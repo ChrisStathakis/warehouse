@@ -9,6 +9,7 @@ urlpatterns = [
 
     path('home/billings/create/', CreateBillPage.as_view(), name='create_bill'),
     path('home/payroll/create/', CreatePayrollPage.as_view(), name='create_payroll'),
+    path('home/billings/edit/<int:pk>/', BillingInvoiceEdit.as_view(), name='edit_bill')
 
 
 ]
