@@ -1,0 +1,112 @@
+{% extends 'reports/incomes.html' %}
+
+
+
+{% block content %}
+    <div class="three column row">
+        <div class="column">
+            <a class="ui teal button" href="{{ return_page }}"><i class="reply icon"></i>Επιστροφή</a>
+        </div>
+        <div class="column">
+            <h2 class="ui green icon header">
+                <i class=" green cart icon"></i>
+                <div class="content">
+                    {{ order }}
+                    <div class="sub header">ID {{ order.id }} -- Τύπος {{ order.get_order_type_display }} -- Κατάσταση {{ order.status }}</div>
+                </div>
+            </h2>
+        </div>
+        <div class="column"></div>
+    </div>
+    <div class="one wide column"></div>
+    <div class="four wide column">
+        <div class="ui segments">
+            <div style='text-align: center' class="ui inverted blue segment">Πληροφορίες</div>
+            <div style='text-align: center' class="ui blue header segment">Ανάλυση Ολοκληρωμένων Παραγγελιών</div>
+            <div style="margin-left: 3%" class="ui celled list">
+                <div class="large item">
+                    <div class="green content">
+                        <div class="green header"><span style="color: teal">{{ order.tag_total_value }}</span></div>
+                        Συνολική Αξία
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                        <div class="header"><span style="color: green">{{ order.tag_clean_value }}</span> -- <span style="color: red">{{ order.tag_taxes }}</span> - {{ order.taxes }} %</div>
+                        Καθαρή Αξία - ΦΠΑ - % ΦΠΑ
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                        <div class="header">{{ order.tag_total_cost }}</div>
+                        Κόστος Πωληθέντων
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                        <div class="header">{{ order.tag_value_vs_cost }} -- {{ order.tag_clean_value_vs_cost }}</div>
+                        Διαφορά Αξία Μειον Κοστος, Μείον Φπα
+                    </div>
+                </div>
+            </div>
+            <div style='text-align: center' class="ui blue header segment">Στοιχεία</div>
+            <div style="margin-left: 3%" class="ui celled list">
+                <div class="item">
+                    <div class="content">
+                        <div class="blue header">{{ order.get_order_type_display }} -- {{ order.status }}</div>
+                        Είδος Παραγγελίας  -- Κατάσταση
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                        <div class="green header">{{ order.costumer_account }} -- {{ order.payment_method }}</div>
+                        Πελάτης -- Τροπος Πληρωμής
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                        <div class="green header">{{ order.seller_account }}</div>
+                        Υποκατάστημα/ Υπάλληλος
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a class="ui blue button" href=""><i class="edit icon"></i> Επεξεργασία </a>
+    </div>
+    <div class="ten wide column">
+        <table class="ui celled striped table">
+          <thead>
+            <tr>
+                <th colspan="5">
+                    Συνολική Αξία {{ order.tag_total_value }}
+                </th>
+            </tr>
+            <tr>
+                <th>Εικόνα</th>
+                <th>Sku - Προϊον</th>
+                <th>Ποσότητα</th>
+                <th>Τιμή</th>
+                <th>Χαρακτηριστικά</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in order_items %}
+                <tr>
+                  <td class="collapsing">
+                    <i class="folder icon"></i> {{ item.title.image }}
+                  </td>
+                  <td>{{ item.title.sku }} {{ item }}</td>
+                  <td class="right aligned collapsing">{{ item.qty }}</td>
+                  <td class="right aligned collapsing">{{ item.price }} {{ currency }}</td>
+                  <td>{{ item.tag_color }}, {{ item.tag_size }}</td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+    <div class="one wide column"></div>
+
+
+
+{% endblock %}
+

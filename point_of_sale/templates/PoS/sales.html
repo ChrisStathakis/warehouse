@@ -1,0 +1,133 @@
+{% extends 'index.html' %} {% load static %}
+
+
+{% block content %}
+    <div class="row">
+        {% if object.is_sale %}
+            <h2 class="ui green center aligned icon header">
+                <i class="circular users icon"></i>
+                Πωλήσεις
+            </h2>
+        {% else %}
+             <h2 class="ui red center aligned icon header">
+                <i class="circular users icon"></i>
+                Επιστροφές
+             </h2>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        <div class="one wide column"></div>
+        <div class="eight wide column">
+            <h2 class="ui header">
+                <i class="plug icon"></i>
+                <div class="content">
+                    Προιόντα
+                </div>
+            </h2>
+             <a href="{% url 'pos:sales' object.id %}" class="ui red button">Reset</a>
+            <div class="row">
+                <form id="filters_form" method="get" class="ui form">
+                    <input onsubmit="this.preventDefault()" data-url="{% url 'pos:ajax_products_search' object.id %}"
+                           type="text" id="search_name" placeholder="Search">
+                </form>
+                <div class="ui accordion">
+
+                </div>
+            </div>
+            <div class="row" id="product_container">
+                {% include 'PoS/includes/products.html' %}
+            </div>
+        </div>
+        <div class="one wide column"></div>
+        <div class="five wide column">
+            <h2 class="ui header">
+                <i class="plug icon"></i>
+                <div class="{% if is_sale %} green {% endif %} content">
+                    Πληροφορίες Παραγγελίας
+                </div>
+            </h2>
+
+            <div class="row" id="ajax_order">
+                {% include 'PoS/includes/order_details.html' %}
+            </div>
+
+            <div class="row">
+                <div class="ui fluid styled accordion">
+                    <div class="title">
+                        <button class="ui button">Επεξεργασία Παραγγελίας</button>
+                    </div>
+                    <div class="content">
+                        <form class="ui form" method="post">{% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit" class="ui fluid blue button"><i class="save icon"></i> </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+            <div style="margin-top: 5%" class="row">
+                <div class="ui fluid card">
+                    <div class="content">
+                        <div class="header">Επιλογές</div>
+                    </div>
+                    <div class="content">
+                        <div class="ui styled fluid accordion">
+                            <div class="title">Create Costumer</div>
+                            <div class="content">
+                                <div class="ui small feed">
+                            <a class="ui blue button" href="{% url 'pos:AuthorCreate' %}"
+                               id="add_author" onclick="return showAddPopup(this);">
+                                Δημιουργία Πελάτη
+                            </a>
+                        </div>
+                            </div>
+                        </div>
+                        <div class="ui small feed">
+                            <div class="ui styled fluid accordion">
+                                <div class="title">
+                                    Payments Orders
+                                </div>
+                                <div class="content">
+                                    <table class="ui table-responsive table">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Payment Type</th>
+                                                <th>Value</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for payment in payment_orders %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ payment }}</td>
+                                                    <td>{{ payment.tag_value }}</td>
+                                                    <td><a href="" class="ui red inverted button"><i class="delete icon"></i> </a> </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="extra content">
+                        <div class="ui two buttons">
+                            <div class="ui basic red button"><i class="delete icon"></i>Ακύρωση </div>
+                            <a href="{% url 'pos:homepage' %}" class="ui basic green button"><i class="save icon"></i>ΑποΘήκευση</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="one wide column"></div>
+    </div>
+
+    <div style="margin-top: 7%" class="row"></div>
+    {% include 'PoS/includes/include_ajax_calls.html' %}
+
+{% endblock %}

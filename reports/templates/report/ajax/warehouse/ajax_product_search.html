@@ -1,0 +1,20 @@
+<table class="ui table">
+    <thead>
+        <tr>
+            <th>Προϊόν</th>
+            <th>Ποσότητα</th>
+            <th>Τιμή Αγοράς</th>
+            <th>Τιμή Πώλήσης</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in queryset %}
+            <tr>
+                <td>{{ product }}</td>
+                <td>{{ product.qty }}</td>
+                <td>{{ product.price_buy }}</td>
+                <td>{{ product.final_price }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

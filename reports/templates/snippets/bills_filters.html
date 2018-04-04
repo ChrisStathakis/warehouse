@@ -1,0 +1,62 @@
+<div class="two fields">
+    <div class="field">
+        <label>Καταστήματα - Ταμεία</label>
+        {% for store in stores %}
+            {% if store.id|stringformat:"s" in store_name  %}
+                <div class="ui checkbox">
+                    <input type="checkbox" name="store_name" value="{{ store.id }}" checked>
+                    <label>{{ store }}</label>
+                </div>
+            {% else %}
+                <div class="ui checkbox">
+                    <input type="checkbox" name="store_name" value="{{ store.id }}">
+                    <label>{{ store }}</label>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="field">
+        <div class="ui green checkbox">
+            <input type="checkbox" name="paid_name" value="0">
+            <label>Πληρωμένες</label>
+        </div>
+        <div class="ui red checkbox">
+            <input type="checkbox" name="paid_name" value="1">
+            <label>Μη πληρωμένες</label>
+        </div>
+    </div>
+</div>
+<div class="two fields">
+    <div class="field">
+        <label>Λογαριασμοί</label>
+        {% for bill in bills %}
+            {% if bill.id|stringformat:"s" in bills_name %}
+                <div class="ui checkbox">
+                    <input type="checkbox" name="bills_name" value="{{ bill.id }}" checked>
+                    <label>{{ bill }}</label>
+                </div>
+            {% else %}
+                <div class="ui checkbox">
+                    <input type="checkbox" name="bills_name" value="{{ bill.id }}">
+                    <label>{{ bill}}</label>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="field">
+        <label>Κατηγορία Εξόδων</label>
+        {% for bill in bills_group %}
+            {% if bill.id|stringformat:"s" in bills_group_name %}
+                <div class="ui checkbox">
+                    <input type="checkbox" name="bills_group_name" value="{{ bill.id }}" checked>
+                    <label>{{ bill }}</label>
+                </div>
+            {% else %}
+                <div class="ui checkbox">
+                    <input type="checkbox" name="bills_group_name" value="{{ bill.id }}">
+                    <label>{{ bill }}</label>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>

@@ -1,0 +1,1181 @@
+{% extends 'reports/warehouse.html' %}
+{% block my_static %}
+     <script xmlns="http://www.w3.org/1999/html">
+            $(function(){
+        $('#search_pro').keyup(function() {
+            $.ajax({
+                type: "POST",
+                url: "/reports/products/ajax-search/",
+                data: {
+                    'search_text' : $('#search_pro').val(),
+                    'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
+                },
+                success: searchSuccess,
+                dataType: 'html'
+            });
+        });
+    });
+    function searchSuccess(data, textStatus, jqXHR)
+    {
+        $('#results_ul').html(data);
+    }
+    </script>
+{% endblock %}
+
+{% block test %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
+{% endblock %}
+
+{% block down_menu %}
+<div class="ui five item bottom fixed menu">
+    <a href="/reports/products/" class="active item">Προιόντα</a>
+    <a href="{% url 'warehouse_order_items_flow' %}" class="item">Κίνηση Προϊόντων</a>
+    <a href="/reports/category-report/" class=" item">Κατηγορίες</a>
+    <a href="/reports/vendors/" class=" item">Προμηθευτές</a>
+    <a href="/reports/orders/" class="item">Τιμολόγια</a>
+</div>
+{% endblock %}
+
+{% block content %}
+    <div class="sixteen wide column">
+        <h2 class="ui center aligned icon header">
+            <i class="circular blue file icon"></i>
+            Προϊόντα
+        </h2>
+    </div>
+    <div class="three wide column">
+        <div  class="ui segments">
+            <form class="ui form" method="get">
+                {% if discount_name %}
+                    <label for="qty">Εκπτωση</label>
+                    <input type="checkbox" name="discount_name" class="ui checkbox" value="true" placeholder="Discount" checked><br>
+                {% else %}
+                     <label for="qty">Εκπτωση</label>
+                    <input type="checkbox" name="discount_name" class="ui checkbox" value="true" placeholder="Discount"><br>
+                {% endif %}
+                {% if qty_name %}
+                    <label for="qty">Απόθεμα</label>
+                    <input type="checkbox" name='qty_name' class="ui checkbox" value="true" placeholder="qty" checked>
+                {% else %}
+                    <label for="qty">Απόθεμα</label>
+                    <input type="checkbox" name='qty_name' class="ui checkbox" value="true" placeholder="qty">
+                {% endif %}
+                <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    Επέλεξε κατηγορία
+                </div>
+                <div style='height: 300px;overflow: scroll' class="content">
+                    {% for ele in categories %}
+                        {% if ele.id|stringformat:'s' in category_name %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="category_name" value="{{ ele.id }}" checked>
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% else %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="category_name" value="{{ ele.id }}">
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+                <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                        Επέλεξε Προμηθευτή
+                </div>
+                <div style='height: 300px;overflow: scroll' class="content">
+                    {% for ele in vendors %}
+                        {% if ele.id|stringformat:'s' in vendor_name %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="vendor_name" value="{{ ele.id }}" checked>
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% else %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="vendor_name" value="{{ ele.id }}">
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+                <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    Επέλεξε Χρώμα
+                </div>
+                <div style='height: 300px;overflow: scroll' class="content">
+                    {% for ele in colors %}
+                        {% if ele.id|stringformat:'s' in color_name %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="color_name" value="{{ ele.id }}" checked>
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% else %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="color_name" value="{{ ele.id }}">
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+                <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                        Επέλεξε Μέγεθος
+                </div>
+                <div style='height: 300px;overflow: scroll' class="content">
+                    {% for ele in sizes %}
+                        {% if ele.id|stringformat:'s' in size_name %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="size_name" value="{{ ele.id }}" checked>
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% else %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="size_name" value="{{ ele.id }}">
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                </div>
+                <input style="width: 100%" type="submit" class="ui green button" placeholder="">
+            </form>
+        </div>
+        <a href="{% url 'reports_products' %}" style="margin-left: 50%" class="ui red button">Καθαρισμός Φίτρων</a>
+    </div>
+    <div class="twelve wide column">
+        <div  class="ui segments">
+        <div  class="ui horizontal segments">
+            <div style="text-align: center" class="ui blue inverted header segment">
+                Προιόντα
+            </div>
+            <div class="ui inverted blue segment">
+                <form method="POST">{% csrf_token %}
+                    <div class="ui search">
+                            <div class="ui icon input">
+                                <input style="width: 300px" id="search_pro" name="search_pro" type="text" placeholder="Αναζήτηση...">
+                                <i class="search icon"></i>
+                            </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div style=" height: {{ table_order.height }}px;  overflow:scroll;" class="ui segment">
+            <table  class="ui small single line selectable table">
+                <thead >
+                    <tr>
+                        <th></th>
+                        <th><a href="{% url 'rep_pro_change_order' 'id' table_order.id %}">Κωδικός</a></th>
+                        <th><a href="{% url 'rep_pro_change_order' 'title' table_order.id %}">Προιόν</a></th>
+                        <th><a href="{% url 'rep_pro_change_order' 'price_buy' table_order.id %}">Τιμή Αγοράς</a></th>
+                        <th><a href="{% url 'rep_pro_change_order' 'price' table_order.id %}">Τιμή Λιανικής/Αρχική Τιμή</a></th>
+                        <th><a href="{% url 'rep_pro_change_order' 'qty' table_order.id %}">Υπόλοιπο</a></th>
+                        <th><a href="{% url 'rep_pro_change_order' 'supplier' table_order.id %}">Προμηθευτής</a></th>
+                        <th><a href="{% url 'rep_pro_change_order' 'category' table_order.id %}">Κατηγορία<br>Κατηγορία Site</a></th>
+                        <th><a href="">Μέγεθος</a></th>
+                    </tr>
+                </thead>
+                <tbody >
+                    {% for ele in products %}
+                        <tr>
+                            <td>{{ forloop.counter }} .{% if ele.image %}<img class="ui tiny image" src="{{ ele.image.url }}">{% else %}{% endif %}</td>
+
+                            <td>{{ ele.sku }}</td>
+                            <td>
+                                <div class="ui teal buttons">
+                                    <a href="/reports/products/{{ ele.id }}" class="ui button">{{ ele }} </a>
+                                    <div class="ui floating dropdown icon button">
+                                        <i class="dropdown icon"></i>
+                                        <div class="menu">
+                                            <div class="item"><i class="edit icon"></i> Προσθήκη στην Παρραγελία</div>
+                                            <a target="_blank" href="{% url 'edit_product' ele.id %}" class="item"><i class="edit icon"></i> Επεξεργασία </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="color:red">{{ ele.price_buy }} {{ currency }}</td>
+                            <td class="positive">{{ ele.site_price }} {{ currency }} / {{ ele.price }} {{ currency }}</td>
+                            {% if ele.show_warehouse_remain <= 0 %}
+                              <td class="negative">{{ ele.show_warehouse_remain|floatformat:2 }}  {{ ele.measure_unit }}</td>
+                            {% else %}
+                              <td class="positive">{{ ele.show_warehouse_remain|floatformat:2 }} {{ ele.measure_unit }} </td>
+                            {% endif %}
+                            <td><a href="/reports/vendors/{{ ele.supplier.id }}">{{ ele.supplier.title }}</a></td>
+                            <td><a href='/reports/products/cat/{{ ele.category.id }}/'>{{ ele.category.title }}<br>{{ ele.tag_category_site }}</a></td>
+                            <td>
+                                {% if ele.have_size %}
+                                    <br>
+                                    {% for size in ele.sizes %}
+                                    {{ size.title }}: {{ size.qty }},
+                                    {% endfor %}
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+                    {% endfor %}
+                    {% for ele in products_color_sum %}
+                        <tr>
+                            <td>
+                                <div class="ui teal buttons">
+                                    <a href="/reports/products/{{ ele.id }}" class="ui button">Ανάλυση Προίόντος</a>
+                                    <div class="ui floating dropdown icon button">
+                                        <i class="dropdown icon"></i>
+                                        <div class="menu">
+                                            <div class="item"><i class="edit icon"></i> Προσθήκη στην Παρραγελία</div>
+                                            <div class="item"><i class="delete icon"></i> Remove Post</div>
+                                            <div class="item"><i class="hide icon"></i> Hide Post</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ ele.description }}</td>
+                            <td><a href="/reports/products/{{ ele.id }}">{{ ele.title }}</a></td>
+                            <td><a href="/reports/vendors/{{ ele.supplier.id }}">{{ ele.supplier.title }}</a></td>
+                            <td><a href='/reports/products/cat/{{ ele.category.id }}/'>{{ ele.category.title }}</a></td>
+                            <td>{{ ele.color_a.title }}</td>
+                            <td>{{ ele.size_a.title }}</td>
+                            <td>{{ ele.price_buy }} €</td>
+                            <td>{{ ele.price_internet }} €</td>
+                            <td class="positive">{{ ele.price }} €</td>
+                            {% if ele.show_warehouse_remain <= 0 %}
+                              <td style="background-color: indianred">{{ ele.show_warehouse_remain|floatformat:2 }}</td>
+                            {% else %}
+                              <td class="green">{{ ele.show_warehouse_remain|floatformat:2 }} </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Σύνολα</th>
+                        <th></th>
+                        <th></th>
+                        <th>{{ products_info.1|floatformat:2 }} {{ currency }}</th>
+                        <th>{{ products_info.2|floatformat:2 }} {{ currency }}</th>
+                        <th>{{ products_info.0 }} Τεμ</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="pagination ">
+            <span class="step-links">
+                {% if products.has_previous %}
+                    <a  href="?page={{ products.previous_page_number }}">previous</a>
+                {% endif %}
+                <span class="current">
+                    Page {{ products.number }} of {{ products.paginator.num_pages }}.
+                </span>
+                {% if products.has_next %}
+                    <a  href="?page={{ products.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+        </div>
+        </div>
+    </div>
+
+
+    </div>
+    <div class="one wide column"></div>
+    <div class="two wide column"></div>
+    <div class="fourteen wide column"><h2>Charts etc....</h2></div>
+     {% if category_name  %}
+       <h2 class="ui center aligned icon header">
+           <i class="circular green sidebar icon"></i>
+           Κατηγορίες
+       </h2>
+        <div class="row">
+        <div class="five wide column">
+        <canvas id="myChart1" width="400" height="200"></canvas>
+            <script>
+            var ctx = document.getElementById("myChart1");
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        {% for key, value in category_info.items %}
+                            "{{ key }}",
+                        {% endfor %}
+                        ],
+                    datasets: [{
+                        label: 'Υπόλοιπο ανα κατηγορία',
+                        data: [
+                            {% for key, value in category_info.items %}
+                                {% if value.0 %}
+                                {{ value.0 }},
+                                {% else %}
+                                 0,
+                                {% endif %}
+                            {% endfor %}
+                            ],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+            </script>
+
+        </div>
+        <div class="five wide column">
+        <canvas id="myChart2" width="400" height="200"></canvas>
+            <script>
+            var ctx = document.getElementById("myChart2");
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        {% for key, value in category_info.items %}
+                            "{{ key }}",
+                        {% endfor %}
+                        ],
+                    datasets: [{
+                        label: 'Κόστος αποθήκης ανά Κατηγορία',
+                         data: [
+                            {% for key, value in category_info.items %}
+                                {% if value.1 %}
+                                {{ value.1 }},
+                                {% else %}
+                                 0,
+                                {% endif %}
+                            {% endfor %}
+                            ],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+            </script>
+        </div>
+        <div class="five wide column">
+        <canvas id="myChart3" width="400" height="200"></canvas>
+            <script>
+            var ctx = document.getElementById("myChart3");
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                     labels: [
+                        {% for key, value in category_info.items %}
+                            "{{ key }}",
+                        {% endfor %}
+                        ],
+                    datasets: [{
+                        label: 'Ποσοστό κέρδους ανά Κατηγορία',
+                        data: [
+                            {% for key, value in category_info.items %}
+                                {% if value.3 %}
+                                {{ value.3|floatformat:2 }},
+                                {% else %}
+                                 0,
+                                {% endif %}
+                            {% endfor %}
+                            ],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+            </script>
+        </div>
+        <div class="four wide column"></div>
+        <div style="margin-top: 2%" class="eight wide column">
+            <table class="ui green table">
+              <thead>
+                <tr>
+                    <th>Κατηγορία</th>
+                    <th>Απόθέμα</th>
+                    <th>Κόστος Αποθήκης</th>
+                    <th>Προβλεπόμενα έσοδα</th>
+                    <th>Ποσοστό κέρδους</th>
+                </tr>
+              </thead>
+                <tbody>
+                {% for key, value in category_info.items %}
+                    <tr>
+                      <td>{{ key }}</td>
+                      {% if value.0 %}
+                        <td>{{ value.0 }}</td>
+                      {% else %}
+                        <td>0</td>
+                      {% endif %}
+                      <td>{{ value.1 }} {{ currency }}</td>
+                      <td>{{ value.2 }} {{ currency }}</td>
+                      <td>{{ value.3|floatformat:2 }} %</td>
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+        <div class="four wide column"></div>
+
+    </div>
+     {% endif %}
+     {% if vendor_name %}
+        <h2 class="ui center aligned icon header">
+            <i class="circular green users icon"></i>
+            Προμηθευτές
+        </h2>
+        <div class="row">
+        <div class="five wide column">
+        <canvas id="myChart4" width="400" height="200"></canvas>
+            <script>
+            var ctx = document.getElementById("myChart4");
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        {% for key, value in vendor_info.items %}
+                            "{{ key }}",
+                        {% endfor %}
+                        ],
+                    datasets: [{
+                        label: 'Υπόλοιπο ανα Προμηθευτή',
+                        data: [
+                            {% for key, value in vendor_info.items %}
+                                {% if value.0 %}
+                                {{ value.0 }},
+                                {% else %}
+                                 0,
+                                {% endif %}
+                            {% endfor %}
+                            ],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+            </script>
+
+        </div>
+        <div class="five wide column">
+        <canvas id="myChart5" width="400" height="200"></canvas>
+            <script>
+            var ctx = document.getElementById("myChart5");
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        {% for key, value in vendor_info.items %}
+                            "{{ key }}",
+                        {% endfor %}
+                        ],
+                    datasets: [{
+                        label: 'Κόστος αποθήκης ανά Προμηθευτή',
+                         data: [
+                            {% for key, value in vendor_info.items %}
+                                {% if value.1 %}
+                                {{ value.1 }},
+                                {% else %}
+                                 0,
+                                {% endif %}
+                            {% endfor %}
+                            ],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+            </script>
+        </div>
+        <div class="five wide column">
+        <canvas id="myChart6" width="400" height="200"></canvas>
+            <script>
+            var ctx = document.getElementById("myChart6");
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                     labels: [
+                        {% for key, value in vendor_info.items %}
+                            "{{ key }}",
+                        {% endfor %}
+                        ],
+                    datasets: [{
+                        label: 'Ποσοστό κέρδους ανά Προμηθευτή',
+                        data: [
+                            {% for key, value in vendor_info.items %}
+                                {% if value.3 %}
+                                {{ value.3 }},
+                                {% else %}
+                                 0,
+                                {% endif %}
+                            {% endfor %}
+                            ],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+            </script>
+        </div>
+        <div class="four wide column"></div>
+        <div style="margin-top: 2%" class="eight wide column">
+            <table class="ui green table">
+              <thead>
+                <tr>
+                    <th>Κατηγορία</th>
+                    <th>Απόθέμα</th>
+                    <th>Κόστος Αποθήκης</th>
+                    <th>Προβλεπόμενα έσοδα</th>
+                    <th>Ποσοστό κέρδους</th>
+                </tr>
+              </thead>
+                <tbody>
+                {% for key, value in vendor_info.items %}
+                    <tr>
+                      <td>{{ key }}</td>
+                      {% if value.0 %}
+                        <td>{{ value.0 }}</td>
+                      {% else %}
+                        <td>0</td>
+                      {% endif %}
+                      <td>{{ value.1 }} {{ currency }}</td>
+                      <td>{{ value.2 }} {{ currency }}</td>
+                      <td>{{ value.3|floatformat:2 }} %</td>
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+        <div class="four wide column"></div>
+    </div>
+    {% endif %}
+     {% if color_name %}
+        <h2 class="ui center aligned icon header">
+            <i class="circular blue block layout icon"></i>
+            Χρώματα
+        </h2>
+        <div class="row">
+        <div class="five wide column">
+        <canvas id="myChart7" width="400" height="200"></canvas>
+            <script>
+            var ctx = document.getElementById("myChart7");
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        {% for key, value in color_info.items %}
+                            "{{ key }}",
+                        {% endfor %}
+                        ],
+                    datasets: [{
+                        label: 'Υπόλοιπο ανα χρώμα',
+                        data: [
+                            {% for key, value in color_info.items %}
+                                {% if value.0 %}
+                                {{ value.0 }},
+                                {% else %}
+                                 0,
+                                {% endif %}
+                            {% endfor %}
+                            ],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+            </script>
+
+        </div>
+        <div class="five wide column">
+        <canvas id="myChart8" width="400" height="200"></canvas>
+            <script>
+            var ctx = document.getElementById("myChart8");
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        {% for key, value in color_info.items %}
+                            "{{ key }}",
+                        {% endfor %}
+                        ],
+                    datasets: [{
+                        label: 'Κόστος αποθήκης ανά Χρώμα',
+                         data: [
+                            {% for key, value in color_info.items %}
+                                {% if value.1 %}
+                                {{ value.1 }},
+                                {% else %}
+                                 0,
+                                {% endif %}
+                            {% endfor %}
+                            ],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+            </script>
+        </div>
+        <div class="five wide column">
+        <canvas id="myChart9" width="400" height="200"></canvas>
+            <script>
+            var ctx = document.getElementById("myChart9");
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                     labels: [
+                        {% for key, value in color_info.items %}
+                            "{{ key }}",
+                        {% endfor %}
+                        ],
+                    datasets: [{
+                        label: 'Ποσοστό κέρδους ανά Χρώμα',
+                        data: [
+                            {% for key, value in color_info.items %}
+                                {% if value.3 %}
+                                {{ value.3 }},
+                                {% else %}
+                                 0,
+                                {% endif %}
+                            {% endfor %}
+                            ],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+            </script>
+        </div>
+        <div class="four wide column"></div>
+        <div style="margin-top: 2%" class="eight wide column">
+            <table class="ui green table">
+              <thead>
+                <tr>
+                    <th>Χρώματα</th>
+                    <th>Απόθέμα</th>
+                    <th>Κόστος Αποθήκης</th>
+                    <th>Προβλεπόμενα έσοδα</th>
+                    <th>Ποσοστό κέρδους</th>
+                </tr>
+              </thead>
+                <tbody>
+                {% for key, value in vendor_info.items %}
+                    <tr>
+                      <td>{{ key }}</td>
+                      {% if value.0 %}
+                        <td>{{ value.0 }}</td>
+                      {% else %}
+                        <td>0</td>
+                      {% endif %}
+                      <td>{{ value.1 }} {{ currency }}</td>
+                      <td>{{ value.2 }} {{ currency }}</td>
+                      <td>{{ value.3|floatformat:2 }} %</td>
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+        <div class="four wide column"></div>
+    </div>
+    {% endif %}
+    <div style="margin-bottom: 5%" class="row"></div>
+{% endblock %}
+
+{% block right_side %}
+    <div style="width: 50%;margin-left: 50%;padding-right: 0%" class="ui segments">
+        <form class="ui form" method="post">{% csrf_token %}
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    {% if category_name %}
+                        {% for ele in category_name %}
+                            <a class="ui blue label">
+                                {{ ele.title }}
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        Επέλεξε κατηγορία
+                    {% endif %}
+                </div>
+                <div style='height: 300px;overflow: scroll' class="content">
+                    {% for ele in categories %}
+                        {% if ele.title in category_name %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="category" value="{{ ele.title }}" checked>
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% else %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="category" value="{{ ele.title }}">
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    {% if vendor_name %}
+                        {% for ele in vendor_name %}
+                            <a style="margin-top: 1%" class="ui blue label">
+                                {{ ele.title }}
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        Επέλεξε Προμηθευτή
+                    {% endif %}
+                </div>
+                <div style='height: 300px;overflow: scroll' class="content">
+                    {% for ele in vendors %}
+                        {% if ele.title in vendor_name %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="vendor" value="{{ ele.title }}" checked>
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% else %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="vendor" value="{{ ele.title }}">
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% endif %}
+
+                    {% endfor %}
+                </div>
+            </div>
+
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    {% if color_name %}
+                        {% for ele in color_name %}
+                            <a style="margin-top: 1%" class="ui blue label">
+                                {{ ele.title }}
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        Επέλεξε Χρώμα
+                    {% endif %}
+                </div>
+                <div style='height: 300px;overflow: scroll' class="content">
+                    {% for ele in colors %}
+                        {% if ele.title in color_name %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="color_name" value="{{ ele.title }}" checked>
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% else %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="color_name" value="{{ ele.title }}">
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    {% if size_name %}
+                        {% for ele in size_name %}
+                            <a style="margin-top: 1%" class="ui blue label">
+                                {{ ele.title }}
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        Επέλεξε Μέγεθος
+                    {% endif %}
+
+                </div>
+                <div style='height: 300px;overflow: scroll' class="content">
+                    {% for ele in sizes %}
+                        {% if ele.title in size_name %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="size_name" value="{{ ele.title }}" checked>
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% else %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="size_name" value="{{ ele.title }}">
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                        Κατάσταση Site
+                </div>
+                <div  class="content">
+                    <div class="field">
+                        {% if site_status_name == 'a' %}
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="site_status" value="a" checked>
+                                <label>Σε απόθεμα</label>
+                            </div>
+                        {% else %}
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="site_status" value="a">
+                                <label>Σε απόθεμα</label>
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+                    <div class="field">
+                        {% if site_status_name == 'i' %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="i" checked>
+                            <label>Inactive</label>
+                        </div>
+                        {% else %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="i">
+                            <label>Inactive</label>
+                        </div>
+
+                        {% endif %}
+                    </div>
+                    <div class="field">
+                         {% if site_status_name == 'o' %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="o" checked>
+                            <label>Διαθέσιμο με παραγγελία</label>
+                        </div>
+                        {% else %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="o">
+                            <label>Διαθέσιμο με παραγγελία</label>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="field">
+                        {% if site_status_name == 'p' %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="p" checked>
+                            <label>Προσωρινά μη διαθέσιμο</label>
+                        </div>
+                        {% else %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="p">
+                            <label>Προσωρινά μη διαθέσιμο</label>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    {% if ware_status_name %}
+                        {% if ware_status_name == 'a' %}
+                            <p style="background-color: green">Ενεργοποιημένο</p>
+                        {% else %}
+                            <p style="background-color: red">Απενεργοποιημένο</p>
+                        {% endif %}
+                    {% else %}
+                        Κατάσταση Αποθήκης
+                    {% endif %}
+                </div>
+                <div  class="content">
+                <div class="field">
+                    {% if ware_status_name == 'a' %}
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="ware_status" value="a" checked>
+                            <label>Ενεργοποιημένο</label>
+                        </div>
+                    {% else %}
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="ware_status" value="a">
+                            <label>Ενεργοποιημένο</label>
+                        </div>
+
+                    {% endif %}
+                </div>
+                <div class="field">
+                    {% if ware_status_name == 'b' %}
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="ware_status" value="b" checked>
+                            <label>Απενεργοποιημένο</label>
+                        </div>
+                    {% else %}
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="ware_status" value="b">
+                            <label>Απενεργοποιημένο</label>
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+                </div>
+            </div>
+
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    Χονδρική
+                </div>
+                <div  class="content">
+                    <div class="ui checkbox">
+                        <input  type="checkbox" name="b2b_status" value="a">
+                        <label>Ναι</label>
+                    </div>
+                    <br>
+                     <div class="ui checkbox">
+                        <input  type="checkbox" name="b2b_status" value="n">
+                        <label>Όχι</label>
+                    </div>
+                    <br>
+                </div>
+            </div>
+
+
+        <input style="width: 100%" type="submit" class="ui green button" placeholder="Search">
+        </form>
+    </div>
+    <a href="{% url 'session_product_rep' %}" style="margin-left: 50%" class="ui red button">Καθαρισμός Φίτρων</a>
+{% endblock %}

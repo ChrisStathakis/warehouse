@@ -1,0 +1,109 @@
+{% extends 'home/index.html' %} {% load static %}
+
+
+{% block content %}
+
+    <div class="page-header page-header-small">
+        <div class="page-header-image" data-parallax="true"
+            {% if first_page.image %}
+                 style="background-image: url('{{ first_page.image.url }}');">
+            {% else %}
+                style="background-image: url('{% static 'home/assets/img/bg6.jpg' %}');">
+            {% endif %}
+        </div>
+        <div class="container">
+            <div class="content-center">
+                <h1 class="title">CheckOut</h1>
+            </div>
+        </div>
+    </div>
+    <div class="section">
+        <div class="container">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success" role="alert">
+                        <div class="container">
+                            <div class="alert-icon">
+                                <i class="now-ui-icons ui-2_like"></i>
+                            </div>
+                            {{ message}}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">
+                                    <i class="now-ui-icons ui-1_simple-remove"></i>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="title text-center">{{ get_order }}</h2>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-responsive">
+                                <thead>
+                                    <tr>
+                                        <th>Sku</th>
+                                        <th>Name</th>
+                                        <th>Qty</th>
+                                        <th>Price</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in get_order.retailorderitem_set.all %}
+                                        <tr>
+                                            <td>{{ item.title.sku|default_if_none:"Empty" }}</td>
+                                            <td>{{ item }}</td>
+                                            <td>{{ item.qty }}</td>
+                                            <td>{{ item.tag_final_price }}</td>
+                                            <td>{{ item.tag_total_price }}</td>
+                                        </tr>
+                                    {% endfor %}
+
+                                    <tr>
+                                        <th>{{ get_order.shipping.title }}</th>
+                                        <th>{{ get_order.tag_shipping_value }}</th>
+                                        <th>{{ get_order.get_payment_method_display }}</th>
+                                        <th>{{ get_order.tag_payment_value }}</th>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Coupons</td>
+                                        <td colspan="2">{% for coupon in get_order.coupons.all %} {{ coupon }} {% empty %} No coupons {% endfor %}</td>
+                                        <th>Total Value</th>
+                                        <th class="success">{{ get_order.tag_final_price }}</th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer">
+                            <h5 class="title text-center">General Details</h5>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <p>Date {{ get_order.date_created }}</p>
+                                    <p>Status  {{ get_order.get_status_display }}</p>
+                                    <p>Status</p>
+                                    <p>Status</p>
+                                    <p>Status</p>
+                                </div>
+                                <div class="col-6">
+                                    <p>Name... {{ get_order.first_name }} {{ get_order.last_name }}</p>
+                                    <p>Address... {{ get_order.address }}, {{ get_order.zip_code }}, {{ get_order.city }}</p>
+                                    <p>Phone...{{ get_order.cellphone }}</p>
+                                    <p>Name</p>
+                                    <p>Name</p>
+                                    <p>Name</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

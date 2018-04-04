@@ -1,0 +1,21 @@
+<table class="ui fixed single line celled table">
+                              <thead>
+                                    <tr>
+                                        <th>Μήνας</th>
+                                        <th>Πίστωση</th>
+                                        <th>Πληρωμές</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for month in data_analysis %}
+                                    <tr>
+                                      <td>{{ month.person__title }} {{ month.person__occupation__title  }}</td>
+                                      <td>{{ month.total_cost }}  {{ currency }}</td>
+                                      <td>{{ month.total_paid }}  {{ currency }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                          </table>
+                          <button id='btn_people' data-url="{% url 'reports:ajax_balance_sheet_payroll' %}" class="ui blue button">Ανάλυση Ανά Άτομο</button> 
+                          <button id='btn_occup' data-url="{% url 'reports:ajax_balance_sheet_payroll' %}" class="ui blue button">Ανάλυση Ανά Επάγγελμα</button>
+

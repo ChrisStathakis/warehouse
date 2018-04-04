@@ -1,0 +1,79 @@
+{% extends 'dashboard/order_section/order_list.html' %}
+
+{% block content %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                            <div class="header">
+                                <h4 class="title text-center">Shipping Method</h4>
+                                <p class="category">
+                                    <a href="{% url 'dashboard:create_coupon' %}"
+                                       class="btn btn-success">Create Order
+                                    </a>
+                                </p>
+                            </div>
+                            <div class="content table-responsive table-full-width">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Limit</th>
+                                        <th>Cost</th>
+                                        <th>Actions</th>
+                                    </thead>
+                                    <tbody>
+                                        {% for shipping in shipping_methods %}
+                                            <tr>
+                                                <td>{{ shipping.id }}</td>
+                                                <td>{{ shipping }}</td>
+                                                <td>{{ shipping.tag_value_limit }}</td>
+                                                <td>{{ shipping.tag_value }}</td>
+                                                <td><button class="btn btn-success">Action</button> </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                            <div class="header">
+                                <h4 class="title text-center">Coupons</h4>
+                                <p class="category">
+                                    <a href="{% url 'dashboard:create_coupon' %}"
+                                       class="btn btn-success">Create Coupon
+                                    </a>
+                                </p>
+                            </div>
+                            <div class="content table-responsive table-full-width">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Limit</th>
+                                        <th>Cost</th>
+                                        <th>Actions</th>
+                                    </thead>
+                                    <tbody>
+                                        {% for shipping in shipping_methods %}
+                                            <tr>
+                                                <td>{{ shipping.id }}</td>
+                                                <td>{{ shipping }}</td>
+                                                <td>{{ shipping.tag_value_limit }}</td>
+                                                <td>{{ shipping.tag_value }}</td>
+                                                <td><button class="btn btn-success">Action</button> </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+               </div>
+           </div>
+       </div>
+   </div>
+
+{% endblock %}

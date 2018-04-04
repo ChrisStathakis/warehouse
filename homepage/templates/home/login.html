@@ -1,0 +1,46 @@
+{% extends 'home/index.html' %} {% load static %}
+
+{% block content %}
+    <div class="page-header page-header-small">
+        <div class="page-header-image" data-parallax="true"
+                     {% if first_page.image %}
+                        style="background-image: url('{{ first_page.image.url }}');">
+                     {% else %}
+                        style="background-image: url('{% static 'home/assets/img/bg6.jpg' %}');">
+                    {% endif %}
+        </div>
+    </div>
+
+    <div class="section section-contact-us text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                     <h2 class="title">Register</h2>
+                    <p class="description">Your project is very important to us.</p>
+                    <div class="row">
+                        <div class="col-lg-6 text-center col-md-8 ml-auto mr-auto">
+                        <form method="post">{% csrf_token %}
+                            {{ register_form }}
+                            <button type="submit" name="register_button" class="btn btn-primary btn-round btn-block btn-lg">Send!</button>
+                        </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                     <h2 class="title">Login</h2>
+                <p class="description">Your project is very important to us.</p>
+                <div class="row">
+                    <div class="col-lg-6 text-center col-md-8 ml-auto mr-auto">
+                       <form method="post">{% csrf_token %}
+                            {{ login_form }}
+                            <button type="submit" name="login_button" class="btn btn-primary btn-round btn-block btn-lg">Send!</button>
+                        </form>
+                    </div>
+                </div>
+
+                </div>
+            </div>
+
+            </div>
+        </div>
+{% endblock %}

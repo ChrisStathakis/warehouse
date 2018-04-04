@@ -1,0 +1,211 @@
+{% extends 'report/balance-sheet.html' %} {% load static %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="four wide column"></div>
+        <div class="four wide column"><h3 class="ui header">Payment Orders</h3> </div>
+        <div class="four wide column"></div>
+    </div>
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <div class="ui fluid styled accordion">
+                <div class="title"><h5>Filters</h5></div>
+                <div class="content">
+                    <form class="ui form" method="get">
+                        {% include 'snippets/search_date_filter.html' %}
+                        <div class="two fields">
+                            <div class="field">
+                                <label>Τρόπος Πληρωμής</label>
+                                {% for payment in payment_type %}
+                                    <div class="ui slider checkbox">
+                                        <input type="checkbox" name="payment_name" value="{{ payment.0 }}">
+                                        <label>{{ payment.1 }}</label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="field">
+                                <label>Είδος Παραστατικού</label>
+                                {% for payment in payment_order_type %}
+                                    <div class="ui slider checkbox">
+                                        <input type="checkbox" name="payment_name" value="{{ payment.0 }}">
+                                        <label>{{ payment.1 }}</label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <input style="width: 100%;margin-top: 3%;" class="ui green inverted button" type="submit">
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="two wide column"></div>
+    </div>
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <canvas id="myChart" width="1000" height="400"></canvas>
+            <script>
+            var ctx = document.getElementById("myChart").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [{% for ele in orders_income_chart %}"{{ ele.0 }}",{% endfor %}],
+                    datasets: [{
+                        label: ' Επιταγές Πληρωτέες ',
+                        data: [
+                            {% for ele in orders_outcome_chart %}
+                                {{ ele.1 }},
+                            {% endfor %}
+                        ],
+                        fill:false,
+                        borderColor:[
+                            'red'
+                        ],
+                        strokeColor: "#fff",
+                        pointColor: "#fff"
+                    },
+                    {
+                        label: ' Επιταγές Εισπρακτέες ',
+                        data: [
+                            {% for ele in orders_income_chart %}
+                                {{ ele.1 }},
+                            {% endfor %}
+                        ],
+                        fill:false,
+                        borderColor:[
+                            'green'
+                        ],
+                        strokeColor: "#fff",
+                        pointColor: "#fff"
+                    },
+                    {
+                        label: ' Διαφορά ',
+                        data: [
+                            {% for ele in diff_chart %}
+                                {{ ele }},
+                            {% endfor %}
+                        ],
+                        fill:false,
+                        borderColor:[
+                            'blue'
+                        ],
+                        strokeColor: "#fff",
+                        pointColor: "#fff"
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+            </script>
+        </div>
+        <div class="two wide column"></div>
+    </div>
+    <div class="row">
+        <div class="seven wide column">
+            <h5 class="header">Έξοδα</h5>
+            <div class="ui mini statistics">
+                <div class="ui red statistic">
+                    <div class="value">
+                        {{ orders_outcome_total.0 }} {{ currency }}
+                    </div>
+                    <div class="label">
+                        Συνολικά Έξοδα
+                    </div>
+                </div>
+                <div class="ui green statistic">
+                    <div class="value">
+                        {{ orders_outcome_total.1 }} {{ currency }}
+                    </div>
+                    <div class="label">
+                        Πληρωτέα Έξοδα
+                    </div>
+                </div>
+            </div>
+            <table class="ui red celled striped table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Ημερομηνία</th>
+                        <th>Είδος</th>
+                        <th>Τρόπος Πληρωμής</th>
+                        <th>Κατάσταση</th>
+                        <th>Ποσό</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders_outcome %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ order.date_expired|date }}</td>
+                            <td>{{ order.content_object }}</td>
+                            <td>{{ order.get_payment_type_display }}</td>
+                            <td{% if order.is_paid %} class="success" >Πληρώθηκε
+                            {% else %} class="negative">Μη Πληρωμένη
+                            {% endif %}</td>
+                            <td class="warning">{{ order.tag_value }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="two wide column"></div>
+        <div class="seven wide column">
+            <h5 class="ui header">Έσοδα</h5>
+            <div class="ui mini statistics">
+                <div class="ui red statistic">
+                    <div class="value">
+                        {{ orders_income_total.0 }} {{ currency }}
+                    </div>
+                    <div class="label">
+                        Συνολικά Έσοδα
+                    </div>
+                </div>
+                <div class="ui green statistic">
+                    <div class="value">
+                        {{ orders_income_total.1 }} {{ currency }}
+                    </div>
+                    <div class="label">
+                        Πληρωτέα Έσοδα
+                    </div>
+                </div>
+            </div>
+            <table class="ui green celled striped table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Ημερομηνία</th>
+                        <th>Είδος</th>
+                        <th>Τρόπος Πληρωμής</th>
+                        <th>Κατάσταση</th>
+                        <th>Ποσό</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders_income %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ order.date_expired|date }}</td>
+                            <td>{{ order.content_object }}</td>
+                            <td>{{ order.get_payment_type_display }}</td>
+                            <td{% if order.is_paid %} class="success" >Πληρώθηκε
+                            {% else %} class="negative">Μη Πληρωμένη
+                            {% endif %}</td>
+                            <td class="success">{{ order.tag_value }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 5%"></div>
+
+{% endblock %}

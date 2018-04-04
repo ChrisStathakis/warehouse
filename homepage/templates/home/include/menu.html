@@ -1,0 +1,98 @@
+{% load static %}
+<!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-primary fixed-top navbar-transparent " color-on-scroll="400">
+        <div class="container">
+            <div class="dropdown button-dropdown">
+                <a href="#pablo" class="dropdown-toggle" id="navbarDropdown" data-toggle="dropdown">
+                    <span class="button-bar"></span>
+                    <span class="button-bar"></span>
+                    <span class="button-bar"></span>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-header">Dropdown header</a>
+                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="#">Another action</a>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Separated link</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">One more separated link</a>
+                </div>
+            </div>
+            <div class="navbar-translate">
+                <a class="navbar-brand" href="{% url 'homepage' %}" rel="tooltip" title="Designed by Invision. Coded by Creative Tim" data-placement="bottom">
+                    Now Ui Kit
+                </a>
+                <button class="navbar-toggler navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-bar bar1"></span>
+                    <span class="navbar-toggler-bar bar2"></span>
+                    <span class="navbar-toggler-bar bar3"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse justify-content-end" id="navigation" data-nav-image="../assets/img/blurred-image-1.jpg">
+                <ul class="navbar-nav">
+                    <li>
+                        <form method="get">
+                            <input class="nav-link form-control" name="search_name" type="text" placeholder="Search...">
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'new_products_page' %}">New Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'offers_page' %}">Offers</a>
+                    </li>
+                    {% for category in menu_categories %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'category_page' category.slug %}">{{ category.title }}</a>
+                    </li>
+                    {% endfor %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'brands' %}">Brands</a>
+                    </li>
+                    <li class="nav-item">
+                        {% if request.user.is_authenticated %}
+                            <a class="nav-link" href="{% url 'profile-page' %}">{{ request.user }}</a>
+                        {% else %}
+                            <a href="{% url 'login_page' %}" class="nav-link">Login</a>
+                        {% endif %}
+                    </li>
+                    <li class="dropdown button-dropdown">
+                        <a href="#pablo" class="dropdown-toggle" id="navbarDropdown" data-toggle="dropdown">
+                            <i class="fa fa-shopping-cart">{% if cart %}{{ cart.tag_value }}{% else %} 0.00 € {% endif %}</i>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Qty</th>
+                                        <th>Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in cart_items %}
+                                        <tr>
+                                            <td>{{ item }}</td>
+                                            <td>{{ item.qty }}</td>
+                                            <td>{{ item.tag_price }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="3">No Products Chosed!</td>
+                                        </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <th>Total Value</th>
+                                        <th>{{ cart.tag_value }}</th>
+                                        <th><a href="{% url 'cart_page' %}" class="btn btn success">Cart Page</a></th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+<!-- End Navbar -->

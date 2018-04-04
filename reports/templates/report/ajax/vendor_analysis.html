@@ -1,0 +1,19 @@
+<h3>Analysis {{ date_pick }}</h3>
+
+<table class="ui table">
+    <thead>
+        <tr>
+            <th>Προμηθευτής</th>
+            <th>Επιλεγμένη Περίοδος</th>
+            <th>Προηγούμενη Περίοδος</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for vendor in current_analysis %}
+            <tr>
+                <td>{{ vendor.vendor__title }}</td>
+                <td>{{ vendor.total_sum }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

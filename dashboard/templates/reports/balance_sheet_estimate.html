@@ -1,0 +1,424 @@
+{% extends 'reports/warehouse.html' %}
+
+
+{% block left_side %}
+
+    <div class="ui segments">
+        <div class="ui segment">
+                <div class="ui blue inverted header">
+                     Περίοδος... {{ date_pick }}
+                </div>
+        </div>
+        <div class="ui segment">
+
+        <form class="ui form" method="post">{% csrf_token %}
+            <div class="ui selection dropdown">
+                <input type="hidden" name="bill_name">
+                <i class="dropdown icon"></i>
+                    <div class="default text">Τρόπος Κοστολόγησης</div>
+
+                <div class="menu">
+
+                        <div class="item" data-value="a" data-text="a">
+                            <i class="male icon"></i>
+                            Σύνολο Εξόδων από Τιμολόγια.
+                        </div>
+                        <div class="item" data-value="a" data-text="a">
+                            <i class="male icon"></i>
+                            Συνόλο εξόδων από Κοστολόγιο.
+                        </div>
+                </div>
+            </div>
+
+
+
+
+
+
+            <input  name="date_pick" placeholder="Ημερομηνία" >
+            <input style="width: 100%;margin-top: 3%;" class="ui green inverted button" type="submit">
+        </form>
+    </div>
+    </div>
+
+{% endblock %}
+
+{% block center %}
+    <div class="ui segments">
+        <div style="text-align: center" class="ui green inverted header segment">
+            'Εσοδα
+        </div>
+        <div class="ui segment">
+            <div class="ui styled accordion">
+                <div class=" content">
+                    <div class="accordion">
+                        <div class="title">
+                            <i class="active dropdown icon"></i>
+                            'Εσοδα ανά Ημέρα
+                        </div>
+                        <div class="content">
+                            <p class="transition hidden">Ανάλυση</p>
+                        <div class="accordion transition hidden">
+                            <div class="title">
+                                <i class="dropdown icon"></i>
+                                Ημερολόγιο
+                            </div>
+                            <div class=" content">
+                                <table class="ui table">
+                                    <thead>
+                                        <tr>
+                                            <th>Ημερομηνία</th>
+                                            <th>Έξοδα</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for key,value in incomes_per_day.items %}
+                                              <tr>
+                                                  <td>{{ key }}</td>
+                                                  <td>{{ value|floatformat:2 }}</td>
+                                              </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="title">
+                                  <i class="dropdown icon"></i>
+                                  Αξία Πωλήσεων ανά Ημέρα
+                            </div>
+                            <div class=" content">
+                                <table class="ui table">
+                                    <thead>
+                                        <tr>
+                                            <th>Ημερομηνία</th>
+                                            <th>Έξοδα</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for key,value in value_per_day.items %}
+                                              <tr>
+                                                  <td>{{ key }}</td>
+                                                  <td>{{ value|floatformat:2 }}</td>
+                                              </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                </div>
+        </div>
+    </div>
+
+    <div class="ui segments">
+        <div style="text-align: center" class="ui red inverted header segment">
+            Πληρωμές
+        </div>
+        <div class="ui segment">
+            <div class="ui styled accordion">
+
+                <div class=" title">
+                    <i class="dropdown icon"></i>
+                    Αξία Πωληθέντων από Κοστολόγιο
+                </div>
+                <div class=" content">
+                    <div class="accordion">
+                        <div class="title">
+                            <i class="dropdown icon"></i>
+                            Αξία Πωληθέντων ανά Ημέρα
+                        </div>
+                        <div class="content">
+                            <p class="transition hidden">Ανάλυση</p>
+                        <div class="accordion transition hidden">
+                            <div class="title">
+                                <i class="active dropdown icon"></i>
+                                Ημερολόγιο
+                            </div>
+                            <div class="active content">
+                                <table class="ui table">
+                                    <thead>
+                                        <tr>
+                                            <th>Ημερομηνία</th>
+                                            <th>Έξοδα</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for key,value in sum_per_day.items %}
+                                              <tr>
+                                                  <td>{{ key }}</td>
+                                                  <td>{{ value|floatformat:2 }}</td>
+                                              </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="title">
+                                  <i class="dropdown icon"></i>
+                                  Not yet Implement
+                            </div>
+                            <div class="content">
+                                Level 1A-B Contents
+                            </div>
+                            </div>
+                        </div>
+                        <div class="title">
+                              <i class="dropdown icon"></i>
+                              'Εξοδα ανά Προμηθευτή
+                        </div>
+                        <div class="content">
+                            Level 1B Contents
+                        </div>
+                    </div>
+                </div>
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    Μισθοδοσία - Πάγια Έξοδα
+                </div>
+                <div class="content">
+                    <p>Ανάλυση</p>
+                    <div class="accordion">
+                        <div class="active title">
+                            <i class="dropdown icon"></i>
+                            Λογαριασμοί
+                        </div>
+                        <div class="content">
+                            <table class="ui table">
+                                  <thead>
+                                      <tr>
+                                          <th>Ημερομηνία</th>
+                                          <th>Λογαριασμός</th>
+                                          <th>Ποσό</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                  {% for ele in pay_log %}
+                                      <tr>
+                                          <td>{{ ele.date }}</td>
+                                          <td>{{ ele.title }}</td>
+                                          <td>{{ ele.price|floatformat:2 }}</td>
+                                      </tr>
+                                  {% endfor %}
+                                  </tbody>
+
+                            </table>
+                        </div>
+                        <div class="title">
+                            <i class="dropdown icon"></i>
+                            Αγορές - Επισκευές
+                        </div>
+                        <div class="content">
+
+                            <table class="ui table">
+                                  <thead>
+                                      <tr>
+                                          <th>Ημερομηνία</th>
+                                          <th>Σχόλια</th>
+                                          <th>Εξωτερικός Συνεργάτης</th>
+                                          <th>Ποσό</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                  {% for ele in pay_pagia %}
+                                      <tr>
+                                          <td>{{ ele.day_added }}</td>
+                                          <td>{{ ele.title }}</td>
+                                          <td>{{ ele.person.title }}</td>
+                                          <td>{{ ele.value|floatformat:2 }}</td>
+                                      </tr>
+                                  {% endfor %}
+                                  </tbody>
+
+                            </table>
+                        </div>
+                        <div class="title">
+                            <i class="dropdown icon"></i>
+                            Μισθοδοσία
+                        </div>
+                        <div class=" content">
+                        <p>Ανάλυση</p>
+                        <div class="accordion">
+                            <div class="title">
+                                <i class="dropdown icon"></i>
+                                Ανά Απασχόληση
+                            </div>
+                            <div class="content">
+                                <table class="ui table">
+                                    <thead>
+                                        <tr>
+                                            <th>Απασχόληση</th>
+                                            <th>Σύνολο</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for key,value in total_pay_by_occup.items %}
+                                            <tr>
+                                                <td>{{ key }}</td>
+                                                <td>{{ value }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                  </tbody>
+                                </table>
+                            </div>
+                            <div class="title">
+                                <i class="dropdown icon"></i>
+                                Ανά Άτομο
+                            </div>
+                            <div class="content">
+                                <table class="ui table">
+                                    <thead>
+                                        <tr>
+                                            <th>Ημερομηνία</th>
+                                            <th>Υπάλληλος</th>
+                                             <th>Απασχόληση</th>
+                                            <th>Ποσό</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for ele in pay_ppl %}
+                                            <tr>
+                                                <td>{{ ele.day_expire }}</td>
+                                                <td>{{ ele.person.title}}</td>
+                                                <td>{{ ele.category.title }}</td>
+                                                <td>{{ ele.value|floatformat:2 }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+        <div class="ui segments">
+            <div style="text-align: center" class="ui blue inverted header segment">
+                Ανάλυση Πωλήσεων
+            </div>
+
+            <div style='text-align: center;' class="ui statistic segment">
+                  <div class="value">
+                    {{ profit|floatformat:2 }}   %
+
+                  </div>
+                  <div class="label">
+                    Συνολικές Πωλήσεις
+                  </div>
+            </div>
+        </div>
+
+
+
+
+{% endblock %}
+
+{% block right_side %}
+
+     <div class="ui segments">
+
+         <div style="text-align: center" class="ui green inverted header segment">
+              Έσοδα
+         </div>
+         <div style='text-align: center;margin-left: 25%' class="ui statistic segment">
+              <div class="value">
+                {{ total_income|floatformat:2 }} <i class="ui green euro icon"></i>
+              </div>
+              <div class="label">
+                Συνολικά Έσοδα
+              </div>
+         </div>
+        <div class="ui segment">
+            <div class="ui styled accordion">
+
+                <div class="active title">
+                    <i class="dropdown icon"></i>
+                    Ανάλυση Εσόδων
+                </div>
+                <div class="active content">
+                    <div class="accordion">
+                        <div class="title active">
+                            <i class="dropdown icon"></i>
+                            Έσοδα από Πωλήσεις
+                        </div>
+                        <div class="content ">
+                            Συνολικές Πωλήσεις {{ total_income.count }}, Συνολικά Έσοδα {{ total_income|floatformat:2 }}
+                        </div>
+                        <div class="title">
+                            <i class="dropdown icon"></i>
+                            Συνολική αξία Πωληθέντων.
+                        </div>
+                        <div class="content ">
+                            Συνολικά Παραστατικά {{ total_value.count }}, Κόστος {{ total_value|floatformat:2 }}
+                        </div>
+
+
+                    </div>
+                  </div>
+            </div>
+        </div>
+         <div style="text-align: center;" class="ui inverted header red segment">
+             Πληρωμές
+         </div>
+         <div style='text-align: center;margin-left: 25%' class="ui statistic segment">
+              <div class="value">
+                {{ total_pay|floatformat:2 }} <i class="ui red euro icon"></i>
+              </div>
+              <div class="label">
+                Συνολικές Πληρωμές
+              </div>
+         </div>
+        <div class="ui segment">
+
+            <div class="ui styled accordion">
+
+                <div class="active title">
+                    <i class="dropdown icon"></i>
+                    Πληρωμές ανά Κατηγορία
+                </div>
+                <div class="active content">
+                    <div class="accordion">
+                        <div class="title active">
+                            <i class="dropdown icon"></i>
+                            Αξία Πωληθέντων.....  {{ total_cost_orders|floatformat:2 }} €
+                        </div>
+                        <div class="content ">
+                            Συνολικές Πωλήσεις ...
+                        </div>
+                        <div class="title">
+                            <i class="dropdown icon"></i>
+                            Έξοδα από Αγορές- Επισκευές {{ pay_pagia_sum|floatformat:2 }} €
+                        </div>
+                        <div class="content">
+                            Συνολικά Παραστατικά
+                        </div>
+                      <div class="title">
+                          <i class="dropdown icon"></i>
+                          'Εξοδα Μισθοδοσίας {{ pay_ppl_sum|floatformat:2 }} €
+                      </div>
+                      <div class="content">
+                          Συνολικές Εντολές Πληρωμών
+                      </div>
+                      <div class="title">
+                          <i class="dropdown icon"></i>
+                          'Εξοδα Λογαριασμοί {{ pay_log_sum|floatformat:2 }} €
+                      </div>
+                      <div class="content">
+                          Συνολικές Εντολές Πληρωμών
+                      </div>
+
+
+                    </div>
+                  </div>
+            </div>
+        </div>
+     </div>
+
+{% endblock %}

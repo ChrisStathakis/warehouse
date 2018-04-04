@@ -1,0 +1,268 @@
+{% extends 'report/warehouse.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="six wide column"></div>
+        <div class="six wide column">
+            <h2 class="ui blue icon header">
+                <i class="blue calendar icon"></i>
+                <div class="blue content">
+                    Κινήσεις Προϊόντων Αποθήκης
+                    <div class="sub header">Περίοδος κινήσεων {{ date_string }}</div>
+                </div>
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <div class="ui fluid styled accordion">
+                <div class="title">
+                    <h5>Filter</h5>
+                </div>
+                <div class="content">
+                     <form id="filters_form" class="ui form" method="get">
+                         <div class="field">
+                            <div class="pagination">
+                                <span class="step-links">
+                                    {% if warehouse_order_items.has_previous %}
+                                        <button onclick="this.form.submit()" class="ui tiny blue button" type="input" name="page" value="{{ warehouse_order_items.previous_page_number }}">{{ warehouse_order_items.previous_page_number }}</button>
+                                    {% endif %}
+                                    <span class="current">
+                                        <label>Page {{ warehouse_order_items.number }} of {{ warehouse_order_items.paginator.num_pages }}. </label>
+                                    </span>
+                                    {% if warehouse_order_items.has_next %}
+                                        <button onclick="this.form.submit()" class="ui tiny blue button" type="input" name="page" value="{{ warehouse_order_items.next_page_number }}">{{ warehouse_order_items.next_page_number }}</button>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="two fields">
+                            <div class="field">
+                                {% if search_name %} <input type="text" class="ui text" name="search_name" value="{{ search_name }}" placeholder="{{ search_name }}"> {% else %} <input type="text" class="ui text" name="search_name" placeholder="Αναζήτηση"> {% endif %}
+                            </div>
+                            <div class="field">
+                                {% if date_pick %} <input  name="date_pick" value="{{ date_pick }}" placeholder="{{ date_pick }}" > {% else %} <input  name="date_pick" placeholder="Ημερομηνία" > {% endif %}
+                            </div>
+                        </div>
+                        <div class="two fields">
+                            <div class="field">
+                                 <label>Επέλεξε Κατηγορία</label>
+                                {% for cate in categories %}
+                                    {% if cate.id|stringformat:"s" in category_name %}
+                                        <div class="ui slider checkbox">
+                                            <input type="checkbox" value="{{ cate.id }}" placeholder="{{ cate }}" name="category_name" checked>
+                                            <label>{{ cate }}</label><br>
+                                        </div>
+                                    {% else %}
+                                        <div class="ui slider checkbox">
+                                            <input type="checkbox" value="{{ cate.id }}" placeholder="{{ cate }}" name="category_name">
+                                            <label>{{ cate }}</label><br>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="field">
+                                <label>Επέλεξε Προμηθευτή</label>
+                                {% for vendor in vendors %}
+                                {% if vendor.id|stringformat:"s" in vendor_name %}
+                                    <div class="ui slider checkbox">
+                                        <input type="checkbox" value="{{ vendor.id }}" placeholder="{{ vendor.title }}" name="vendor_name" checked>
+                                        <label>{{ vendor }}</label><br>
+                                    </div>
+                                {% else %}
+                                    <div class="ui slider checkbox">
+                                        <input type="checkbox" value="{{ vendor.id }}" placeholder="{{ vendor.title }}" name="vendor_name">
+                                        <label>{{ vendor }}</label><br>
+                                    </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                         <input style="width: 100%;margin-top: 3%;" class="ui green inverted button" type="submit">
+
+                     </form>
+                    <a href="{% url 'reports:warehouse_order_items_flow' %}" style="margin-top: 3%;margin-right: auto;margin-left: 0%;" class="ui red button">
+                        <i class="trash icon"></i>Καθαρισμός Φίλτρων
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="two wide column"></div>
+    </div>
+
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <div class="row">
+                <button id="analysis_button" data-url="{% url 'reports:ware_pro_flow_analysis' %}" class="ui blue button">Ανάλυση Κατηγοριών</button><button class="ui blue button">Ανάλυση Προμηθευτών</button><button class="ui blue button">Ανάλυση Μεγεθών</button>
+            </div>
+            <div class="row" id="analysis_container">
+
+            </div>
+        </div>
+        <div class="two wide column"></div>
+    </div>
+
+    <div class="row">
+        <div class="ui one wide column"></div>
+        <div class="ui eight wide column">
+            <canvas id="myChart1" width="400" height="150"></canvas>
+            <script>
+            var ctx = document.getElementById("myChart1").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ["Συνολικό Υπόλοιπο Προμηθευτών", "Αξία Τιμολογίων", "Πληρωμένη Αξία Τιμολογίων"],
+                    datasets: [{
+                        label: '# Euro',
+                        data: [{{ totals.0 }}, {{ totals.1 }}, {{ totals.2 }}],
+                        backgroundColor: [
+                            'blue',
+                            'red',
+                            'green',
+                            'rgba(255,99,132,1)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }
+                    ]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+            </script>
+        </div>
+        <div class="ui seven wide column">
+            <canvas id="myChart" width="400" height="150"></canvas>
+            <script>
+            var ctx = document.getElementById("myChart").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [
+
+                        {% for month in analysis_buy %}
+                        "{{ month.0 }}",
+                        {% endfor %}
+                        ],
+                    datasets: [
+                    {
+                        label: 'Αγορές Περιόδου',
+                        data: [
+
+                            {% for month in analysis_buy %}
+                            {{ month.1 }},
+                            {% endfor %}
+                        ],
+                        fill:false,
+                        borderColor: [
+                            '#ff6f69'
+                        ],
+                        borderWidth: 1
+                    }
+                    ]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+            </script>
+        </div>
+    </div>
+
+    <div class="row">
+    <div class="one wide column"></div>
+    <div class="fourteen wide column">
+        <div class="row">
+            <table class="ui celled striped table">
+                <thead>
+                    <tr>
+                        <th colspan="7">
+                            Συνολική Αξία... {{ order_items_total_value }} {{ currency }}
+                        </th>
+                        <th colspan="3">
+                            Κινήσεις Περιόδου {{ order_items_qty }}
+                        </th>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th>Ημερομηνία</th>
+                        <th>Κωδικός Τιμολογίου</th>
+                        <th>Προϊόν</th>
+                        <th>Προμηθευτής</th>
+                        <th>Τιμολόγιο Αγοράς</th>
+                        <th>Ποσότητα</th>
+                        <th>Τιμή Αγοράς</th>
+                        <th><span >Στοιχεία Τιμής</span>
+                            <br><span style="color: red">Έκπτωση - Φπα</span>
+                            <br><span style="color: green">Τελική Τιμή Αγοράς</span>
+                        </th>
+                        <th>Συνολική Αξία</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order_item in warehouse_order_items %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ order_item.order.day_created }}</td>
+                            <td>{{ order_item.order.code }}</td>
+                            <td><a href="">{{ order_item.product }}</a> </td>
+                            <td><a href="">{{ order_item.product.supply }}</a></td>
+                            <td><a href="">{{ order_item.order }}</a></td>
+                            <td>{{order_item.qty }} {{ order_item.get_unit_display }}</td>
+                            <td>{{ order_item.tag_clean_price }}</td>
+                            <td>{{ value.0|floatformat:2 }}
+                                <br><span style="color:red"> {{ order_item.discount }} % , {{ order_item.get_taxes_display }} %</span>
+                                <br><span style='color:green'>{{ order_item.tag_final_price }}</span>
+                            </td>
+                            <td>{{ order_item.tag_total_final_price }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="one wide column"></div>
+    </div>
+    <div class="row" style="margin-bottom: 10%"></div>
+    <script type="text/javascript">
+        $('#analysis_button').click(function(){
+            var btn = $(this);
+            var form_data =$('#filters_form').serialize();
+            console.log(form_data);
+            $.ajax({
+                url: btn.attr('data-url'),
+                dataType: 'json',
+                type: 'get',
+                data: form_data,
+                success: function(data){
+                    $('#analysis_container').html(data.product_analysis)
+                }
+            })
+        })
+    </script>
+{% endblock %}
+

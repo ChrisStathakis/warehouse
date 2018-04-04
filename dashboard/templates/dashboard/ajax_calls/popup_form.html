@@ -1,0 +1,12 @@
+{% extends 'dashboard/product_detail.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Create</h2>
+    <form method="post" action="" enctype="multipart/form-data" novalidate id="category-form">{% csrf_token %}
+        {{ form.as_ul }}
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+</div>
+{% endblock %}
+

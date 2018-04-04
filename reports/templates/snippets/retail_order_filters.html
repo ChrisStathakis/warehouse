@@ -1,0 +1,56 @@
+<div class="two fields">
+    <div class="field">
+        <label>Καταστήματα - Ταμεία</label>
+        {% for store in stores %}
+            {% if store.id|stringformat:"s" in store_name  %}
+                <div class="ui checkbox">
+                    <input type="checkbox" name="store_name" value="{{ store.id }}" checked>
+                    <label>{{ store }}</label>
+                </div>
+            {% else %}
+                <div class="ui checkbox">
+                    <input type="checkbox" name="store_name" value="{{ store.id }}">
+                    <label>{{ store }}</label>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="field">
+        {% for seller in seller_accounts %}
+        {% endfor %}
+    </div>
+</div>
+<div class="two fields">
+    <div class="field">
+        <label>Είδος Παραστατικού</label>
+        {% for choice in order_type_choices %}
+            {% if choice.id|stringformat:"s" in order_type_name %}
+                <div class="ui checkbox">
+                    <input type="checkbox" name="order_type_name" value="{{ choice.0 }}" checked>
+                    <label>{{ choice.1 }}</label>
+                </div>
+            {% else %}
+                <div class="ui checkbox">
+                    <input type="checkbox" name="order_type_name" value="{{ choice.0 }}">
+                    <label>{{ choice.1 }}</label>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="field">
+        <label>Κατάσταση Παραγγελίας</label>
+        {% for choice in order_status %}
+            {% if choice.id|stringformat:"s" in order_status_name %}
+                <div class="ui checkbox">
+                    <input type="checkbox" name="status_name" value="{{ choice.0 }}" checked>
+                    <label>{{ choice.1 }}</label>
+                </div>
+            {% else %}
+                <div class="ui checkbox">
+                    <input type="checkbox" name="status_name" value="{{ choice.0 }}">
+                    <label>{{ choice.1 }}</label>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>

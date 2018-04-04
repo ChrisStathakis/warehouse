@@ -1,0 +1,123 @@
+{% extends 'dash_ware/index.html' %}
+
+{% block content %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="card">
+                        <div class="content">
+                            <div class="author text-center">   
+                                <h4 class="title">Order Code: {{ instance }}<br />
+                                    <a href="#"><small>Vendor: {{ instance.vendor }}</small></a>
+                                </h4>
+                            </div>
+                            <br><br>
+                            <p class="description text-center">
+                                Date Created: {{ instance.date_created|date }}<br> 
+                                Payment Method: {{ instance.get_payment_method_display }}<br>
+                                Date Created: {{ instance.date_created|date }}<br>       
+                            </p>
+                        </div>
+                        <hr>
+                        <div class="text-center">
+                            <div class="row">
+                                <div class="col-md-3 col-md-offset-1">
+                                            <h5>{{ instance.tag_all_values.0 }}<br /><small>Clean Value</small></h5>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h5>{{ instance.tag_all_values.3 }}<br /><small>Taxes</small></h5>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h5>{{ instance.tag_all_values.4 }}<br /><small>Total Value</small></h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                    <div class="card">
+                        <div class="header">
+                            <h4>Add Product</h4>
+                        </div>
+                        <div class="content">
+                            <table class="table table-responsive table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Sku</th>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Qty</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product in products %}
+                                        <tr>
+                                            <td>{{ product.id }}</td>
+                                            <td>{{ product.code }}</td>
+                                            <td>{{ product }}</td>
+                                            <td>{{ product.price_buy }}</td>
+                                            <td>1</td>
+                                            <td><a href="{% url 'dashboard:add_order_item' instance.id product.id %}" class="btn btn-success">Add</a> </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="card">
+                        <div class="header">
+                            <h4>Order Items</h4>
+                        </div>
+                        <div class="content">
+                            <table class="table table-responsive table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Sku</th>
+                                    <th>Product</th>
+                                    <th>Price<br>Discount</th>
+                                    <th>Qty</th>
+                                    <th>Price after Discount<br>Total Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product in instance_items %}
+                                        <tr>
+                                            <td>{{ product.product.code|default_if_none:"No Code" }}</td>
+                                            <td>{{ product.product }}</td>
+                                            <td>{{ product.tag_price }}<br>{{ product.discount }} %</td>
+                                            <td>{{ product.tag_qty }}</td>
+                                            <td>{{ product.get_clean_price }}<br>{{ product.tag_final_price }}</td>
+                                            <td><a href="{% url 'dashboard:edit_order_item' product.id %}" class="btn btn-info">edit</a>
+                                            <a href="{% url 'dashboard:delete_order_item' product.id %}" class="btn btn-warning">Delete</a> </td>
+                                        </tr>
+                                        {% empty %}
+                                         <tr>
+                                            <td colspan="6">No order items added yet!</td>
+                                         </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                            <div class="header">
+                                <h4>Order Details</h4>
+                            </div>
+                            <div class="content">
+                                <form method="post">{% csrf_token %}
+                                    {{ form }}
+                                    <button type="submit" class="btn btn-fill btn-success">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

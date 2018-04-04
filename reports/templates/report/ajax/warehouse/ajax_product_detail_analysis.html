@@ -1,0 +1,26 @@
+
+
+<table class="ui table">
+    <thead>
+        <tr>
+            <th>Μήνας</th>
+            {% for month in month_analysis %}
+                <th>{{ month.month|date }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Ποσότητα</td>
+            {% for item in month_analysis %}
+                <td>{{ item.total_qty }} {{ product.get_measure_unit_display }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Κόστος</td>
+            {% for item in month_analysis %}
+                <td>{{ item.total_cost }} {{ currency }}</td>
+            {% endfor %}
+        </tr>
+    </tbody>
+</table>

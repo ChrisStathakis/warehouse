@@ -1,0 +1,105 @@
+{% extends "home/index.html" %} {% load static %}
+
+
+
+{% block content %}
+
+<div class="page-header page-header-small">
+    <div class="page-header-image" data-parallax="true"
+        {% if first_page.image %}
+             style="background-image: url('{{ first_page.image.url }}');">
+        {% else %}
+            style="background-image: url('{% static 'home/assets/img/bg6.jpg' %}');">
+        {% endif %}
+    </div>
+    <div class="container">
+        <div class="content-center">
+            <h1 class="title">Cart Page</h1>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'homepage' %}">Home</a></li>
+                    <li class="breadcrumb-item active">Cart</li>
+                </ol>
+            </div>
+        </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success" role="alert">
+                        <div class="container">
+                            <div class="alert-icon">
+                                <i class="now-ui-icons ui-2_like"></i>
+                            </div>
+                            {{ message}}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true"><i class="now-ui-icons ui-1_simple-remove"></i></span>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+        <br><br>
+        <form method="post"> {% csrf_token %}
+        <div class="card">
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Unit Price</th>
+                            <th>Total Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ item }}</td>
+                                <td><input name="{{ item.id }}" type="number" onchange="this.form.submit()" class="form-control text-center" value="{{ item.qty }}" placeholder="{{ item.qty }}"></td>
+                                <td>{{ item.tag_final_price }}</td>
+                                <td>{{ item.tag_total_value }}</td>
+                                <td><a href="{% url 'cart:delete' item.id %}" class="btn btn-warning">Delete</a> </td>
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            <th>Cart Details</th>
+                            <th>Total Value {{ cart.tag_value }}</th>
+                            <th colspan="2">Add Coupon</th>
+                            <th>
+                                <input  type="text" name="coupon_name" placeholder="Add Coupon" class="form-control">
+                                <input type="submit" hidden>
+                            </th>
+                            <th><button type="submit" class="btn btn-success">Add Coupon</button> </th>
+                        </tr>
+                        <tr>
+                            <td colspan="2"></td>
+                            <td colspan="3">
+                                {% for coupon in cart.coupon.all %}
+                                <a href="{% url 'remove_coupon' coupon.id %}" class="btn btn-warning">{{ coupon.code }}  <i class="fa fa-remove"></i></a>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <a href="{% url 'checkout_page' %}" class="btn btn-info btn-fill">Go to Checkout Page</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}

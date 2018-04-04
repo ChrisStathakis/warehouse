@@ -1,0 +1,32 @@
+{% extends 'reports/warehouse.html' %}
+
+{% block center %}
+    <div class="ui segments">
+        <div class="ui segment">
+            <div class="ui top attached tabular menu">
+                <a class="active item" data-tab="first">Αποθήκη</a>
+                <a class="item" data-tab="second">Εξοδα</a>
+                <a class="item" data-tab="third">Έσοδα</a>
+                <a class="item" data-tab="fourth">Ισολογισμός</a>
+            </div>
+            <div class="ui bottom attached active tab segment" data-tab="first">
+                 <div class="ui segment">
+                     <form method="post" class="ui form">{% csrf_token %}
+                         {{ form_pro }}
+                         <button id="ware_pro" name="ware_pro" type="submit" class="ui icon green button"><i class="save icon"></i>Αποθήκευση </button>
+                     </form>
+                 </div>
+            </div>
+            <div class="ui bottom attached tab segment" data-tab="second">
+                Second
+            </div>
+            <div class="ui bottom attached tab segment" data-tab="third">
+                Third
+            </div>
+            <div class="ui bottom attached tab segment" data-tab="fourth">
+                fourth
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

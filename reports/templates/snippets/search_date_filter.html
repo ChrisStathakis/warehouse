@@ -1,0 +1,11 @@
+<div class="two fields">
+    <div class="field">
+        {% if search_pro %} <input type="text" id='search_pro' class="ui text" name="search_pro" value="{{ search_pro }}" placeholder="{{ search_pro }}"> {% else %} <input type="text"  class="ui text" id='search_pro' name="search_pro" placeholder="Αναζήτηση"> {% endif %}
+    </div>
+    <div class="field">
+        {% if date_pick %} <input  name="date_pick" value="{{ date_pick }}" placeholder="{{ date_pick }}" >
+        {% else %}
+            <input  name="date_pick" placeholder="Ημερομηνία" >
+        {% endif %}
+    </div>
+</div>

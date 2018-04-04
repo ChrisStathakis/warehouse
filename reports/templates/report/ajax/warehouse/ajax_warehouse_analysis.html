@@ -1,0 +1,62 @@
+
+{% if switcher == 'warehouse_analysis' %}
+<div  class="ui statistics">
+    <div class="statistic">
+        <div class="value">
+            {{ queryset_analysis.0|floatformat:0 }} Τεμ.
+        </div>
+        <div class="label">
+            Συνολικά Προϊόντα
+        </div>
+    </div>
+    <div class="statistic">
+        <div class="value">
+            {{ queryset_analysis.1|floatformat:2 }} {{ currency }}
+        </div>
+        <div class="label">
+            Αξία Αποθήκης Σε Τιμή Αγοράς
+        </div>
+    </div>
+    <div class="statistic">
+        <div class="value">
+            {{ queryset_analysis.2|floatformat:2 }} {{ currency }}
+        </div>
+        <div class="label">
+            Αξία Αποθήκης Σε Τιμή Πώλησης
+        </div>
+    </div>    
+</div>
+
+{% endif %}
+
+{% if switcher == 'vendor_analysis' %}
+    <h3>Ανάλυση Αποθήκης ανά Προμηθευτή</h3>
+    <table class="ui table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Προμηθευτής</th>
+                <th colspan="3">Αξία Αποθήκης</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th></th>
+                <th class="warning">Τιμή Αγοράς</th>
+                <th></th>
+                <th class="positive">Τιμή Πώλησης</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vendor in vendor_analysis %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ vendor.supply__title }}</td>
+                    <td class="warning">{{ vendor.total_ware_price }} {{ currency }} </td>
+                    <td></td>
+                    <td class="positive">{{ vendor.total_sell_price }} {{ currency }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+

@@ -1,0 +1,207 @@
+{% if get_stores %}
+<div class="ui top attached tabular menu">
+    <a class="item active" data-tab="first">ΦΕΤΟΣ</a>
+    <a class="item" data-tab="second">ΠΕΡΣΥ</a>
+</div>
+<div class="ui bottom attached tab segment active" data-tab="first">
+  <div class="row">
+    <div class="column">
+        <table class="ui celled table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Κατάστημα</th>
+                    <th></th>
+                    {% for sell in store_analysis_per_month.0.1 %}
+                        <th>{{ sell.month }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for store in store_analysis_per_month %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ store.0 }}</td>
+                        <td>Πωλήσεις<br>
+                            Κόστος Παραγγελίας<br>
+                        </td>
+                        {% for sell in store.1 %}
+                            <td>{{ sell.total_incomes }} {{ currency }}<br>  
+                                {{ sell.total_cost }} {{ currency }} <br>   
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="column">
+        <canvas id="myChartat" width="400" height="150"></canvas>
+        <script>
+        var ctx = document.getElementById("myChartat").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [
+
+                    {% for month in store_analysis_per_month.0.1 %}
+                    "{{ month.month }}",
+                    {% endfor %}
+                    ],
+                datasets: [
+                {% for store in store_analysis_per_month %}
+                    {% if forloop.last %}
+                        {
+                        label: '{{ store.0 }}',
+                        data: [
+                            {% for month in store.1 %}
+                            {{ month.total_incomes }},
+                            {% endfor %}
+                        ],
+                        fill:false,
+                        borderColor: [
+                            '#2f5f4f'
+                        ],
+                        borderWidth: 1
+                    }
+                    {% else %}
+                    {
+                        label: '{{ store.0 }}',
+                        data: [
+                            {% for month in store.1 %}
+                            {{ month.total_incomes }},
+                            {% endfor %}
+                        ],
+                        fill:false,
+                        borderColor: [
+                            '#2f5f4f'
+                        ],
+                        borderWidth: 1
+                    },
+                    {% endif %}
+                    {% endfor %}
+               
+                ]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+            }
+        });
+        </script>
+    </div>
+</div>
+</div>
+<div class="ui bottom attached tab segment" data-tab="second">
+  <div class="row">
+    <div class="column">
+        <table class="ui celled table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Κατάστημα</th>
+                    <th></th>
+                    {% for sell in last_store_analysis_per_month.0.1 %}
+                        <th>{{ sell.month }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for store in last_store_analysis_per_month %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ store.0 }}</td>
+                        <td>Πωλήσεις<br>
+                            Κόστος Παραγγελίας<br>
+                        </td>
+                        {% for sell in store.1 %}
+                            <td>{{ sell.total_incomes }} {{ currency }}<br>  
+                                {{ sell.total_cost }} {{ currency }} <br>   
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="column">
+        <canvas id="myChartat2" width="400" height="150"></canvas>
+        <script>
+        var ctx = document.getElementById("myChartat2").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [
+
+                    {% for month in last_store_analysis_per_month.0.1 %}
+                    "{{ month.month }}",
+                    {% endfor %}
+                    ],
+                datasets: [
+                {% for store in last_store_analysis_per_month %}
+                    {% if forloop.last %}
+                        {
+                        label: '{{ store.0 }}',
+                        data: [
+                            {% for month in store.1 %}
+                            {{ month.total_incomes }},
+                            {% endfor %}
+                        ],
+                        fill:false,
+                        borderColor: [
+                            '#2f5f4f'
+                        ],
+                        borderWidth: 1
+                    }
+                    {% else %}
+                    {
+                        label: '{{ store.0 }}',
+                        data: [
+                            {% for month in store.1 %}
+                            {{ month.total_incomes }},
+                            {% endfor %}
+                        ],
+                        fill:false,
+                        borderColor: [
+                            '#2f5f4f'
+                        ],
+                        borderWidth: 1
+                    },
+                    {% endif %}
+                    {% endfor %}
+               
+                ]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+            }
+        });
+        </script>
+    </div>
+</div>
+</div>
+{% else %}
+    <div class="row">
+        <div class="six wide column"></div>
+        <div class="six wide column"><h2>Επιλέξτε Προμηθευτές</h2></div>
+    </div>
+{% endif %}
+
+
+<script type="text/javascript">
+    $('.menu .item')
+  .tab()
+;
+</script>
+

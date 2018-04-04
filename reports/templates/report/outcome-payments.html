@@ -1,0 +1,367 @@
+{% extends 'report/outcome.html' %}{% load staticfiles %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="six wide column"></div>
+        <div class="six wide column">
+            <h2 class="ui blue icon header">
+                <i class="blue calendar icon"></i>
+                <div class="blue content">
+                    Μισθοδοσία
+                    <div class="sub header">Ημερομηνια Ανάλυσης {{ date_range }}</div>
+                </div>
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <div class="ui styled fluid accordion">
+                <div class="title">
+                    <h4 class="ui header">Filters, Συνολική Αξία.. {{ total_value }} {{ currency }}  , Πληρωμένη Αξία... {{ paid_value }} {{ currency }}</h4>
+                </div>
+                <div class="content">
+                    <form class="ui form" method="get">
+                        {% include 'snippets/search_date_filter.html' %}
+                        <div class="three fields">
+                            <div class="field">
+                                <label>Υπάλληλος</label>
+                                {% for person in persons %}
+                                    {% if person.id|stringformat:"s" in person_name %}
+                                        <div class="ui checkbox">
+                                            <input type="checkbox" name="person_name" value="{{ person.id }}" checked>
+                                            <label>{{ choice.1 }}</label>
+                                        </div>
+                                    {% else %}
+                                        <div class="ui checkbox">
+                                            <input type="checkbox" name="person_name" value="{{ person.id }}">
+                                            <label>{{ person }}</label>
+                                        </div>
+                                    {% endif %}
+                                    {% empty %}
+                                    <p>No value added</p>
+                                {% endfor %}
+                            </div>
+                             <div class="field">
+                                <label>Επάγγελμα</label>
+                                {% for occup in occupations %}
+                                    {% if occup.id|stringformat:"s" in occup_name %}
+                                        <div class="ui checkbox">
+                                            <input type="checkbox" name="occup_name" value="{{ occup.id }}" checked>
+                                            <label>{{ occup }}</label>
+                                        </div>
+                                    {% else %}
+                                        <div class="ui checkbox">
+                                            <input type="checkbox" name="occup_name" value="{{ occup.id }}">
+                                            <label>{{ occup }}</label>
+                                        </div>
+                                    {% endif %}
+                                    {% empty %}
+                                    <p>No value added</p>
+                                {% endfor %}
+                            </div>
+                            <div class="field">
+                                <label>Κατάστημα</label>
+                                {% for store in stores %}
+                                    {% if store.id|stringformat:"s" in store_name %}
+                                        <div class="ui checkbox">
+                                            <input type="checkbox" name="store_name" value="{{ store.id }}" checked>
+                                            <label>{{ store }}</label>
+                                        </div>
+                                    {% else %}
+                                        <div class="ui checkbox">
+                                            <input type="checkbox" name="store_name" value="{{ store.id }}">
+                                            <label>{{ store }}</label>
+                                        </div>
+                                    {% endif %}
+                                    {% empty %}
+                                    <p>No store added</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="two fields">
+                            <div class="field">
+                                <label>Είδος Πληρωμής</label>
+                                {% for cate in categories %}
+                                    {% if cate.id|stringformat:"s" in cate_name %}
+                                        <div class="ui checkbox">
+                                            <input type="checkbox" name="occup_name" value="{{ cate.0 }}" checked>
+                                            <label>{{ cate.1 }}</label>
+                                        </div>
+                                    {% else %}
+                                        <div class="ui checkbox">
+                                            <input type="checkbox" name="occup_name" value="{{ cate.0 }}">
+                                            <label>{{ cate.1 }}</label>
+                                        </div>
+                                    {% endif %}
+                                    {% empty %}
+                                    <p>No value added</p>
+                                {% endfor %}
+                            </div>
+                            <div class="field">
+                                <label>Πληρωμένο</label>
+                                {% for cate in caegories %}
+                                    {% if cate.id|stringformat:"s" in cate_name %}
+                                        <div class="ui checkbox">
+                                            <input type="checkbox" name="occup_name" value="{{ cate }}" checked>
+                                            <label>{{ cate }}</label>
+                                        </div>
+                                    {% else %}
+                                        <div class="ui checkbox">
+                                            <input type="checkbox" name="occup_name" value="{{ occup.id }}">
+                                            <label>{{ cate }}</label>
+                                        </div>
+                                    {% endif %}
+                                    {% empty %}
+                                    <p>No value added</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <input style="width: 100%;margin-top: 3%;" class="ui green inverted button" type="submit">
+                    </form>
+                    <a href="" style="margin-top: 3%;margin-right: auto;margin-left: 0%;" class="ui red button">
+                        <i class="trash icon"></i>
+                        Καθαρισμός Φίλτρων
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="two wide column"></div>
+    </div>
+
+    <div class="row">
+        <div class="one wide column"></div>
+        <div class="four wide column">
+        <canvas id="myChart1" width="400" height="400"></canvas>
+        <script>
+        var ctx = document.getElementById("myChart1").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Συνολική Αξία Παραγγελιών", "Πληρωμές", "Οφειλωμενα"],
+                datasets: [{
+                    label: '# Euro',
+                    data: [{{ total_value }}, {{ paid_value }}, {{ diff }}],
+                    backgroundColor: [
+                        'blue',
+                        'green',
+                        'yellow',
+                        'rgba(255,99,132,1)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255,99,132,1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }
+                ]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+            }
+        });
+        </script>
+        </div>
+        <div class="ten wide column">
+            <canvas id="myChart2" width="800" height="400"></canvas>
+            <script>
+            var ctx = document.getElementById("myChart2").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [{% for month in warehouse_analysis %}"{{ month.0 }}", {% endfor %}],
+                    datasets: [{
+                        label: '# Τιμολόγια',
+                        data: [{% for month in warehouse_analysis %}{{ month.1 }}, {% endfor %}],
+                        fill:false,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+            </script>
+        </div>
+        <div class="one wide column"></div>
+        </div>
+    <div class="row">
+        <div class="one wide column"></div>
+        <div class="twelve wide column">
+            <div class="row">
+                <table class="ui celled striped table">
+                    <thead>
+                        <tr>
+                            <th colspan="7">
+                                Συνολική Αξία {{ order.tag_total_value }}
+                            </th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th>Ημερομηνία</th>
+                            <th>Σχόλια</th>
+                            <th>Υπαλληλος</th>
+                            <th>Απασχόληση</th>
+                            <th>Είδος Πληρωμής</th>
+                            <th>Κατάσταση</th>
+                            <th>Κατάστημα</th>
+                            <th class="warning">Αξία</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in object_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ order.date_expired }}</td>
+                                <td><a href="" >{{ order }}</a> </td>
+                                <td><a href="{% url 'reports:payroll_person' order.person.id %}">{{ order.person }}</a> </td>
+                                <td>{{ order.person.occupation }}</td>
+                                <td><a href="">{{ order.get_category_display }}</a></td>
+                                <td>{{ order.is_paid }}</td>
+                                <td>{{ order.person.store_related }} </td>
+                                <td class="warning">{{ order.tag_value }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="three wide column">
+            <div class="ui segments">
+                <div style='text-align: center' class="ui inverted blue segment">Πληροφορίες</div>
+                <div style='text-align: center' class="ui blue header segment">Ανάλυση Παραγγελιών</div>
+                <div style="margin-left: 3%" class="ui celled list">
+                    <div class="item">
+                        <div class=" green content">
+                            <div class="green header">{{ total_value  }} {{ currency }}</div>
+                            Συνολική Αξία Παραγγελιών
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="content">
+                            <div class="header">{{ paid_value }} {{ currency }}</div>
+                            Πληρωμές
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="content">
+                            <div class="header">{{ diff }} {{ currency }}</div>
+                            Οφειλωμενα
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="content">
+                            <div class="header">{{ object_list.count }}</div>
+                            Παραγγελίες
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="six wide column">
+            <h4>Υπόλοιπο Ανά Υπάλληλο</h4>
+            <table class="ui table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Υπάλληλος</th>
+                        <th>Υπόλοιπο</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in analysis_per_person %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ item.person__title }}</td>
+                            <td class="warning">{{ item.remai }} {{ currency }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="six wide column">
+            <h4>Υπόλοιπο Ανά Υπάλληλο</h4>
+            <table class="ui table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Είδος Πληρωμής</th>
+                        <th>Υπόλοιπο</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in analysis_per_cate %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ item.category }}</td>
+                            <td class="warning">{{ item.occup_value }} {{ currency }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="two wide column"></div>
+    </div>
+    <div style="margin-bottom: 5%" class="row">
+    </div>
+{% endblock %}
+
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    for (var id in {{ vendor_name }}) {
+        var $option = $("<option value=\"" + id + "\">" + championships[id].name + "</option>");
+            $select.append($option);
+        }
+        $select.dropdown('refresh');
+        if (defaultValueId)
+        setTimeout(function () {
+        $select.dropdown('set selected', defaultValueId);
+        }, 1);
+
+  $('input[name="vendor_name"]').dropdown('set selected',{{ vendor_name }});
+
+
+});
+</script>

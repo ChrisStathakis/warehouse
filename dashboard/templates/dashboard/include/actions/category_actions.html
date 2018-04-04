@@ -1,0 +1,147 @@
+<div class="card">
+    <div class="header">
+        <h4>Actions</h4>
+    </div>
+    <div class="content">
+        <form method="get">
+            <div class="form-group">
+                <input type="text" {% if search_name %}value=""{% endif %}
+                       placeholder="Search" class="form-control" name="search_name"
+                />
+            </div>
+            <div id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="card">
+                    <div class="card-header" role="tab" id="headingTwo">
+                        <h6 class="mb-0">
+                            <a class="collapsed" data-toggle="collapse" data-parent="#accordion"
+                               href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Categories
+                            </a>
+                        </h6>
+                    </div>
+                    <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
+                        <div class="card-block">
+                            {% for category in categories %}
+                                {% if category.title|stringformat:"s" in cate_name %}
+                                    <div class="checkbox">
+                                        <input name="cate_name" value="{{ category.title }}" id="checkbox1" type="checkbox" checked>
+                                                       <label for="checkbox1">{{ category}}
+                                                       </label>
+                                                   </div>
+                                                   {% else %}
+                                                   <div class="checkbox">
+                                                       <input name="cate_name" value="{{ category.title }}" id="checkbox1" type="checkbox">
+                                                       <label for="checkbox1">
+                                                           {{ category}}
+                                                       </label>
+                                                   </div>
+                                                   {% endif %}
+                                               {% endfor %}
+                                           </div>
+                                       </div>
+                                   </div>
+                                   <div class="card">
+                                       <div class="card-header" role="tab" id="headingOne">
+                                           <h6 class="mb-0">
+                                               <a class="collapsed" data-toggle="collapse" data-parent="#accordion"
+                                                  href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                                   Vendors
+                                               </a>
+                                           </h6>
+                                       </div>
+                                       <div id="collapseOne" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                                           <div class="card-block">
+                                               {% for vendor in vendors %}
+                                                   {% if vendor.title|stringformat:"s" in vendor_name %}
+                                                   <div class="checkbox">
+                                                       <input name="vendor_name" value="{{ vendor.title }}"
+                                                              id="checkbox1" type="checkbox" checked>
+                                                       <label for="checkbox1">
+                                                           {{ vendor }}
+                                                       </label>
+                                                   </div>
+                                                   {% else %}
+                                                   <div class="checkbox">
+                                                       <input name="vendor_name" value="{{ vendor.title }}"
+                                                              id="checkbox1" type="checkbox">
+                                                       <label for="checkbox1">
+                                                           {{ vendor }}
+                                                       </label>
+                                                   </div>
+                                                   {% endif %}
+                                               {% endfor %}
+                                           </div>
+                                       </div>
+                                   </div>
+                                   <div class="card">
+                                       <div class="card-header" role="tab" id="headingThree">
+                                           <h6 class="mb-0">
+                                               <a class="collapsed" data-toggle="collapse" data-parent="#accordion"
+                                                  href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                                   Brands
+                                               </a>
+                                           </h6>
+                                       </div>
+                                       <div id="collapseThree" class="collapse" role="tabpanel" aria-labelledby="headingThree">
+                                           <div class="card-block">
+                                               {% for brand in brands %}
+                                                  {% if brand.title|stringformat:"s" in brand_name %}
+                                                   <div class="checkbox">
+                                                       <input name="brand_name" value="{{ brand.title }}"
+                                                              id="checkbox1" type="checkbox" checked>
+                                                       <label for="checkbox1">
+                                                           {{ brand }}
+                                                       </label>
+                                                   </div>
+                                                   {% else %}
+                                                   <div class="checkbox">
+                                                       <input name="brand_name" value="{{ brand.title }}"
+                                                              id="checkbox1" type="checkbox">
+                                                       <label for="checkbox1">
+                                                           {{ brand }}
+                                                       </label>
+                                                   </div>
+                                                   {% endif %}
+                                               {% endfor %}
+                                           </div>
+                                       </div>
+                                   </div>
+                                   <div class="card">
+                                       <div class="card-header" role="tab" id="headingFour">
+                                           <h6 class="mb-0">
+                                               <a class="collapsed" data-toggle="collapse" data-parent="#accordion"
+                                                  href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                                   Color
+                                               </a>
+                                           </h6>
+                                       </div>
+                                       <div id="collapsFour" class="collapse" role="tabpanel" aria-labelledby="headingFour">
+                                           <div class="card-block">
+                                               {% for color in colors %}
+                                                   {% if color.title|stringformat:"s" in color_name %}
+                                                   <div class="checkbox">
+                                                       <input name="vendor_name" value="{{ color.title }}"
+                                                              id="checkbox1" type="checkbox" checked>
+                                                       <label for="checkbox1">
+                                                           {{ color }}
+                                                       </label>
+                                                   </div>
+                                                   {% else %}
+                                                   <div class="checkbox">
+                                                       <input name="color_name" value="{{ color.title }}"
+                                                              id="checkbox1" type="checkbox">
+                                                       <label for="checkbox1">
+                                                           {{ color }}
+                                                       </label>
+                                                   </div>
+                                                   {% endif %}
+                                               {% endfor %}
+                                           </div>
+                                       </div>
+                                   </div>
+                               </div>
+                               <button type="submit" class="btn btn-primary">Submit</button>
+                               <button class="btn btn-danger">Reset Filters</button>
+                           </form>
+                       </div>
+</div>

@@ -1,0 +1,36 @@
+
+#nav_menu_up .header {
+    width: 13%;
+}
+
+#nav_menu_up .item {
+    width: 8%;
+
+}
+
+
+#main_menu_pay {
+    width: 9%;
+}
+
+
+#login .item {
+    width: 5%;
+}
+
+
+/* warehouse*/
+
+
+#warehouse_menu{
+    margin-top: 15%;
+}
+
+#warehouse_center .row {
+    margin-top: 5%;
+}
+
+.myForm {
+    text-align: center;
+
+}

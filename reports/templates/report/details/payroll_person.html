@@ -1,0 +1,200 @@
+{% extends 'report/outcome-payments.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="six wide column"></div>
+        <div class="six wide column">
+            <h2 class="ui blue icon header">
+                <i class="blue calendar icon"></i>
+                <div class="blue content">
+                    Μισθοδοσία
+                    <div class="sub header">Ημερομηνια Ανάλυσης {{ date_range }}</div>
+                </div>
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <div class="ui styled fluid accordion">
+                <div class="title">
+                    <h4 class="ui header">Filters, Συνολική Αξία.. {{ total_value }} {{ currency }}  , Πληρωμένη Αξία... {{ paid_value }} {{ currency }}</h4>
+                </div>
+                <div class="content">
+                    <form class="ui form" method="get">
+                     <div class="field">
+                            <div class="pagination">
+                                <span class="step-links">
+                                    {% if object_page.has_previous %}
+                                        <button onclick="this.form.submit()" class="ui tiny blue button" type="input" name="page" value="{{ object_list.previous_page_number }}">{{ orders.previous_page_number }}</button>
+                                    {% endif %}
+                                    <span class="current">
+                                        <label>Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}. </label>
+                                    </span>
+                                    {% if object_list.has_next %}
+                                        <button onclick="this.form.submit()" class="ui tiny blue button" type="input" name="page" value="{{ object_list.next_page_number }}">{{ orders.next_page_number }}</button>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="three fields">
+                            <div class="field">
+                                {% if search_pro %} <input type="text" class="ui text" name="search_pro" value="{{ search_pro }}" placeholder="{{ search_pro }}"> {% else %} <input type="text" class="ui text" name="search_pro" placeholder="Αναζήτηση"> {% endif %}
+                            </div>
+                            <div class="field">
+                                {% if date_pick %} <input  name="date_pick" value="{{ date_pick }}" placeholder="{{ date_pick }}" > {% else %} <input  name="date_pick" placeholder="Ημερομηνία" > {% endif %}
+                            </div>
+                            <div class="field">
+                                <select>
+                                    <option value="">Κατάσταση</option>
+                                    <option value="1">Πληρωμένο</option>
+                                    <option value="0">Μη Πληρωμένο</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="three fields">
+                            <div class="field">
+                            <label>Επέλεξε Υπάλληλο</label>
+                            {% for person in persons %}
+                                {% if person.id|stringformat:"s" in person_name %}
+                                    <div class="inline field">
+                                        <div class="ui toggle checkbox">
+                                            <input value="{{ person.id }}" name="person_name" type="checkbox" tabindex="0" class="hidden" checked>
+                                            <label>{{ person }}</label>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="inline field">
+                                        <div class="ui toggle checkbox">
+                                            <input value="{{ person.id }}" name="person_name" type="checkbox" tabindex="0" class="hidden">
+                                            <label>{{ person }}</label>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                            </div>
+                            <div class="field">
+                                <label>Επέλεξε Επάγγελμα</label>
+                                {% for occup in occupations %}
+                                    {% if occup.id|stringformat:"s" in occup_name %}
+                                        <div class="inline field">
+                                            <div class="ui toggle checkbox">
+                                                <input value="{{ occup.id }}" name="occup_name" type="checkbox" tabindex="0" class="hidden" checked>
+                                                <label>Toggle</label>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="inline field">
+                                            <div class="ui toggle checkbox">
+                                                <input value="{{ occup.id }}" name="occup_name" type="checkbox" tabindex="0" class="hidden">
+                                                <label>{{ occup }}</label>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="field">
+                                    <label>Επέλεξε Κατάστημα</label>
+                                    {% for store in stores %}
+                                        {% if store.id|stringformat:"s" in store_name %}
+                                            <div class="inline field">
+                                                <div class="ui toggle checkbox">
+                                                    <input value="{{ store.id }}" name="store_name" type="checkbox" tabindex="0" class="hidden" checked>
+                                                    <label>{{ store }}</label>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="inline field">
+                                                <div class="ui toggle checkbox">
+                                                    <input value="{{ store.id }}" name="store_name" type="checkbox" tabindex="0" class="hidden">
+                                                    <label>{{ store }}</label>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                            </div>
+                        </div>
+                        <input style="width: 100%;margin-top: 3%;" class="ui green inverted button" type="submit">
+                    </form>
+                    <a href="" style="margin-top: 3%;margin-right: auto;margin-left: 0%;" class="ui red button">
+                        <i class="trash icon"></i>
+                        Καθαρισμός Φίλτρων
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="two wide column"></div>
+    </div>
+
+    
+    <div class="row">
+        <div class="one wide column"></div>
+        <div class="six wide column">
+            <div class="row">
+                <table class="ui celled striped table">
+                    <thead>
+                        <tr>
+                            <th colspan="7">
+                                Συνολική Αξία {{ order.tag_total_value }}
+                            </th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th>Ημερομηνία</th>
+                            <th>Σχόλια</th>
+                            <th>Είδος Πληρωμής</th>
+                            <th>Κατάσταση</th>               
+                            <th class="warning">Αξία</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in object_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ order.date_expired }}</td>
+                                <td>{{ order.title }}</td>
+                                <td>{{ order.get_category_display }}</td>
+                                <td>{{ order.tag_is_paid }}</td>
+                                <td>{{ order.tag_value }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="six wide column">
+            <table class="ui celled striped table">
+                <thead>
+                    <tr>
+                        <th colspan="7">
+                            Συνολική Αξία {{ order.tag_total_value }}
+                        </th>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th>Ημερομηνία</th>
+                        <th>Σχόλια</th>
+                        <th>Είδος Πληρωμής</th>
+                        <th>Κατάσταση</th>               
+                        <th class="warning">Αξία</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in object_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ order.date_expired }}</td>
+                            <td>{{ order.title }}</td>
+                            <td>{{ order.get_category_display }}</td>
+                            <td>{{ order.tag_is_paid }}</td>
+                            <td>{{ order.tag_value }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="one wide column"></div>
+    </div>
+   
+    <div style="margin-bottom: 5%" class="row"></div>
+{% endblock %}

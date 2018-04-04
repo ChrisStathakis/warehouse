@@ -1,0 +1,264 @@
+{% extends 'report/outcome.html' %}{% load staticfiles %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="six wide column"></div>
+        <div class="six wide column">
+            <h2 class="ui blue icon header">
+                <i class="blue calendar icon"></i>
+                <div class="blue content">
+                    Παραστατικα Εξόδων
+                    <div class="sub header">Ανάλυση Λογαριασμών , Ενοικίων κτλ</div>
+                </div>
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <div class="ui styled fluid accordion">
+                <div class="title">
+                    <h4 class="ui header">Filters</h4>
+                </div>
+                <div class="content">
+                    <form class="ui form" method="get">
+                        {% include 'snippets/search_date_filter.html' %}
+                        {% include 'snippets/bills_filters.html' %}
+                        <input style="width: 100%;margin-top: 3%;" class="ui green inverted button" type="submit">
+                    </form>
+                    <a href="{{ request.path }}" style="margin-top: 3%;margin-right: auto;margin-left: 0%;" class="ui red button">
+                        <i class="trash icon"></i>
+                        Καθαρισμός Φίλτρων
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="two wide column"></div>
+    </div>
+    <div class="row">
+        <div class="one wide column"></div>
+        <div class="four wide column">
+        <canvas id="myChart1" width="400" height="400"></canvas>
+        <script>
+        var ctx = document.getElementById("myChart1").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Συνολική Αξία Παραγγελιών", "Πληρωμές", "Οφειλωμενα"],
+                datasets: [{
+                    label: '# Euro',
+                    data: [{{ total_value }}, {{ paid_value }}, {{ diff }}],
+                    backgroundColor: [
+                        'blue',
+                        'green',
+                        'yellow',
+                        'rgba(255,99,132,1)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255,99,132,1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }
+                ]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+            }
+        });
+        </script>
+        </div>
+        <div class="ten wide column">
+            <canvas id="myChart2" width="400" height="150"></canvas>
+            <script>
+            var ctx = document.getElementById("myChart2").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [{% for bill in value_per_bill %}"{{ bill.category__title }}", {% endfor %}],
+                    datasets: [{
+                        label: '# Αξία Παραστατικών',
+                        data: [{% for bill in value_per_bill %}{{ bill.val }}, {% endfor %}],
+                        fill:false,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+            </script>
+        </div>
+        <div class="one wide column"></div>
+        </div>
+    <div class="row">
+        <div class="one wide column"></div>
+        <div class="twelve wide column">
+            <div class="row">
+                <table class="ui celled striped table">
+                    <thead>
+                        <tr>
+                            <th colspan="7">
+                                Συνολική Αξία {{ order.tag_total_value }}
+                            </th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th>Ημερομηνία Λήξης</th>
+                            <th>Σχολια- Τίτλος</th>
+                            <th>Λογαριασμός</th>
+                            <th>Κατηγορία</th>
+                            <th class="warning">Αξία Παραστατικού</th>
+                            <th>Κατάσταση</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in object_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ order.date_expired|date }}</td>
+                                <td><a href="" >{{ order }}</a> </td>
+                                <td><a href="">{{ order.category }}</a></td>
+                                <td>{{ order.category.category}}</td>
+                                <td class="warning">{{ order.tag_price }}</td>
+                                <td>{{ order.tag_is_paid }} </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="three wide column">
+            <div class="ui segments">
+                <div style='text-align: center' class="ui inverted blue segment">Πληροφορίες</div>
+                <div style='text-align: center' class="ui blue header segment">Ανάλυση Παραγγελιών</div>
+                <div style="margin-left: 3%" class="ui celled list">
+                    <div class="item">
+                        <div class=" green content">
+                            <div class="green header">{{ total_value  }} {{ currency }}</div>
+                            Συνολική Αξία Παραγγελιών
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="content">
+                            <div class="header">{{ paid_value }} {{ currency }}</div>
+                            Πληρωμές
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="content">
+                            <div class="header">{{ diff }} {{ currency }}</div>
+                            Οφειλωμενα
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="content">
+                            <div class="header">{{ object_list.count }}</div>
+                            Παραγγελίες
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="six wide column">
+            <h2 class="">Υπόλοιπα ανά Λογαριασμό</h2>
+            <table class="ui table">
+                <thead>
+                    <th>#</th>
+                    <th>Λογαριασμός</th>
+                    <th>Υπόλοιπο</th>
+                </thead>
+                <tbody>
+                    {% for bill in bills %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ bill }}</td>
+                            <td class="ui negative">{{ bill.tag_balance }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="six wide column">
+            <h2>Υπόλοιπα Ανα Κατηγορία</h2>
+            <table class="ui table">
+                <thead>
+                    <th>#</th>
+                    <th>Λογαριασμός</th>
+                    <th>Υπόλοιπο</th>
+                </thead>
+                <tbody>
+                    {% for bill in bills_group %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ bill }}</td>
+                            <td class="ui negative">{{ bill.tag_balance }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="two wide column"></div>
+    <div style="margin-bottom: 5%" class="row">
+    </div>
+{% endblock %}
+
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    for (var id in {{ vendor_name }}) {
+        var $option = $("<option value=\"" + id + "\">" + championships[id].name + "</option>");
+            $select.append($option);
+        }
+        $select.dropdown('refresh');
+        if (defaultValueId)
+        setTimeout(function () {
+        $select.dropdown('set selected', defaultValueId);
+        }, 1);
+
+  $('input[name="vendor_name"]').dropdown('set selected',{{ vendor_name }});
+
+
+});
+</script>

@@ -1,0 +1,261 @@
+{% extends 'reports/warehouse.html' %}
+
+{% block down_menu %}
+
+<div class="ui six item bottom fixed menu">
+    <a href="/reports/outcome/"  class=" ui active blue item">Home</a>
+    <a href="/reports/outcome/payment-analysis/" class=" ui blue item">Ροή Πληρωμών</a>
+    <a href="/reports/outcome/logariasmoi/" class=" ui blue item">Λογαριασμοί</a>
+    <a href="/reports/outcome/pagia-agores/{{ pagia_id }}/" class=" ui blue item">Πάγια έξοδα</a>
+    <a href="/reports/outcome/μισθοδοσία/" class=" ui blue item">Μισθοδοσία</a>
+</div>
+{% endblock %}
+
+
+{% block test %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="six wide column"><a href="{% url 'reports' %}" class="ui teal button">Επιστροφή</a> </div>
+        <div class="six wide column">
+            <h2 class="ui red icon header">
+                <i class="red book icon"></i>
+                <div class="red content">
+                    {{ title }}
+                    <div class="sub red header">{{ date_range }}</div>
+                </div>
+            </h2>
+        </div>
+        <div class="four wide column">
+            <form method="get" class="ui form">
+                <div class="ui sub header">Χρονος</div>
+                    <input name="date_pick" placeholder="{{ date_pick }}" value="{{ date_pick }}">
+                    <button class="ui green inverted button" type="submit">Αναζήτησε</button>
+                    <a href="{% url 'reports_outcome' %}" class="ui red inline button">Καθαρισμός</a>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="one wide column"></div>
+        <div class="four wide column">
+            <h3 class="ui blue header">Συνολικά Έξοδα ανά Κατηγορία</h3>
+            <table class="ui teal table">
+                <thead>
+                    <tr>
+                        <th>Κατηγορία</th>
+                        <th>Υποχρεώσεις</th>
+                        <th>Πληρωμές</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ele in totals %}
+                        <tr>
+                            <td>{{ ele.0 }}</td>
+                            <td class="negative">{{ ele.1 }} {{ currency }}</td>
+                            <td class="positive">{{ ele.2 }} {{ currency }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="ten wide column">
+            <h3 class="ui blue header">Συνολικά Έξοδα ανά Μήνα</h3>
+            <canvas id="myChart" width="800" height="400"></canvas>
+            <script>
+            var ctx = document.getElementById("myChart").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [{% for month in warehouse_orders_month %}"{{ month.0 }}", {% endfor %}],
+                    datasets: [{
+                        label: '# Τιμολόγια',
+                        data: [{% for month in warehouse_orders_month %}{{ month.1 }}, {% endfor %}],
+                        fill:false,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    },
+                    {
+                        label: '# Λογαριασμοί',
+                        data: [{% for month in bills_orders_month %}{{ month.1 }}, {% endfor %}],
+                        fill:false,
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.2)'
+
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)'
+
+                        ],
+                        borderWidth: 1
+                    },
+                    {
+                        label: '# Μισθοδοσία',
+                        data: [{% for month in salary_month %}{{ month.1 }}, {% endfor %}],
+                        fill:false,
+                        backgroundColor: [
+                            'rgba(255, 159, 64, 0.2)'
+
+                        ],
+                        borderColor: [
+                            'rgba(255, 159, 64, 1)'
+
+                        ],
+                        borderWidth: 1
+                    },
+                    {
+                        label: '# Αγορές και Επικεύες',
+                        data: [{% for month in investements_month %}{{ month.1 }}, {% endfor %}],
+                        fill:false,
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.2)'
+
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)'
+
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+            </script>
+            <table class="ui teal table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        {% for month in warehouse_orders_month %}
+                        <th>{{ month.0 }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Τιμολόγια</th>
+                        {% for month in warehouse_orders_month %} <td>{{ month.1 }} {{ currency }}</td> {% endfor %}
+                    </tr>
+                    <tr>
+                        <th>Λογαριασμοι</th>
+                        {% for month in bills_orders_month %} <td>{{ month.1 }} {{ currency }}</td> {% endfor %}
+                    </tr>
+                    <tr>
+                        <th>Μισθοδoσία</th>
+                        {% for month in salary_month %} <td>{{ month.1 }} {{ currency }}</td> {% endfor %}
+                    </tr>
+                    <tr>
+                        <th>Αγορές και επισκευές</th>
+                        {% for month in investements_month %} <td>{{ month.1 }} {{ currency }}</td> {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="ui divider"></div>
+    <div class="row">
+        <h3 style="margin-left: 40%" class="ui aligned center red header">Χρωστούμενα</h3>
+    </div>
+    <div class="row">
+        <div class="one wide column"></div>
+        <div class="four wide column">
+            <h4 class="ui header">Τιμολόγια</h4>
+            <table class="ui selectable table">
+                <thead>
+                    <tr>
+                        <th>Ημερομηνία</th>
+                        <th>Κωδικός Τιμ</th>
+                        <th>Προμηθευτης</th>
+                        <th>Υπόλοιπο</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in warehouse_orders_pending %}
+                     <tr>
+                         <td>{{ order.day_created|date }}</td>
+                         <td>{{ order.code }}</td>
+                         <td>{{ order.vendor }}</td>
+                         <td class="negative">{{ order.tag_remaining_value }}</td>
+                     </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+             <a class="ui red button" href="{% url 'order_pay_section' %}"><p>Πήγαινε στις πληρωμές</p></a>
+        </div>
+        <div class="one wide column"></div>
+        <div class="three wide column">
+            <h4 class="ui header">Πάγια</h4>
+            <table class="ui selectable table">
+                <thead>
+                    <tr>
+                        <th>Ημερομηνία</th>
+                        <th>Λογαριασμός</th>
+                        <th>Υπόλοιπο</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in bills_orders_pending %}
+                     <tr>
+                         <td>{{ order.date_expired|date }}</td>
+                         <td>{{ order.category }}</td>
+                         <td class="negative">{{ order.tag_price }}</td>
+                     </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="{% url 'bills_and_salary' %}"><button class="ui red button">Αποπληρωμή</button> </a>
+        </div>
+        <div class="one wide column"></div>
+        <div class="three wide column">
+            <h4 class="ui header">Μισθοδοσία</h4>
+            <table class="ui selectable table">
+                <thead>
+                    <tr>
+                        <th>Ημερομηνία</th>
+                        <th>Υπάλληλος</th>
+                        <th>Υπόλοιπο</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in salary_pending %}
+                     <tr>
+                         <td>{{ order.date_expired|date }}</td>
+                         <td>{{ order.person }}</td>
+                         <td class="negative">{{ order.tag_show_remain }}</td>
+                     </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="{% url 'bills_and_salary' %}" class="ui red button">Πήγαινε στις πληρωμές</a>
+        </div>
+        <div style="margin-bottom: 15%" class="ui divider"></div>
+    </div>
+
+
+{% endblock %}
+

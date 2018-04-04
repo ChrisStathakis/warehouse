@@ -1,0 +1,18 @@
+
+<style>
+    #id_is_expense, #id_content_type, #id_object_id, label[for='id_is_expense'],
+    label[for='id_content_type'], label[for='id_object_id']{
+       visibility: hidden;
+    }
+</style>
+<div class="ui inverted segment">
+
+	<h1>Add payment</h1>
+	<form class="ui inverted form" method = 'POST' action= '' enctype = "multipart/form-data" novalidate id = "author-form">{% csrf_token %}
+		{{form.as_p}}
+        <button class="ui blue fluid button" type="submit">Αποθήκευση</button>
+	</form>
+    <a style="margin-top: 3%" href="" class="ui red fluid button">Επιστροφή</a>
+
+
+</div>

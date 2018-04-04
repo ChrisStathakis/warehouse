@@ -1,0 +1,84 @@
+<div class="three fields">
+    <div class="field">
+        <label>Προμηθευτές</label>
+        {% for vendor in vendors %}
+            {% if vendor.id|stringformat:"s" in vendor_name %}
+                <div class="ui slider checkbox">
+                    <input type="checkbox" checked name="vendor_name" value="{{ vendor.id }}">
+                    <label>{{ vendor }}</label>
+                </div>
+            {% else %}
+                <div class="ui slider checkbox">
+                    <input type="checkbox" name="vendor_name" value="{{ vendor.id }}">
+                    <label>{{ vendor }}</label>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="field">
+        <label>Κατηγορίες Αποθήκης</label>
+        {% for cate in categories %}
+            {% if cate.id|stringformat:"s" in category_name %}
+                <div class="ui slider checkbox">
+                    <input type="checkbox" checked name="category_name" value="{{ cate.id }}">
+                    <label>{{ cate }}</label>
+                </div>
+            {% else %}
+                <div class="ui slider checkbox">
+                    <input type="checkbox" name="category_name" value="{{ cate.id }}">
+                    <label>{{ cate }}</label>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="field">
+        <label>Κατηγορίες Site</label>
+         {% for cate in categories_site %}
+            {% if cate.id|stringformat:"s" in category_name %}
+                <div class="ui slider checkbox">
+                    <input type="checkbox" checked name="cate_site_name" value="{{ cate.id }}">
+                    <label>{{ cate }}</label>
+                </div>
+            {% else %}
+                <div class="ui slider checkbox">
+                    <input type="checkbox" name="cate_site_name" value="{{ cate.id }}">
+                    <label>{{ cate }}</label>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+<div class="two fields">
+    <div class="field">
+        <label>Χρώμα</label>
+        {% for color in colors %}
+            {% if color.id|stringformat:"s" in color_name %}
+                <div class="ui slider checkbox">
+                    <input type="checkbox" checked name="color_name" value="{{ color.id }}">
+                    <label>{{ color }}</label>
+                </div>
+            {% else %}
+                <div class="ui slider checkbox">
+                    <input type="checkbox" name="color_name" value="{{ color.id }}">
+                    <label>{{ color }}</label>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="field">
+        <label>Μέγεθος</label>
+        {% for size in sizes %}
+            {% if size.id|stringformat:"s" in sizes_name %}
+                <div class="ui slider checkbox">
+                    <input type="checkbox" checked name="size_name" value="{{ size.id }}">
+                    <label>{{ size }}</label>
+                </div>
+            {% else %}
+                <div class="ui slider checkbox">
+                    <input type="checkbox" name="size_name" value="{{ size.id }}">
+                    <label>{{ size }}</label>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>

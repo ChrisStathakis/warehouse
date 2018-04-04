@@ -1,0 +1,173 @@
+{% extends 'reports/restaurant_homepage.html' %}
+
+
+
+
+{% block center %}
+
+    <div class="ui segments">
+        <div style="text-align: center;" class="ui header inverted blue segment">Τραπέζι {{ resto_order.table.title }}</div>
+        <table class="ui table segment">
+            <thead>
+                <tr>
+                    <th>Συνταγή</th>
+                    <th>Ποσότητα</th>
+                    <th>Κόστος Παραγωγής</th>
+                    <th>Αξία Πωλησης</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for ele in resto_items %}
+                <tr>
+                    <td>{{ ele.title }}</td>
+                    <td>{{ ele.qty }}</td>
+                    <td>{{ ele.cost|floatformat:2  }}</td>
+                    <td>{{ ele.price|floatformat:2  }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+
+
+
+{% endblock %}
+
+
+{% block right_side %}
+    <div class="ui segments">
+        <div style='text-align: center' class="ui inverted blue segment">Πληροφορίες</div>
+
+
+        <div class="ui fluid horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ resto_order.title }}
+                    </div>
+                    <div class="label">
+                        Σημειώσεις
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment"></div>
+
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ resto_order.day_added }}
+                    </div>
+                    <div class="label">
+                        Ημερομηνία
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui divider segment"></div>
+
+
+        <div style='text-align: center' class="ui header blue segment">Στοιχεία</div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ resto_order.table.title }}
+                    </div>
+                    <div class="label">
+                        Τραπεζι
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                       <i class="euro icon"></i> {{ resto_order.total_cost|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Κόστος Παρασκευής
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro red icon"></i> {{ resto_order.value|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Καθαρή Αξία
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro icon"></i> {{ resto_order.remaining_value|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Ποσό 'Εκπτωσης
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro icon"></i> {{ resto_order.paid_value|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Πληρωτέο Ποσό
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div style='text-align: center' class="ui blue header segment">Στοιχεία Πώλησης</div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro icon"></i> {{ order.total_taxes|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Φπα
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro green icon"></i> {{ order.total_price|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Συνολική Αξία
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+
+                <div class="ui mini red inverted statistic">
+                    <div class="value">
+                        <i class="euro red icon"></i> {{ order.ipoloipo_xreostiko|floatformat:2 }}
+                    </div>
+                    <div style="color:red;" class="label">
+                        Υπόλοιπο
+                    </div>
+                </div>
+            </div>
+
+        </div>
+		{% if order.status == 'a' %}
+        <div style='text-align: center' class="ui inverted green segment">{{ order.get_status_display }}</div>
+		{% elif order.status == 'p' %}
+        <div style='text-align: center' class="ui inverted red segment">{{ order.get_status_display }}</div>
+		{% else %}
+		<div style='text-align: center' class="ui inverted blue segment">{{ order.get_status_display }}</div>
+		{% endif %}
+    </div>
+
+{% endblock %}

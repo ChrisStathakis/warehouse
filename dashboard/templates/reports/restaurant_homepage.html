@@ -1,0 +1,94 @@
+{% extends 'reports/warehouse.html' %}
+
+{% block left_side %}
+
+    <div class="ui segments">
+        <div class="ui segment"></div>
+        <div class="ui grid segment ">
+            <div class="ui vertical fluid tabular menu">
+                  <a href="/reports/restaurant-reports/" class="active item">
+                    Παραγγελίες
+                  </a>
+                  <a href="/reports/recipes-reports/" class=" item">
+                    Συνταγές
+                  </a>
+                  <a href="/reports/isologismos-reports/" class="item">
+                    Κίνηση
+                  </a>
+
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block center %}
+    <div class="ui segments">
+        <div class="ui blue inverted left floated main menu segment">
+            <div class="header item">
+                <h2>Παραγγελίες</h2>
+            </div>
+            <div class="item">
+                <form method="get">
+                    <div class="ui search">
+                        <div class="ui icon input">
+                            <input class="prompt" name="search_pro" type="text" placeholder="Αναζήτηση...">
+                            <i class="search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <table class="ui celled structured table segment">
+            <thead>
+                <tr>
+                    <th>Ημερομηνία</th>
+                    <th>Τραπέζι</th>
+                    <th>Ονομασία</th>
+                    <th>Συνολικο Κόστος</th>
+                    <th>Συνολικά Έσοδα</th>
+                    <th>Ανάλυση</th>
+                </tr>
+
+            </thead>
+            <tbody>
+                {% for ele in resto_orders %}
+                    <tr>
+                        <td>{{ ele.day_added }}</td>
+                        <td>{{ ele.table.title }}</td>
+                        <td>{{ ele.title }}</td>
+                        <td>{{ ele.total_cost|floatformat:2 }}</td>
+                        <td>{{ ele.value|floatformat:2 }}</td>
+                       <td class="ui green button"><a style="width: 100%;" href="/reports/restaurant-reports/resto-order/{{ ele.id }}/">Ανάλυση</a></td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+{% endblock %}
+
+
+{% block right_side %}
+
+    <div class="ui segments">
+        <div class="ui header segment">
+            Filter    Όλες οι κατηγορίες
+        </div>
+        <div class="ui vertical blue inverted menu segment">
+            {% for ele in category %}
+                <div class=" inverted blue item ">
+                    <a href="/reports/products/cat/{{ ele.id }}">{{ ele.title }}</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+
+
+{% endblock %}

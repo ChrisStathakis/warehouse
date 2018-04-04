@@ -1,0 +1,59 @@
+{% extends 'report/orders.html' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="six wide column"></div>
+        <div class="six wide column">
+            <h2 class="ui blue icon header">
+                <i class="blue calendar icon"></i>
+                <div class="blue content">
+                    {{ object.code|default_if_none:'Order' }}
+                    <div class="sub header">{{ object.day_created }}</div>
+                </div>
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="one wide column"></div>
+        <div class="four wide column">
+            <h4>Στοιχεία Τιμολογίου</h4>
+            <div class="ui cards">
+                <div class="card">
+                    <div class="content">
+                    <div class="header">{{ object.code }}</div>
+                    <div class="description">
+                        Ημερομηνία...  {{ object.day_created|date }} <br>
+                        Τρόπος Πληρωμής...  {{ object.get_payment_method_display }} <br>
+                        Σημειώσεις... {{ object.notes }}
+                    </div>
+                    </div>
+                <a href="" class="ui bottom attached button">
+                    Καρτέλα Προμηθευτή - Υπόλοιπο {{ object.vendor.balance }} {{ currency }}
+                </a>
+                </div>
+            </div>
+            <h4>Στοιχεία Προμηθευτή</h4>
+            <div class="ui cards">
+            <div class="card">
+                <div class="content">
+                    <div class="header">{{ object.vendor.title }}</div>
+                    <div class="description">
+                        ΑΦΜ {{ object.vendor.afm }} <br>
+                        Πόλη ΤΚ {{ object.vendor.city }}, {{ object.vendor.zip_code }} <br>
+                        Τηλέφωνα. {{ object.vendor.phone }}, {{ object.vendor.phone1 }}
+                    </div>
+                </div>
+                <a href="" class="ui bottom attached button">
+                    Καρτέλα Προμηθευτή - Υπόλοιπο {{ object.vendor.balance }} {{ currency }}
+                </a>
+            </div>
+            </div>
+        </div>
+        <div class="ten wide column">
+
+        </div>
+        <div class="one wide column"></div>
+    </div>
+{% endblock %}

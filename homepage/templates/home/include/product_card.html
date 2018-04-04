@@ -1,0 +1,29 @@
+{% load static %}
+
+<div class="col-md-3">
+    <div class="product-container">
+        {% if product.price_discount > 0 %}<div class="tag-sale"></div>{% endif %}
+        <div class="product-image">
+            <span class="hover-link"></span>
+            <a href="{% url 'product_page' product.slug %}" class="product-link">view details</a>
+            {% if product.image %}<img class="img-responsive" src="{{ product.image.url }}" alt="">
+            {% else %}<img class="img-responsive" src="{% static 'home/no_image.png' %}" alt="">{% endif %}
+        </div>
+        <div class="product-description">
+            <div class="product-label">
+                <div class="product-name">
+                    <h1>{{ product|truncatechars_html:30 }}</h1>
+                    <p class="price">{{ product.tag_final_price }} </p>
+                    <p>{{ product.brand|default_if_none:"Non Brand selected" }}</p>
+                    <p>{{ product.category_site.first|default_if_none:"Non Category selected" }}</p>
+                </div>
+            </div>
+            <div class="product-option">
+                <div class="product-size">
+                    <a href="{% url 'cart:add' product.id  1 %}" class="btn btn-success">Add to Cart</a>
+                    <p>{% if product.price_discount > 0%}{{ product.tag_final_price }}<del>{{ product.tag_price }}</del> {% endif %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

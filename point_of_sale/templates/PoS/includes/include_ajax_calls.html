@@ -1,0 +1,65 @@
+
+<script>
+    $('#filters_form').submit(function (event) {
+        event.preventDefault();
+        var btn = $('#search_name');
+        console.log(btn.val());
+        if(btn.val().length>2){
+            $.ajax({
+                url: btn.attr('data-url'),
+                dataType: 'json',
+                data: '&search_name='+ btn.val(),
+                success: function (data) {
+                    $('#product_container').html(data.products)
+                }
+            })
+        }
+    });
+</script>
+
+
+<script type="text/javascript">
+    $('.add_product').click(function () {
+        var btn = $(this);
+        var qty = $("#"+btn.attr('data-value')).val();
+        $.ajax({
+            url: btn.attr('data-url'),
+            dataType: 'json',
+            data: '&qty='+qty,
+            success: function (data) {
+                $('#ajax_order').html(data.order_details)
+            }
+        })
+    })
+</script>
+
+
+<script type="text/javascript">
+    $('.edit_button').click(function () {
+        console.log('change!');
+        var btn = $(this);
+        var type = btn.attr('data-value');
+        $.ajax({
+            url: btn.attr('data-url'),
+            dataType: 'json',
+            data: '&type='+ type,
+            success: function (data) {
+                $('#ajax_order').html(data.order_details)
+            }
+        })
+    })
+</script>
+
+
+<script type="text/javascript">
+    $('.delete_button').click(function () {
+        var btn = $(this);
+        $.ajax({
+            url: btn.attr('data-url'),
+            dataType: 'json',
+            success: function (data) {
+                $('#ajax_order').html(data.order_details)
+                }
+        })
+    })
+</script>

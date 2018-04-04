@@ -1,0 +1,245 @@
+{% extends 'reports/outcome.html' %}
+
+
+{% block down_menu %}
+<div class="ui six item bottom fixed menu">
+    <a href="/reports/outcome/"  class=" ui blue item">Home</a>
+    <a href="/reports/outcome/payment-analysis/" class=" ui blue item">Ροή Πληρωμών</a>
+    <a href="/reports/outcome/logariasmoi/" class=" ui blue item">Λογαριασμοί</a>
+    <a href="/reports/outcome/pagia-agores/1/" class=" ui blue item">Πάγια έξοδα</a>
+    <a href="/reports/outcome/μισθοδοσία/" class=" ui active blue item">Μισθοδοσία</a>
+</div>
+{% endblock %}
+
+{% block content %}
+    <div class="three column row">
+        <div class="column">
+            <a href="/reports/outcome/μισθοδοσία/analitika/" class=" ui  blue button">Ανάλυση Μισθοδοσίας </a>
+        </div>
+        <div class="column">
+            <h2 class="ui icon header">
+                <i class="settings icon"></i>
+                <div class="content">
+                    {{ title }}
+                    <div class="sub header">Manage your account settings and set e-mail preferences.</div>
+                </div>
+            </h2>
+        </div>
+        <div class="column"></div>
+    </div>
+
+    <div class="three wide column">
+        <div class="ui segments">
+        <div style ="text-align:center;" class="ui inverted blue segment">Απασχόληση</div>
+        <div class="ui segment">
+        <table style="font-size:10px;" class="ui bordered table segment">
+            <thead>
+                <tr>
+                    <th>Λογαρ.</th>
+                    <th>Συνολικά Έξοδα</th>
+                    <th>Διαφορά</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ele in occupation %}
+                    <tr>
+                        <td>{{ ele.title }}</td>
+                        <td>{{ ele.total_cost|floatformat:2  }} €</td>
+                        <td>{{ ele.remaining_cost|floatformat:2  }} €</td>
+
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+        </div>
+    </div>
+    <div class="ui segments">
+        <div style ="text-align:center;" class="ui inverted blue segment">Υπάλληλοι</div>
+        <div class="ui segment">
+        <table style="font-size:10px;" class="ui bordered table segment">
+            <thead>
+                <tr>
+                    <th>Λογαρ.</th>
+                    <th>Συνολικά Έξοδα</th>
+                    <th>Διαφορά</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ele in persons %}
+                    <tr>
+                        <td>{{ ele.title }}</td>
+                        <td>{{ ele.total_amount_paid|floatformat:2  }} €</td>
+                        <td>{{ ele.salary_paid |floatformat:2  }} €</td>
+
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+        </div>
+    </div>
+    </div>
+    <div class="ten wide column">
+        <div class="ui segments">
+        {% if log_id %}
+        <div style="text-align: center;" class="ui blue inverted segment">
+            {{ log_id.title }}, Συνολικό Υπόλοιπο {{ log_id.show_remain|floatformat:2 }} €,
+        </div>
+        {% else %}
+        <div style="text-align: center;" class="ui blue inverted segment">
+            Εντολές Πληρωμών
+        </div>
+        {% endif %}
+        <div class="ui segment">
+        <table class="ui table segment">
+            <thead>
+                <tr>
+                    <th>Ημερομηνία</th>
+                    <th>Υπάλληλος</th>
+                    <th>Επάγγελμα</th>
+                    <th>Είδος Πληρωμής</th>
+                    <th>Σημειώσεις</th>
+                    <th>Ποσό</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ele in pays %}
+                    <tr>
+                        <td>{{ ele.day_expire }}</td>
+                        <td>{{ ele.person.title }}</td>
+                        <td>{{ ele.person.occupation.title }}</td>
+                        <td>{{ ele.category.title }}</td>
+                        <td>{{ ele.title }}</td>
+                        {% if ele.status == 'a' %}
+                         <td style="background-color: indianred">{{ ele.show_remain|floatformat:2 }} € </td>
+                        {% else %}
+                        <td style="background-color: darkseagreen">{{ ele.show_remain|floatformat:2 }} € </td>
+                        {% endif %}
+                        <td></td>
+                    </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination">
+            <span class="step-links">
+                {% if pays.has_previous %}
+                    <a href="?page={{ pays.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ pays.number }} of {{ pays.paginator.num_pages }}.
+                </span>
+
+                {% if pays.has_next %}
+                    <a href="?page={{ pays.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+        </div>
+        </div>
+    </div>
+    </div>
+    <div class="three wide column">
+        <div class="ui segment">
+        <div class="ui blue inverted button ">
+            <a style="width: 100%;" href="/reports/outcome/reports/outcome/logariasmoi/">Καθαρισμός Φίλτρων</a>
+        </div>
+    </div>
+    <div class="ui segment">
+
+        <form class="ui form" method="post">{% csrf_token %}
+
+            <div class="grouped fields">
+                <label>Επέλεξε Επάγγελμα: </label>
+
+                {% for ele in occupation %}
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input type="radio" value="{{ ele.title }}" name="occup">
+                        <label>{{ ele.title }}</label>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+
+            <div class="grouped fields">
+                <label>Επέλεξε Υπάλληλο: </label>
+
+                {% for ele in persons %}
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input type="radio" name="person" value="{{ ele.title }}">
+                        <label>{{ ele.title }}</label>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+
+
+
+             <div class="ui selection dropdown">
+                <input type="hidden" name="payment_name">
+                <i class="dropdown icon"></i>
+                {% if payment_name %}
+                    <div class="item"  data-value="{{ payment_name }}" data-text="{{ payment_name }}">{{ payment_name }}</div>
+                {% else %}
+                    <div class="default text">Τρόπος Πληρωμής</div>
+                {% endif %}
+                <div class="menu">
+                    {% for ele in payment_method %}
+                        <div class="item" data-value="{{ ele.title }}" data-text="{{ ele.title }}">
+                            <i class="male icon"></i>
+                            {{ ele.title }}
+                        </div>
+
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="ui selection dropdown">
+                <input type="hidden" name="payment_name">
+                <i class="dropdown icon"></i>
+                {% if payment_name %}
+                    <div class="item"  data-value="{{ payment_name }}" data-text="{{ payment_name }}">{{ payment_name }}</div>
+                {% else %}
+                    <div class="default text">Ειδος Πληρωμής</div>
+                {% endif %}
+                <div class="menu">
+                    {% for ele in payment_category %}
+                        <div class="item" data-value="{{ ele.title }}" data-text="{{ ele.title }}">
+                            <i class="male icon"></i>
+                            {{ ele.title }}
+                        </div>
+
+                    {% endfor %}
+                </div>
+            </div>
+
+
+
+            <input name="date_pick" placeholder="Επέλεξε Ημερομηνία">
+            <input style="width: 100%;" class="ui green inverted button" type="submit">
+        </form>
+    </div>
+    </div>
+
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+

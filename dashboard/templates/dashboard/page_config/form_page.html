@@ -1,0 +1,33 @@
+{% extends "dashboard/page_config/index.html" %}
+
+{% block extra_css %}
+<style>
+    .form-control {
+        background-color: rgba(17, 11, 13, 0.06);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3 col-3"></div>
+                <div class="col-md-6 col-6">
+                    <div class="card">
+                        <div class="card-header text-center"><h3 class="title text center">{{ form_title }}</h3></div>
+                            <div class="card-body">
+                            <form enctype="multipart/form-data" method="post" class="form form-group">
+                                {% csrf_token %}
+                                {{ form }}
+                                <button class="btn btn-success btn-fill" type="submit">Save</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-3"></div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+

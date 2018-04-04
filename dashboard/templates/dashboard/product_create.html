@@ -1,0 +1,128 @@
+{% extends 'dashboard/dashboard.html' %} {% load static %} {% load widget_tweaks %}
+
+
+{% block content %}
+    <style>
+        .form-control {
+            background-color: #ddd
+        }
+    </style>
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-8 col-md-7">
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title">Create Product</h4>
+                        </div>
+                        <div class="content">
+                            <form method="post">{% csrf_token %}
+                                {% for field in form.visible_fields %}
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>{{ field.label_tag }}</label>
+                                            {{ field }}
+                                            {% if field.help_text %}
+                                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-info btn-fill btn-wd">Update Profile</button>
+                                </div>
+                                <div class="clearfix"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-5">
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title">Create</h4>
+                        </div>
+                        <div class="content">
+                            <ul class="list-unstyled team-members">
+                                <li>
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            Create Vendor
+                                            <br />
+                                        </div>
+                                        <div class="col-xs-6 text-right">
+                                            <button  class="btn btn-sm btn-success btn-icon">
+                                                <i class="fa fa-align-right"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            Create Category
+                                            <br />
+                                        </div>
+                                        <div class="col-xs-6 text-right">
+                                            <a href="{% url 'dashboard:ajax_create_category' %}"
+                                               id="add_category"
+                                               onclick="return showAddPopup(this);"
+                                               class="btn btn-sm btn-success btn-icon">
+                                                <i class="fa fa-align-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            Create Brand
+                                            <br />
+                                        </div>
+                                        <div class="col-xs-6 text-right">
+                                            <button class="btn btn-sm btn-success btn-icon"><i class="fa fa-align-right"></i></button>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            Create Color
+                                            <br />
+                                        </div>
+                                        <div class="col-xs-6 text-right">
+                                            <button class="btn btn-sm btn-success btn-icon"><i class="fa fa-align-right"></i></button>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function showEditPopup(url) {
+            var win = window.opener(url, "Edit", "height=500,width=800,resizable=yes,scrollbars=yes");
+            return false
+        }
+
+        function showAddPopup(triggerLink) {
+            var name = triggeringLink.id.replace(/^add_/, '');
+            href = triggeringLink.href;
+            var win = window.open(href, name, 'height=500,width=800,resizable=yes,scrollbars=yes');
+            win.focus();
+            return false;
+        }
+
+        function closePopup(win, newID, newRepr, id) {
+            $(id).append('<option value=' + newID + ' selected >' + newRepr + '</option>');
+            win.close();
+        }
+    </script>
+
+
+{% endblock %}
+

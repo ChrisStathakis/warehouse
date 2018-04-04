@@ -1,0 +1,123 @@
+{% extends "dashboard/dashboard.html" %}
+
+{% block submenu %}
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar bar1"></span>
+                    <span class="icon-bar bar2"></span>
+                    <span class="icon-bar bar3"></span>
+                </button>
+                <a class="navbar-brand" href="{% url 'dashboard:products' %}">Billing and Payroll</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="{% url 'dashboard:warehouse_home' %}">
+                            <i class="ti-panel"></i>
+								<p>Home</p>
+                            </a>
+                        </li>
+                         <li>
+                            <a href="{% url 'billings:billings' %}">
+                                <i class="ti-panel"></i>
+								<p>Billings</p>
+                            </a>
+                        </li>
+                         <li>
+                            <a href="{% url 'dashboard:brands' %}">
+                                <i class="ti-panel"></i>
+								<p>Payments</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:colors' %}">
+                                <i class="ti-panel"></i>
+								<p>Go to reports</p>
+                            </a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="header"><h4>Billings Expiring!</h4></div>
+                        <div class="content">
+                            <a href="{% url 'billings:create_bill' %}" class="btn btn-success">Add new Bill</a>
+                            <br>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Bill</th>
+                                        <th>Date Expiring</th>
+                                        <th>Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for bill in billings %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ bill }}</td>
+                                            <td>{{ bill.date_expired|date }}</td>
+                                            <td>{{ bill.tag_price }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan='4'>No unpaid bill</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="header"><h4 class="text-center">Payroll</h4></div>
+                        <div class='content'>
+                            <a href="{% url 'billings:create_payroll' %}" class="btn btn=success">Create Payroll Invoice</a>
+                            <table class='table'>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Person</th>
+                                        <th>Type</th>
+                                        <th>Date expiring</th>
+                                        <th>Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for invoice in payroll %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ invoice.person }}</td>
+                                            <td>{{ invoice.get_category_display }}</td>
+                                            <td>{{ invoice.date_expired|date }}</td>
+                                            <td>{{ invoice.tag_value }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="5">No payment added.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

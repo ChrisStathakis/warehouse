@@ -1,0 +1,73 @@
+{% extends 'report/warehouse.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="six wide column"></div>
+        <div class="six wide column">
+            <h2 class="ui blue icon header">
+                <i class="blue user icon"></i>
+                <div class="blue content">
+                    Πελάτες
+                    <div class="sub header">Περίοδος κινήσεων {{ date_string }}</div>
+                </div>
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <div class="ui styled fluid accordion">
+                <div class="title">Filters</div>
+                <div class="content">
+                    <form class="ui form" method="get">
+                        {% include 'snippets/search_date_filter.html' %}
+                        <button type="submit" class="ui green fluid button">Αποστολή</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="two wide column"></div>
+    </div>
+
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="twelve wide column ">
+        <table class="ui selectable red table">
+            <thead>
+                  <tr>
+                      <th>Πελάτης</th>
+                      <th>Site Account</th>
+                      <th>Κινητό<br>Τηλέφωνο</th>
+                      <th>Fax</th>
+                      <th>Email</th>
+                      <th>Χρεωστικό Υπολ.</th>
+                      <th>Πιστωτικό Υπολ.</th>
+                      <th>Υπόλοιπο</th>
+                      <th></th>
+                  </tr>
+            </thead>
+            <tbody>
+                {% for costumer in object_list %}
+                    <tr>
+                        <td>{{ costumer.full_name }}</td>
+                        <td>{{ costumer.user.username }}</td>
+                        <td>{{ costumer.cellphone }}<br>{{ costumer.phone }}</td>
+                        <td>{{ costumer.fax }}</td>
+                        <td>{{ costumer.user.email }}</td>
+                        <td class="warning">{{ costumer.total_order_value }} {{ currency }}</td>
+                        <td class="info">{{ costumer.template_tag_paid_value }}</td>
+                        {% if costumer.balance > 0  %}
+                            <td class="negative">{{ costumer.template_tag_balance }}</td>
+                        {% else %}
+                            <td class="positive">{{ costumer.template_tag_balance }}</td>
+                        {% endif %}
+                        <td><a href="" class="ui button">Δες το ιστορικό</a></td>
+                    </tr>
+                {% endfor %}
+          </tbody>
+        </table>
+    </div>
+        <div class="two wide column"></div>
+    </div>
+{% endblock %}

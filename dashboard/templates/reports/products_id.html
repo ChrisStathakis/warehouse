@@ -1,0 +1,387 @@
+{% extends 'reports/products.html' %}
+{% load staticfiles %}
+{% block content %}
+    <div class="three column row">
+        <div class="column">
+            <div class="results_ul">
+                <ul class="result_ul" id="results_ul"></ul>
+            </div>
+        </div>
+        <div class="column">
+            <h2 class="ui icon header">
+                <i class="settings icon"></i>
+                <div data-content="{{ product.title }}" class="content">
+                    {{ product }}
+                    <div class="sub header">{{ date_range }}</div>
+                </div>
+            </h2>
+        </div>
+        <div class="column">
+            <div class="ui small image">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}">
+                {% else %}
+                    <img src="{% static 'obaju/img/no-photo.jpg'%}">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="four wide column">
+        <div class="ui segments">
+            <div style='text-align: center' class="ui inverted blue segment">Πληροφορίες</div>
+            <div style='text-align: center' class="ui blue header segment">Γενικά Στοιχεία</div>
+            <div style="margin-left: 3%" class="ui celled list">
+                <div class="item">
+                    <div class="content">
+                        <div class="header">{{ product.supplier }}</div>
+                        Προμηθευτής
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                        <div class="header">{{ product.category }}</div>
+                        Κατηγορία αποθήκης
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                        <div class="header">{{ product.category_site }}</div>
+                        Κατηγορία Site
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                        <div class="header">{{ product.brand }}</div>
+                        Brand
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                        <div class="header">{{ product.sku }} - {{ product.order_code }} - {{ product.barcode }}</div>
+                        Sku - Κωδικος Τιμολ. - Barcode
+                    </div>
+                </div>
+
+            </div>
+            <div style='text-align: center' class="ui blue header segment">Τιμές</div>
+            <div style="margin-left: 3%" class="ui celled list">
+                <div class="item">
+                    <div class="content">
+                        <div class="blue header">{{ product.tag_price_buy }} - {{ product.tag_price_buy_final }}</div>
+                        Τιμή Αγοράς - Τελική Τιμή Αγοράς
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                        <div class="green header">{{ product.tag_price }} - {{ product.tag_site_price }}</div>
+                        Τιμή Πώλησης  - Τελική Τιμή Πώλησης
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                        <div class="red header">{{ product.qty }}</div>
+                        Ποσότητα
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                        <div class="header">Not implentent yet</div>
+                        Νούμερα -
+                    </div>
+                </div>
+            </div>
+            <div style='text-align: center' class="ui blue header segment">
+                Κινήσεις Περιόδου<br>
+                <a class='ui green label'>Καθαρή Αξία</a>
+                <a class='ui red label'>Καθαρή Αξία + Φπα</a>
+                <a class='ui blue label'>Τεμάχια</a>
+            </div>
+            <div style="margin-left: 3%" class="ui celled list">
+                <div class="item">
+                    <div class="content">
+                        <div class="header"><a class='ui green label'>{{ order_items_total.1|floatformat:2 }} {{ currency }}</a>
+                        <a class='ui red label'>{{ order_items_total.2|floatformat:2 }} {{ currency }}</a>
+                        <a class='ui blue label'>{{ order_items_total.0|floatformat:2 }} {{ product.measure_unit }}</a>
+                    </div>
+                        Αγορές Περιόδου
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                        <div class="header">
+                            <a class='ui green label'>{{ retail_totals.1|floatformat:2 }} {{ currency }}</a>
+                            <a class='ui red label'>{{ retail_totals.2|floatformat:2 }} {{ currency }}</a>
+                            <a class='ui blue label'>{{ retail_totals.0|floatformat:2 }} {{ product.measure_unit }}</a>
+                        </div>
+                        Πωλήσεις Περιόδου
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                        <div class="header">
+                            <a class='ui blue label'>{{ retail_totals.4|floatformat:2 }} </a> <a class='ui red label'>- {{ return_and_destroy_totals.6|floatformat:2 }} </a>
+                            <a class='ui teal label'>{{ retail_totals.3|floatformat:2 }} {{ currency }}</a>
+                        </div>
+                        Επιστροφές/Ελλατωματικά
+                    </div>
+                </div>
+            </div>
+            <div style='text-align: center' class="ui blue header segment">Ανάλυση Εσόδων</div>
+            <div style='text-align: center' class="ui header blue segment">
+                <a class='ui teal label'>Καθαρή Αξία Πωλήσεων {{ retail_analysis.0|floatformat:2 }} {{ currency }}</a>
+                <a style="margin-top: 1%" class='ui red label'>Κόστος Ελλατωμ+Κόστος Πωληθ. {{ retail_analysis.1|floatformat:2 }} {{ currency }}</a>
+            </div>
+        <div style='text-align: center' class="ui inverted green segment">Αποτελέσματα Χρήσης {{ retail_analysis.2|floatformat:2 }} {{ currency }} </div>
+    </div>
+        <div class="ui segments">
+        <div class="ui segment">
+            {% for key,value in color_list.items %}
+            <table class="ui tiny selectable table">
+                <thead>
+                    <tr>
+                        <th>{{ key }}</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ele in value %}
+                        {% if forloop.counter|divisibleby:2 %}
+                            <tr>
+                                <td>Ποσότητα</td>
+                                <td>{{ ele }}</td>
+                                <td></td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td class="warning">{{ ele }}</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        {% endif %}
+
+                    {% endfor %}
+                </tbody>
+
+            </table>
+            {% endfor %}
+        </div>
+
+    </div>
+    </div>
+    <div class="ten wide column">
+        <div class="ui segments">
+            <div class="ui segment">
+                <form method="post" class="ui form">{% csrf_token %}
+                    <input  name="date_pick" placeholder="{{ date_range }}" >
+                    <input style="width: 100%;margin-top: 3%;" class="ui green inverted button" type="submit">
+                </form>
+            </div>
+            <div class="ui segment">
+                <div style="width: 100%" class="ui styled accordion">
+                <div class="title">
+                    <div style="text-align: center;" class="ui header  inverted blue segment">
+                        Αγορές Τιμολογίου
+                    </div>
+                </div>
+                <div class="content">
+                    <table class="ui small single line selectable table">
+                    <thead>
+                        <tr>
+                            <th>Ημερομηνία</th>
+                            <th>Κωδικός Τιμολογίου - Χρωμα - Μέγεθος</th>
+                            <th>Προμηθευτής</th>
+                            <th>Τιμή</th>
+                            <th>Εκπτωση</th>
+                            <th>Φπα</th>
+                            <th>Ποσότητα</th>
+                            <th>Τελική τιμή</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for ele in order_item %}
+                        <tr>
+                            <td>{{ ele.order.date }}</td>
+                            <td><a href="{% url 'report_order_id' ele.order.id %}">{{ ele.order.code }} - {{ ele.color.title }} - {{ ele.size.title }}</a> </td>
+                            <td>{{ ele.order.vendor }}</td>
+                            <td>{{ ele.price|floatformat:2 }} €</td>
+                            <td>{{ ele.discount }} %</td>
+                            <td>{{ ele.get_taxes_display }} %</td>
+                            <td>{{ ele.qty|floatformat:1 }}</td>
+                            <td style="color: red;">{{ ele.price_after_taxes|floatformat:2 }} €</td>
+                        </tr>
+                    {% endfor %}
+                    <tr style="font-size: larger">
+                        <td class="warning">Σύνολα</td>
+                        <td class="warning"></td>
+                        <td class="warning"></td>
+                        <td class="warning">{{ order_items_total.2|floatformat:2 }} €</td>
+                        <td class="warning"></td>
+                        <td class="warning"></td>
+                        <td class="warning">{{ order_items_total.0|floatformat:2 }}</td>
+                        <td class="warning">{{ order_items_total.1|floatformat:2 }} €</td>
+                    </tr>
+                    </tbody>
+            </table>
+                </div>
+            </div>
+            </div>
+            <div class="ui divider segment"></div>
+            <div class="ui segment">
+                <div style="width: 100%" class="ui accordion">
+                <div class="title">
+                    <div style="text-align: center;" class="ui inverted teal center header segment">Εισαγωγές - Εξαγωγές Αποθήκης </div>
+                </div>
+                <div class="content">
+                    <table class="ui small single line selectable table">
+                    <thead>
+                        <tr>
+                            <th>Ημερομηνία</th>
+                            <th>Προϊόν</th>
+                            <th>Σχόλια</th>
+                            <th>Ποσότητα</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for ele in change_qty %}
+
+                        <tr>
+                            <td>{{ ele.order.day_added }}</td>
+                            <td>{{ ele.show_product }}</td>
+                            <td>{{ ele.order.title }} </td>
+                            <td>{{ ele.qty }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+            </table>
+                </div>
+            </div>
+            </div>
+            <div class="ui divider segment"></div>
+            <div class="ui segment">
+                <div style="width: 100%" class="ui accordion">
+                    <div class="title">
+                        <div style="text-align: center" class="ui green inverted header segment">Πωλήσεις</div>
+                    </div>
+                    <div class="content">
+                        <table class="ui small single line selectable table">
+                            <thead>
+                                <tr>
+                                    <th>Ημερομηνία</th>
+                                    <th>Κατάσταση</th>
+                                    <th>Πώληση</th>
+                                    <th>Χρώμα - Μέγεθος</th>
+                                    <th>Τιμή Μονάδας</th>
+                                    <th>Ποσότητα</th>
+                                    <th>Σύνολική Αξία</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    {% for ele in retail %}
+                        {% if ele.size %}
+                            <tr>
+                                <td>{{ ele.order.day_added }}</td>
+                                <td>{{ ele.order.title|truncatechars:15 }}| {{ ele.color.title }}| {{ ele.size.title }} </td>
+                                <td>{{ ele.price|floatformat:2 }} €</td>
+                                <td>{{ ele.qty }}</td>
+                                <td>{{ ele.total_price|floatformat:2 }} €</td>
+                            </tr>
+
+
+                        {% elif ele.color %}
+                            <tr>
+                                <td>{{ ele.order.day_added }}</td>
+                                <td>{{ ele.order.title|truncatechars:15 }}| {{ ele.color.title }} </td>
+                                <td>{{ ele.price|floatformat:2 }} €</td>
+                                <td>{{ ele.qty }}</td>
+                                <td>{{ ele.total_price|floatformat:2 }} €</td>
+                            </tr>
+
+                        {% else %}
+                        <tr>
+                            <td>{{ ele.order.day_added }}</td>
+                            {% if ele.order.status.id == 8 %}
+                                <td class="negative">{{ ele.order.status }}</td>
+                            {% elif ele.order.status.id == 7 %}
+                                <td class="positive">{{ ele.order.status }}</td>
+                            {% else %}
+                                <td class="">{{ ele.order.status }}</td>
+                            {% endif %}
+                            <td>{{ ele.order.title }}</td>
+                            <td>{{ ele.color_a }}, {{ ele.size_a }}</td>
+                            <td>{{ ele.template_tag_price }}</td>
+                            {% if ele.order.status.id == 8 %}
+                                <td class="negative">{{ ele.qty }}</td>
+                            {% else %}
+                                <td>{{ ele.qty }}</td>
+                            {% endif %}
+                            {% if ele.order.status.id == 8 %}
+                                <td> --- </td>
+                            {% else %}
+                                <td>{{ ele.template_tag_total_price }}</td>
+                            {% endif %}
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                    <tr style="font-size: larger">
+                        <td class="warning">Σύνολα</td>
+                        <td class="warning"></td>
+                        <td class="warning">Μέση Τιμή {{ retail_totals.2|floatformat:2 }} €</td>
+                        <td class="warning">{{ retail_totals.0|floatformat:2 }}</td>
+                        <td class="warning">{{ retail_totals.1|floatformat:2 }} €</td>
+                    </tr>
+                    </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="ui divider segment"></div>
+            <div class="ui segment">
+                <div style="width: 100%" class="ui accordion">
+                    <div class="title">
+                        <div style="text-align: center" class="ui orange inverted header segment">Skroutz</div>
+                    </div>
+                    <div class="content">
+                        <div class="skroutz-widget">
+                              <script type="text/javascript" src="//www.skroutz.gr/javascripts/widget-v1.js" charset="utf-8"></script>
+                              <script type="text/javascript" charset="utf-8" >
+                                new SkroutzWidget().display_popular({keyphrase:'{{ product.title }}'});
+                              </script>
+                              <p class="skwidget-footer">powered by <a href="http://www.skroutz.gr" title="Skroutz">Skroutz</a></p>
+                        </div>
+                        <div class="skroutz-widget">
+                            <script type="text/javascript" src="//www.skroutz.gr/javascripts/widget-v1.js" charset="utf-8"></script>
+                            <script type="text/javascript" charset="utf-8" >
+                             new SkroutzWidget().display_popular({category_id:40, keyphrase:'{{ product.title }}'});
+                           </script>
+                           <p class="skwidget-footer">powered by <a href="http://www.skroutz.gr" title="Skroutz">Skroutz</a></p>
+                        </div>
+                        <div class="skroutz-widget">
+                              <script type="text/javascript" src="//www.skroutz.gr/javascripts/widget-v1.js" charset="utf-8"></script>
+                              <script type="text/javascript" charset="utf-8" >
+                                new SkroutzWidget().display_sku({id:{{ product.sku }});
+                              </script>
+                              <p class="skwidget-footer">powered by <a href="http://www.skroutz.gr" title="Skroutz">Skroutz</a></p>
+                        </div>
+                        <div class="skroutz-widget">
+                          <script type="text/javascript" src="//www.skroutz.gr/javascripts/widget-v1.js" charset="utf-8"></script>
+                          <script type="text/javascript" charset="utf-8" >
+                            new SkroutzWidget().display_popular({category_id:40});
+                          </script>
+                          <p class="skwidget-footer">powered by <a href="http://www.skroutz.gr" title="Skroutz">Skroutz</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui divider segment"></div>
+
+        </div>
+    </div>
+    <div class="two wide column"></div>
+    <div style="margin-bottom: 5%" class="row"></div>
+
+
+{% endblock %}
+
+
+

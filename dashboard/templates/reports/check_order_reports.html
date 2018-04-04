@@ -1,0 +1,215 @@
+{%  extends 'reports/warehouse.html' %}
+
+
+{% block down_menu %}
+
+<div class="ui six item bottom fixed menu">
+    <a href="/reports/outcome/"  class=" ui blue item">Home</a>
+    <a href="/reports/outcome/payment-analysis/" class=" ui active blue item">Ροή Πληρωμών</a>
+    <a href="/reports/outcome/logariasmoi/" class=" ui blue item">Λογαριασμοί</a>
+    <a href="/reports/outcome/pagia-agores/{{ pagia_id }}/" class=" ui blue item">Πάγια έξοδα</a>
+    <a href="reports/outcome/μισθοδοσία/" class=" ui blue item">Μισθοδοσία</a>
+</div>
+{% endblock %}
+
+{% block content %}
+    <div class="three column row">
+        <div class="column">
+        </div>
+        <div class="column">
+            <h2 class="ui icon header">
+                <i class="settings icon"></i>
+                <div class="content">
+                    {{ title }}
+                    <div class="sub header">Manage your account settings and set e-mail preferences.</div>
+                </div>
+            </h2>
+        </div>
+        <div class="column"></div>
+    </div>
+
+    <div class="two wide column">
+
+
+    </div>
+    <div class="ten wide column">
+        <div class="ui segments">
+        <div class="ui blue inverted header segment ">
+            Test
+        </div>
+        <div class="ui segment">
+            <table class="ui table">
+                <thead>
+                    <tr>
+                        <th>Ημερομηνία Πληρωμής</th>
+                        <th>Σχόλια</th>
+                        <th>Ονομασία Πιστωτή</th>
+                        <th>Τόπος-Τράπεζα</th>
+                        <th>Κατάσταση</th>
+                        <th>Ποσό</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ele in checks %}
+                        <tr>
+                            <td>{{ ele.date_expire }}</td>
+                            <td>{{ ele.title }}</td>
+                            <td>{{ ele.debtor.title }}</td>
+                            <td>{{ ele.place.title }}</td>
+                            {% if ele.status == 'a' %}
+                                <td style="background-color: #91ceff">{{ ele.get_status_display }}</td>
+                            {% elif ele.status == 'b' %}
+                                <td style="background-color: green">{{ ele.get_status_display }}</td>
+                            {% else %}
+                                <td style="background-color: red">{{ ele.get_status_display }}</td>
+                            {% endif %}
+                                <td >{{ ele.value|floatformat:2 }} €</td>
+
+                        </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+    </div>
+    <div class="four wide column">
+          <div class="ui segments">
+
+        <form class="ui form" method="post">{% csrf_token %}
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    {% if vendor_name %}
+                        {% for ele in vendor_name %}
+                            {{ ele.title }},
+                        {% endfor %}
+                    {% else %}
+                        Επέλεξε Προμηθευτή
+                    {% endif %}
+                </div>
+                <div style='height: 300px;overflow: scroll' class="content">
+
+                    {% for ele in vendors %}
+                        {% if ele.title in vendor_name %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="vendor" value="{{ ele.title }}" checked>
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% else %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="vendor" value="{{ ele.title }}">
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% endif %}
+
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    {% if status_name %}
+                        {% for ele in status_name %}
+                            {{ ele }},
+                        {% endfor %}
+                    {% else %}
+                        Κατάσταση Επιταγής
+                    {% endif %}
+                </div>
+                <div style='height: 300px;overflow: scroll' class="content">
+
+                    {% for ele in status %}
+                        {% if ele.0 in status_name %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="status_name" value="{{ ele.0 }}" checked>
+                                <label>{{ ele.1 }}</label>
+                            </div>
+                            <br>
+                        {% else %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="status_name" value="{{ ele.0 }}">
+                                <label>{{ ele.1 }}</label>
+                            </div>
+                            <br>
+                        {% endif %}
+
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    {% if payment_name %}
+                        {% for ele in payment_name %}
+                            {{ ele.title }},
+                        {% endfor %}
+                    {% else %}
+                        Τρόπος Πληρωμής
+                    {% endif %}
+                </div>
+                <div style='height: 300px;overflow: scroll' class="content">
+
+                    {% for ele in payment_method %}
+                        {% if ele.title in payment_name %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="payment_name" value="{{ ele.title }}" checked>
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% else %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="payment_name" value="{{ ele.title }}">
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% endif %}
+
+                    {% endfor %}
+                </div>
+            </div>
+
+
+
+
+        <div class="ui sub header">Χρονος</div>
+            <input name="date_pick" placeholder="{{ date_pick }}" value="{{ date_pick }}">
+            <input style="width: 100%;" class="ui green inverted button" type="submit">
+        </form>
+    </div>
+    </div>
+
+
+
+
+
+{% endblock %}
+
+
+
+
+
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    for (var id in {{ vendor_name }}) {
+        var $option = $("<option value=\"" + id + "\">" + championships[id].name + "</option>");
+            $select.append($option);
+        }
+        $select.dropdown('refresh');
+        if (defaultValueId)
+        setTimeout(function () {
+        $select.dropdown('set selected', defaultValueId);
+        }, 1);
+
+  $('input[name="vendor_name"]').dropdown('set selected',{{ vendor_name }});
+
+
+});
+</script>

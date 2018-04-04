@@ -1,0 +1,84 @@
+<div class="ui fluid cards">
+    <div class="ui fluid card">
+        <div class="fluid content">
+            <div class="header">
+                Παραγγελία {{ object.title }}
+            </div>
+          <div class="meta">
+            {{ object.date_created }}
+          </div>
+          <div class="description">
+            Κατάσταση  {{ object.get_status_display }},<br> Πελάτης  {{ object.costumer_account }},
+              Πωλητής  {{ object.seller_account }}
+          </div>
+        </div>
+        <div class="extra content">
+            <div class="ui two buttons">
+                <div id="add_payment" data-url="{% url 'pos:PaymentCreate' object.id %}" class="ui basic green button">Πληρωτέο Ποσό {{ object.tag_paid_value }}</div>
+                <div class="ui basic red button">Αξία Παραγγελίας {{ object.tag_final_price }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="ui compact celled definition table">
+    <thead>
+    <tr>
+        <th></th>
+        <th>Προιόν</th>
+        <th>Ποσότητα</th>
+        <th>Τιμή</th>
+        <th>Συνολικη Αξία</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for product in object.retailorderitem_set.all %}
+        <tr>
+            <td class="collapsing">
+                <button data-url="{% url 'pos:ajax_delete_product' product.id %}"  class="ui red button delete_button">
+                    <i class="trash icon"></i>
+                </button>
+            </td>
+            <td>{{ product.title }}</td>
+            <td>
+                <button data-value="add" data-url="{% url 'pos:ajax_edit_product' product.id %}" class="ui green tiny button edit_button"><i class="plus tiny icon "></i> </button>
+                <button data-value="remove" data-url="{% url 'pos:ajax_edit_product' product.id %}" class="ui red tiny button edit_button"><i class="minus tiny icon "></i> </button>
+                {{ product.qty }}
+            </td>
+            <td>{{ product.tag_final_price }}</td>
+            <td>{{ product.tag_total_price }}</td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td></td>
+            <td>No products Added</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot class="full-width">
+        <tr>
+            <th></th>
+            <th colspan="4">
+                <a href="{% url 'pos:order_paid' object.id %}" class="ui right floated small green labeled icon button">
+                    <i class="visa icon"></i> Πληρωμή
+                </a>
+            </th>
+        </tr>
+    </tfoot>
+</table>
+
+<script type="text/javascript">
+
+    $('#add_payment').click(function () {
+        console.log('here');
+        var btn = $(this);
+        var href = btn.attr('data-url');
+        $.ajax({
+            url: href,
+            dataType: 'json',
+            success: function (data) {
+                $('#ajax_order').html(data.add_payment)
+            }
+        })
+    })
+</script>

@@ -1,0 +1,443 @@
+{% extends 'reports/vendors.html' %}
+
+{% block content %}
+    <div class="three column row">
+        <div class="column">
+            <a class="ui teal button" href="{{ return_page }}"><i class="reply icon"></i>Επιστροφή</a>
+            <div class="results_ul">
+                <ul class="result_ul" id="results_ul"></ul>
+            </div>
+        </div>
+        <div class="column">
+            <h2 class="ui center aligned icon header">
+                <i class="circular users icon"></i>
+                Προμηθευτής {{ vendor }}
+            </h2>
+        </div>
+        <div class="column"></div>
+    </div>
+    <div class="three wide column">
+        <div style="text-align: center;" class="ui card">
+         <div class="content">
+              <div class="header">{{ vendor.title }}</div>
+                   <div class="meta">ΔΟΥ..{{ vendor.doy.title }}</div>
+                   <div class="description">
+                       <p>Τηλέφωνα {{ vendor.phone }}, Φαξ {{ vendor.fax }} ,Κινητό {{ vendor.phone1 }}</p>
+                       <p>Email {{ vendor.email }} </p>
+                       <p>Site <a target="_blank" href="https://{{ vendor.site }}">{{ vendor.site }}</a></p>
+                       <p> Διεύθυνση.. {{ vendor.address }}, </p>
+                       <p> Ημερομηνία Δημιουργίας..{{ vendor.date_added }}, </p>
+                       <p>{{ vendor.description }}</p>
+                </div>
+         </div>
+         {% if vendor.balance > 0 %}
+             <div style="font-size: larger;color: green;" class="extra content">
+                 <i class="euro green icon"></i>
+                     Υπόλοιπο {{ vendor.template_tag_balance }}
+             </div>
+         {% else %}
+            <div style="font-size: larger;color: red;" class="extra content">
+                 <i class="euro green icon"></i>
+                     Υπόλοιπο {{ vendor.template_tag_balance }}
+             </div>
+         {% endif %}
+        <h4>Προκαταβολές {{ vendor.remaining_deposit }}</h4>
+         <a target="_blank" href="{% url 'edit_vendor' vendor.id %}" class="ui blue button"> Επεξεργασία </a>
+     </div>
+    </div>
+    <div class="nine wide column">
+         <div class="row">
+            <div class="ui accordion">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    <h2 style="display: inline" class="ui sub header">
+                        Προϊόντα  , Συνολικό Κόστος Υπολοίπου <b>{{ total_remaining_cost|floatformat:2 }} {{ currency }}</b>, Συνολική Αξία Υπολοίπου Προϊόντων <b>{{ total_remaining_markup|floatformat:2 }} €.</b>
+                    </h2>
+                </div>
+                <div class="content">
+                    <table class="ui small selectable table">
+                        <thead>
+                            <tr>
+                                <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/description/{{ tools_table.id }}/" >Κωδικός Τιμολογίου</a></th>
+                                <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/title/{{ tools_table.id }}/">Προϊόν</a></th>
+                                <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/category/{{ tools_table.id }}/">Κατηγορία</a></th>
+                                <th style="width: 5%"><a href="/αποθήκη/εργαλεία/table-order-by/price_buy/{{ tools_table.id }}/" >Τελευταία τιμή Τιμολογίου</a></th>
+                                <th style="width: 5%"><a href="/αποθήκη/εργαλεία/table-order-by/price/{{ tools_table.id }}/">Τιμή Πώλησης/Χονδρικής</a></th>
+                                <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/edit/{{ tools_table.id }}/">Κατάσταση Site,Κατάσταση Αποθήκης</a></th>
+                                <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/reserve/{{ tools_table.id }}/">Απόθεμα</a></th>
+                                <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/edit/{{ tools_table.id }}/">Κόστος Υπολοίπου</a></th>
+                                <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/supplier/{{ tools_table.id }}/">Αξία Υπολοίπου (MarkUp)</a></th>
+                                <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/day_added/{{ tools_table.id }}/" >Ημερομηνία Δημιουργίας</a></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                             {% for ele in products %}
+                                <tr>
+                                    <td style="width: 10%">{{ ele.order_code }}</td>
+                                    <td style="width: 10%">
+                                        <a target="_blank" style="display: inline;" class="popup item" data-content='Ιστορικό {{ ele }}' href="{% url 'info_product_id' ele.id %}">
+                                            {{ ele.title }}, {{ ele.color }}
+                                        </a>
+                                    </td>
+                                    <td style="width: 10%" class="right aligned">{{ ele.category.title }}</td>
+                                    <td style="width: 5%">{{ ele.final_price_warehouse|floatformat:2 }} {{ currency }}</td>
+                                    <td style="width: 5%">{{ ele.price|floatformat:2 }} {{ currency }}
+                                        {% if ele.priceb2b == 0 %}
+                                        {% elif ele.priceb2b %}
+                                         /{{ ele.priceb2b|floatformat:2 }} {{ currency }}</td>
+                                        {% else %}
+                                        {% endif %}
+                                    {% if ele.ware_active == True %}
+                                        <td style='background-color:#64801d;'>
+                                            Ενεργό
+                                        </td>
+                                    {% else %}
+                                        <td style='background-color:#ff9775;width: 10%;'>Μη Ενεργό</td>
+                                    {% endif %}
+                                    <td style="width: 10%">{{ ele.show_warehouse_remain|floatformat:2 }} {{ ele.measure_unit }}</td>
+                                    <td>{{ ele.cost_of_remaining|floatformat:2 }} {{ currency }}</td >
+                                    <td style="width: 10%">{{ ele.markup_remaining|floatformat:2 }} {{ currency }}</td>
+                                    <td style="width: 10%">{{ ele.day_added }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="ui divider row"></div>
+        <div class="row">
+            <div class="ui accordion">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    <h2 style="display: inline" class="ui center sub header">
+                        Τιμολόγια, Συνολικά Τιμολόγια...{{ warehouse_orders.0 }} , Συνολική Αξία...  {{ warehouse_orders.1 }}{{ currency }}
+                    </h2>
+                </div>
+                <div class="content">
+                    <table class="ui single line  selectable table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Ημερομηνία</th>
+                                <th>Αρ Παραστατικου</th>
+                                <th>Συνολικό Ποσό</th>
+                                <th>ΦΠΑ</th>
+                                <th>Κατάσταση</th>
+                                <th>Yπόλοιπο</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ele in orders %}
+                                <tr>
+                                    <td>{{ forloop.counter }}
+                                    <td>{{ ele.day_created|date }}</td>
+                                    <td><a href="/reports/orders/{{ ele.id }}">{{ ele.code }}</a></td>
+                                    <td>{{ ele.total_price|floatformat:2  }} {{ currency }}</td>
+                                    <td>{{ ele.total_taxes|floatformat:2  }} {{ currency }}</td>
+                                    {% if ele.status == 'a' %}
+                                        <td style="background-color:green;">{{ ele.get_status_display }}</td>
+                                    {% else %}
+                                        <td style="background-color:red;">{{ ele.get_status_display }}</td>
+                                        <td>{{ ele.tag_remaining_value  }}</td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="ui divider row">
+
+        </div>
+        <div class="row">
+            <h2 class="ui center aligned icon header">
+                <i class="calendar icon"></i>
+                Ανάλυση
+            </h2>
+        </div>
+        <div class="row">
+            <div class="ui accordion">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    <h2 style="display: inline" class="ui sub header">
+                        Κίνηση Προϊόντων <br> Συνολικές Ημέρες... {{ total_days }} .  Από... {{ date_start }} , Εώς... {{ date_end }}
+                     </h2>
+                </div>
+                <div class="content">
+                    <table class="ui small selectable table">
+                        <thead>
+                            <tr>
+                                <th>Επιλογές</th>
+                                <th style="width: 10%"><a href="" >Κωδικός Τιμολογίου</a></th>
+                                <th style="width: 10%"><a href="">Προϊόν</a></th>
+                                <th style="width: 10%"><a href="">Αποθεμα/Απόθεμα Ασφαλείας</a></th>
+                                <th style="width: 5%"><a href="" >Πωλήσεις ανά Ημέρα./Συνολικές Πωλήσεις Περιόδου</a></th>
+                                <th style="width: 5%"><a href="">Υπόλοιπο Αποθήκης σε Ημέρες</a></th>
+                                <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/edit/{{ tools_table.id }}/">Επιστροφές/Ελλατωματικά.</a></th>
+                                <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/reserve/{{ tools_table.id }}/">Ποσοστο Επιστροφών/Ελλατ./Σύνολο</a></th>
+                                <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/edit/{{ tools_table.id }}/">Τιμή Αγορας -Κόστος Πωληθεντων</a></th>
+                                <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/supplier/{{ tools_table.id }}/">Τιμή Πώλησης - Αξία Πωληθέντων</a></th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                             {% for ele in products_analysis %}
+                                <tr>
+                                    <td>
+                                        <div class="ui small teal buttons">
+                                            <div class="ui small button"> Ιστορικό.</div>
+                                            <div class="ui floating dropdown icon button">
+                                                <i class="dropdown icon"></i>
+                                                <div class="menu">
+                                                    <a href="{% url 'vendor_info_add_preorder' ele.0.id vendor.id %}" class="item"><i class="edit icon"></i> Προσθήκη στην Παραγγελία.</a>
+                                                    <div class="item"><i class="delete icon"></i> Remove Post</div>
+                                                    <div class="item"><i class="hide icon"></i> Hide Post</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="width: 10%">{{ ele.0.order_code }}</td>
+                                    <td style="width: 10%">{{ ele.0.title }}</td>
+                                    <td style="width: 10%" class="right aligned">{{ ele.0.qty|floatformat:1 }}<br>{{ ele.0.safe_stock|floatformat:1 }}</td>
+                                    <td style="width: 5%">{{ ele.1|floatformat:1 }} Τεμ.<br>{{ ele.9|floatformat:1 }}Τεμ.</td>
+                                    <td>{{ ele.2 }} Ημερ.</td>
+                                    <td>{{ ele.5 }}<br>{{ ele.6 }}</td>
+                                    <td>{{ ele.7|floatformat:1 }} %<br> {{ ele.8|floatformat:1 }} %</td>
+                                    <td style="width: 10%">{{ ele.0.price_buy|floatformat:2 }} € <br> {{ ele.3|floatformat:2 }}€</td>
+                                    <td>{{ ele.0.price|floatformat:2 }} €<br>{{ ele.4|floatformat:2 }} €</td >
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="ui divider row"></div>
+    </div>
+    <div class="four wide column">
+        <div class="ui row">
+            <form class="ui form" method="post">{% csrf_token %}
+                <div class="ui  label">Επιλογή Ημερομηνίας</div><br>
+                <input  name="date_pick" placeholder="{{ request.session.date_range }}" value="{{ date_pick }}">
+                <input  class="ui small green inverted button" type="submit">
+            </form>
+        </div>
+        <div style="margin-top: 5%;" class="ui row">
+            <div class="ui relaxed divided list">
+                <div class="item">
+                    <div class="header">Κινήσεις Προιόντων</div>
+                </div>
+                <div style="overflow:scroll; height: 400px;width: 300px; ">
+                {% for order in pos_order_list %}
+                    {% if order.order_type_for_vendor == 'sell' %}
+                        <div style="margin-top: 3%;" class="item">
+                            <i class="large cart green aligned icon"></i>{{ order.day_added }}
+                            <div class="content">
+                                <a target="_blank" href="{{ order.absolute_url_vendor_page }}" class="header">{{ order.order.title }},Τιμή..{{ order.price_for_vendor_page|floatformat:2 }} €, Ποσ.{{ order.qty }}</a>
+                                <div class="description">{{ payment.get_payment_type_display }}<br></div>
+                            </div>
+                        </div>
+                    {% elif order.order_type_for_vendor == 'return' %}
+                        <div style="margin-top: 3%;" class="item">
+                            <i class="large alarm blue aligned icon"></i>{{ order.day_added }}
+                            <div class="content">
+                                <a target="_blank" href="{{ order.absolute_url_vendor_page }}" class="header">{{ order.order.title }},Τιμή..{{ order.price_for_vendor_page|floatformat:2 }} €, Ποσ.{{ order.qty }}</a>
+                                <div class="description">{{ payment.get_payment_type_display }}<br></div>
+                            </div>
+                        </div>
+                    {% elif order.order_type_for_vendor == 'destroy' %}
+                        <div style="margin-top: 3%;" class="item">
+                            <i class="large red minus circle aligned icon"></i>{{ order.day_added }}
+                            <div class="content">
+                                <a target="_blank" href="{{ order.absolute_url_vendor_page }}" class="header">{{ order.order.title }},Τιμή..{{ order.price_for_vendor_page|floatformat:2 }} €, Ποσ.{{ order.qty }}</a>
+                                <div class="description">{{ payment.get_payment_type_display }}<br></div>
+                            </div>
+                        </div>
+                    {% else %}
+                    <div style="margin-top: 3%;" class="item">
+                        <i class="large  github middle aligned icon"></i>{{ order.day_added }}
+                        <div class="content">
+                            <a target="_blank" href="{{ order.absolute_url_vendor_page }}" class="header">{{ order.order.title }},Τιμή..{{ order.price_for_vendor_page|floatformat:2 }} €, Ποσ.{{ order.qty }}</a>
+                            <div class="description">{{ payment.get_payment_type_display }}<br></div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+            <div class="ui list">
+                <div class="item"><i class="header">Επεξήγηση</i></div>
+                <div class="item"><i class="large cart green aligned icon"></i>Πωλήσεις</div>
+                <div class="item"><i class="large alarm blue aligned icon"></i>Επιστροφές</div>
+                <div class="item"><i class="large red minus circle aligned icon"></i>Ελλατωματικά κτλ.</div>
+            </div>
+        </div>
+
+        {% if payment_list %}
+        <div class="ui row">
+            <div style="margin-top: 15%" class="ui relaxed divided list">
+                <div class="item">
+                    <div class="header">Πληρωμές</div>
+                </div>
+                <div style="overflow:scroll; height: 400px;width: 300px; ">
+                {% for payment in payment_list %}
+                    {% if payment.payment_type_vendor_page == 'payment_order' %}
+                        <div style="margin-top: 2%" class="item">
+                        <i class="large blue add square middle aligned icon"></i>{{ payment.day_added }}
+                        <div class="content">
+                            <a class="header">{{ payment.value|floatformat:2 }} €,{{ payment.title }}</a>
+                            <div class="description">{{ payment.get_payment_type_display }}</div>
+                        </div>
+                    </div>
+                    {% elif payment.payment_type_vendor_page == 'deposit_order' %}
+                        <div style="margin-top: 2%" class="item">
+                        <i class="large  add square middle aligned icon"></i>{{ payment.day_added }}
+                        <div class="content">
+                            <a class="header">{{ payment.value|floatformat:2 }} €,{{ payment.title }}</a>
+                            <div class="description">{{ payment.get_payment_type_display }}</div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div style="margin-top: 2%" class="item">
+                        <i class="large green check circle middle aligned icon"></i>{{ payment.day_added }}
+                        <div class="content">
+                            <a class="header">{{ payment.value|floatformat:2 }} €,{{ payment.title }}</a>
+                            <div class="description">{{ payment.get_payment_type_display }}</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+            <div class="ui list">
+                <div class="item"><i class="header">Επεξήγηση</i></div>
+                <div class="item"><i class="large green check circle middle aligned icon"></i>Προκαταβολές - Επιταγές</div>
+                <div class="item"><i class="large blue add square middle aligned icon"></i>Αποπληρωμές Τιμολογίου</div>
+
+            </div>
+        </div>
+        {% else %}
+
+        {% endif %}
+
+    </div>
+
+
+
+
+{% endblock %}
+
+
+{% block right_side %}
+    <div class="ui column grid">
+        <div class="ui row">
+            <form class="ui form" method="post">{% csrf_token %}
+                <div class="ui  label">Επιλογή Ημερομηνίας</div><br>
+                <input  name="date_pick" placeholder="{{ request.session.date_range }}" value="{{ date_pick }}">
+                <input  class="ui small green inverted button" type="submit">
+            </form>
+        </div>
+        <div style="margin-top: 5%;" class="ui row">
+            <div class="ui relaxed divided list">
+                <div class="item">
+                    <div class="header">Κινήσεις Προιόντων</div>
+                </div>
+                <div style="overflow:scroll; height: 400px;width: 300px; ">
+                {% for order in pos_order_list %}
+                    {% if order.order_type_for_vendor == 'sell' %}
+                        <div style="margin-top: 3%;" class="item">
+                            <i class="large cart green aligned icon"></i>{{ order.day_added }}
+                            <div class="content">
+                                <a target="_blank" href="{{ order.absolute_url_vendor_page }}" class="header">{{ order.order.title }},Τιμή..{{ order.price_for_vendor_page|floatformat:2 }} €, Ποσ.{{ order.qty }}</a>
+                                <div class="description">{{ payment.get_payment_type_display }}<br></div>
+                            </div>
+                        </div>
+                    {% elif order.order_type_for_vendor == 'return' %}
+                        <div style="margin-top: 3%;" class="item">
+                            <i class="large alarm blue aligned icon"></i>{{ order.day_added }}
+                            <div class="content">
+                                <a target="_blank" href="{{ order.absolute_url_vendor_page }}" class="header">{{ order.order.title }},Τιμή..{{ order.price_for_vendor_page|floatformat:2 }} €, Ποσ.{{ order.qty }}</a>
+                                <div class="description">{{ payment.get_payment_type_display }}<br></div>
+                            </div>
+                        </div>
+                    {% elif order.order_type_for_vendor == 'destroy' %}
+                        <div style="margin-top: 3%;" class="item">
+                            <i class="large red minus circle aligned icon"></i>{{ order.day_added }}
+                            <div class="content">
+                                <a target="_blank" href="{{ order.absolute_url_vendor_page }}" class="header">{{ order.order.title }},Τιμή..{{ order.price_for_vendor_page|floatformat:2 }} €, Ποσ.{{ order.qty }}</a>
+                                <div class="description">{{ payment.get_payment_type_display }}<br></div>
+                            </div>
+                        </div>
+                    {% else %}
+                    <div style="margin-top: 3%;" class="item">
+                        <i class="large  github middle aligned icon"></i>{{ order.day_added }}
+                        <div class="content">
+                            <a target="_blank" href="{{ order.absolute_url_vendor_page }}" class="header">{{ order.order.title }},Τιμή..{{ order.price_for_vendor_page|floatformat:2 }} €, Ποσ.{{ order.qty }}</a>
+                            <div class="description">{{ payment.get_payment_type_display }}<br></div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+            <div class="ui list">
+                <div class="item"><i class="header">Επεξήγηση</i></div>
+                <div class="item"><i class="large cart green aligned icon"></i>Πωλήσεις</div>
+                <div class="item"><i class="large alarm blue aligned icon"></i>Επιστροφές</div>
+                <div class="item"><i class="large red minus circle aligned icon"></i>Ελλατωματικά κτλ.</div>
+            </div>
+        </div>
+
+        {% if payment_list %}
+        <div class="ui row">
+            <div style="margin-top: 15%" class="ui relaxed divided list">
+                <div class="item">
+                    <div class="header">Πληρωμές</div>
+                </div>
+                <div style="overflow:scroll; height: 400px;width: 300px; ">
+                {% for payment in payment_list %}
+                    {% if payment.payment_type_vendor_page == 'payment_order' %}
+                        <div style="margin-top: 2%" class="item">
+                        <i class="large blue add square middle aligned icon"></i>{{ payment.day_added }}
+                        <div class="content">
+                            <a class="header">{{ payment.value|floatformat:2 }} €,{{ payment.title }}</a>
+                            <div class="description">{{ payment.get_payment_type_display }}</div>
+                        </div>
+                    </div>
+                    {% elif payment.payment_type_vendor_page == 'deposit_order' %}
+                        <div style="margin-top: 2%" class="item">
+                        <i class="large  add square middle aligned icon"></i>{{ payment.day_added }}
+                        <div class="content">
+                            <a class="header">{{ payment.value|floatformat:2 }} €,{{ payment.title }}</a>
+                            <div class="description">{{ payment.get_payment_type_display }}</div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div style="margin-top: 2%" class="item">
+                        <i class="large green check circle middle aligned icon"></i>{{ payment.day_added }}
+                        <div class="content">
+                            <a class="header">{{ payment.value|floatformat:2 }} €,{{ payment.title }}</a>
+                            <div class="description">{{ payment.get_payment_type_display }}</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+            <div class="ui list">
+                <div class="item"><i class="header">Επεξήγηση</i></div>
+                <div class="item"><i class="large green check circle middle aligned icon"></i>Προκαταβολές - Επιταγές</div>
+                <div class="item"><i class="large blue add square middle aligned icon"></i>Αποπληρωμές Τιμολογίου</div>
+
+            </div>
+        </div>
+        {% else %}
+
+        {% endif %}
+    </div>
+
+
+
+{% endblock %}

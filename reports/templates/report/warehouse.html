@@ -1,0 +1,247 @@
+{% extends 'index.html' %}
+
+
+{% block down_menu %}
+
+<div class="ui six item bottom fixed menu">
+    <a href="" class="item">Κενρική Σελίδα</a>
+    <a style="background-color: red"  href="{% url 'reports:products' %}" class="item">Προϊόντα</a>
+    <a style="background-color: green" href="{% url 'reports:vendors' %}" class="item">Προμηθευτές</a>
+    <a style="background-color: dodgerblue"  href="{% url 'reports:warehouse_categories' %}" class="item">Κατηγορίες</a>
+    <a href="{% url 'reports:warehouse_orders' %}" class="item">Τιμολόγια</a>
+    <a href="{% url 'reports:warehouse_order_items_flow' %}" class="item">Κίνηση Προϊόντων</a>
+</div>
+{% endblock %}
+
+{% block content %}
+    <div class="three column row">
+        <div class="column"></div>
+        <div class="column">
+            <h2 class="ui icon header">
+                <i class="settings icon"></i>
+                <div class="content">
+                    {{ title }}
+                    <div class="sub header">{{ date_range }}</div>
+                </div>
+            </h2>
+        </div>
+        <div class="column"></div>
+    </div>
+
+    <div class="one wide column"></div>
+    <div style="margin-bottom: 5%" class="fourteen wide column">
+        <div class="ui header">
+            Ανάλυση Πωλήσεων Τρέχοντος Μήνα
+        </div>
+        <div class="ui cards">
+            <div class="card">
+                <div class="content">
+                    <div class="header">
+                       Συνολικά Έσοδα
+                    </div>
+                    <div class="description">
+                        Έσοδα Περιόδου
+                    </div>
+                </div>
+                <div class="extra content">
+                    <div class="ui two buttons">
+                        <a href="" class="ui teal button">{{ total_incomes|floatformat:2 }} €</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content">
+                    <div class="header">
+                        Έσοδα Λιανικής
+                    </div>
+                </div>
+                <div class="extra content">
+                    <div class="ui two buttons">
+                        <div  class="ui  green button">{{ retail_incomes|floatformat:2 }} €</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content">
+                    <div class="header">
+                        Έσοδα Εshop
+                    </div>
+                </div>
+                <div class="extra content">
+                    <div class="ui two buttons">
+                        <div class="ui green button">{{ eshop_incomes|floatformat:2 }} €</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content">
+                    <div class="header">
+                        Έσοδα Χονδρικής
+                    </div>
+                </div>
+                <div class="extra content">
+                    <div class="ui two buttons">
+                        <div class="ui green button">0.00 €</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content">
+                    <div class="header">
+                        Ελλατωματικά
+                    </div>
+                    <div class="description">
+                        Κόστος Ελλατωματικών
+                    </div>
+                </div>
+                <div class="extra content">
+                    <div class="ui two buttons">
+                        <div class="ui red button">{{ destroy_value|floatformat:2 }} €</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 5%" class="ui header">
+            Ανάλυση Αγορών  Τρέχοντος Μήνα
+        </div>
+        <div class="ui cards">
+            <div class="card">
+                <div class="content">
+                    <div class="header">
+                        Συνολική Αξία
+                    </div>
+                    <div class="description">
+                        Σύνολο Υποχρεώσεων
+                    </div>
+                </div>
+                <div class="extra content">
+                    <div class="ui two buttons">
+                        <div  class="ui blue button">{{ orders_total_value|floatformat:2 }} €</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content">
+                    <div class="header">
+                       Αξία Τιμολογίων
+                    </div>
+                    <div class="meta">
+                        Διαχωρισμός σε
+                    </div>
+                    <div class="description">
+                        Καθαρή Αξία - ΦΠΑ
+                    </div>
+                </div>
+                <div class="extra content">
+                    <div class="ui two buttons">
+                        <div class="ui red button">{{ orders_clear_value|floatformat:2 }} €</div>
+                        <div class="ui green button">{{ orders_taxes_value|floatformat:2 }} €</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content">
+                    <div class="header">
+                        Πληρωμένη Αξία
+                    </div>
+                    <div class="description">
+                        Σύνολο Υποχρεώσεων  -- Σύνολο Πληρωμών
+                    </div>
+                </div>
+                <div class="extra content">
+                    <div class="ui two buttons">
+                        <div  class="ui  green button">{{ orders_paid|floatformat:2 }} €</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content">
+                    <div class="header">
+                        Υποχρεώσεις Μήνα
+                    </div>
+
+                    <div class="description">
+                        Υπόλοιπο προμηθευτών τρέχοντος Μήνα
+                    </div>
+                </div>
+                <div class="extra content">
+                    <div class="ui two buttons">
+                        <div class="ui red button">{{ orders_remaining_paid|floatformat:2 }} €</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div style="margin-top: 5%" class="ui header">
+            Υπόλοιπο Λογαριασμών
+        </div>
+        <div class="ui cards">
+            {% for bill in bills %}
+            <div class="card">
+                <div class="content">
+                    <div class="header">
+                       {{ bill.title }}
+                    </div>
+
+                    <div class="description">
+                        Υπόλοιπο
+                    </div>
+                </div>
+                <div class="extra content">
+                    <div class="ui two buttons">
+                        {% if bill.show_remain > 0 %}
+                            <div class="ui red button">{{ bill.show_remain|floatformat:2 }} €</div>
+                        {% else %}
+                            <div class="ui green button">{{ bill.show_remain|floatformat:2 }} €</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+
+        </div>
+
+        <div style="margin-top: 5%" class="ui header">
+            Υπόλοιπο Μισθοδοσίας
+        </div>
+        <div class="ui cards">
+            {% for occup in payroll %}
+            <div class="card">
+                <div class="content">
+                    <div class="header">
+                       {{ occup.title }}
+                    </div>
+
+                    <div class="description">
+                        Υπόλοιπο
+                    </div>
+                </div>
+                <div class="extra content">
+                    <div class="ui two buttons">
+                        {% if occup.balance > 0 %}
+                            <a href="{% url 'reports:payroll_page' %}" class="ui red button">{{ occup.tag_balance }} </a>
+                        {% else %}
+                            <a href="{% url 'reports:payroll_page' %}" class="ui green button">{{ occup.tag_balance }} </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+
+        </div>
+
+
+
+
+    </div>
+    <div class="one wide column">
+
+    </div>
+
+
+
+{% endblock %}

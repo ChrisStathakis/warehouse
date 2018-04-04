@@ -1,0 +1,151 @@
+{% extends 'home/index.html' %} {% load static %}
+
+{% block seo %}
+    <title>Demo Ecommerce | {{ seo_title }}</title>
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'home/product_page.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="page-header page-header-small">
+        <div class="page-header-image" data-parallax="true"
+                {% if object.image %}
+                        style="background-image: url('{{ object.image.url }}');">
+                     {% else %}
+                        style="background-image: url('{% static 'home/assets/img/bg6.jpg' %}');">
+                {% endif %}
+        </div>
+        <div class="container">
+            <div class="content-center">
+                <h1 class="title">{{ seo_title }}</h1>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="section section-basic">
+        <div class="container-fluid">
+             <div class="row">
+                 <div class="col-12">
+                     <ol class="breadcrumb">
+                         <li class="breadcrumb-item"><a href="{% url 'homepage' %}">Home</a></li>
+                         <li class="breadcrumb-item active">{{ seo_title }}</li>
+                     </ol>
+                 </div>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-success" role="alert">
+                            <div class="container">
+                                <div class="alert-icon">
+                                    <i class="now-ui-icons ui-2_like"></i>
+                                </div>
+                                {{ message}}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">
+                                    <i class="now-ui-icons ui-1_simple-remove"></i>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <br><br>
+            <form method="get">
+                <div class="row">
+                <div style="padding-left: 5%" class="col-md-3 col-sm-12">
+                    <div id="inputs">
+                        <h4>Filters</h4>
+                            <p class="category">Choose Categories</p>
+                            {% for category in categories %}
+                                <div class="checkbox">
+                                    <input id="cat{{ category.id }}" name="cate_name" value="{{ category.id }}"
+                                           type="checkbox"
+                                            {% if category.id|stringformat:"s" in cate_name %} checked {% endif %}
+                                    >
+                                    <label for="cat{{ category.id }}">
+                                        {{ category }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+
+                            <p class="category">Choose Brand</p>
+                            {% for brand in brands %}
+                                <div class="checkbox">
+                                    <input id="brand{{ brand.id }}" name="brand_name" value="{{ brand.id }}"
+                                           type="checkbox" {% if brand.id|stringformat:"s" in brand_name %} checked {% endif %}>
+                                    <label for="brand{{ brand.id }}">
+                                        {{ brand }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+
+                            <p class="category">Choose Color</p>
+                            {% for color in colors %}
+                            <div class="checkbox">
+                                <input id="color{{ color.id }}" name="color_name" value="{{ color.id }}"
+                                       type="checkbox" {% if color.id|stringformat:"s" in color_name %} checked {% endif %}>
+                                <label for="color{{ color.id }}">
+                                    {{ color }}
+                                </label>
+                            </div>
+                            {% endfor %}
+
+                            <p class="category">Choose Size</p>
+                            {% for size in sizes %}
+                            <div class="checkbox">
+                                <input id="size{{ size.id }}" name="size_name" value="{{ size.id }}"
+                                       type="checkbox" {% if size.id|stringformat:"s" in size_name %} checked {% endif %}>
+                                <label for="size{{ size.id }}">
+                                    {{ color }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                            <button class="btn btn-success">Submit</button>
+                            <a href="" class="btn btn-warning">Clear</a>
+                        </div>
+                </div>
+                <div class="col-md-9 col-9 col-sm-12">
+                    <h2>Total Products {{ object_list.count }}</h2>
+                    <label class="mr-sm-2" for="inlineFormCustomSelect">Order by</label>
+                    <select on-release="this.form.submit()" name='order_by' class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
+                        <option selected>Choose...</option>
+                        <option value="1">Price</option>
+                        <option value="2">Name</option>
+                        <option value="3">Latest</option>
+                    </select>
+
+                    <div class="row">
+                        <div class="container">
+                            <div class="row">
+                                {% for product in object_list %}
+                                    {% include 'home/include/product_card.html' %}
+                                {% endfor %}
+                            </div>
+                          </div>
+                    </div>
+
+                    <div class="row">
+                        <ul class="pagination pagination-primary">
+                            <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+                            {% if page_obj.has_next %}
+                            <li class="page-item"><a href="?page={{ page_obj.next_page_number }}" class="page-link">Next</a></li> 
+                            {% endif %}
+                            <li class="page-item active"><p class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p></li>
+                            {% if page_obj.has_next %}
+                            <li class="page-item"><a href="?page={{ page_obj.next_page_number }}" class="page-link">Next</a></li> 
+                            {% endif %}
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last Page</a> </li>
+                        </ul>
+                    </div>
+
+                </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+{% endblock %}

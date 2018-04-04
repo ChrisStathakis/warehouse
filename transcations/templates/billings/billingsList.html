@@ -1,0 +1,72 @@
+{% extends "billings/index.html" %}
+
+{% block content %}
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="header"><h4>Billing Invoice</h4></div>
+                    <div class="content">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Title</th>
+                                    <th>Bill</th>
+                                    <th>Date expire</th>
+                                    <th>Value</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for invoice in object_list %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ invoice }}</td>
+                                        <td>{{ invoice.category }}</td>
+                                        <td>{{ invoice.date_expired|date }}</td>
+                                        <td>{{ invoice.tag_price }}</td>
+                                        <td>{{ invoice.tag_is_paid }}</td>
+                                        <td>
+                                            <a href="" class="btn btn-info">Edit</a>
+                                            <a href="" class="btn btn-success"><i class="fa fa-payment"></i>Paid</a>
+                                            <a href="" class="btn btn-warning">Delete </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>                            
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="header">Actions</div>
+                    <div class="content">
+                        <a href="" class="btn btn-success">Create Bill Category</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class='header'>Filters</div>
+                    <div class="content">
+                        <form method="get">
+                            <h5>Select Bill</h5>
+                            {% for cate in categories %}
+                                <div class="form-check">
+                                    <label class="form-check-label">
+                                      <input type="checkbox" class="form-check-input" name='cate_name' value="{{ cate.id }}">{{ cate }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                                      
+                            <button class="btn btn-success">Save</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

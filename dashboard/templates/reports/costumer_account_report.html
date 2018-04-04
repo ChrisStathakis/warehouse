@@ -1,0 +1,132 @@
+{% extends 'reports/incomes.html' %}
+
+
+
+
+{% block down_menu %}
+
+<div class="ui six item bottom fixed menu">
+    <a  href="/reports/income/" class="green item">Πωλήσεις</a>
+    <a  href='{% url 'sell_item_flow' %}' class="item">Ροή Προϊόντων</a>
+    <a  href="{% url 'costumers_reports' %}" class="active item">Υπόλοιπα Πελατών</a>
+    <a  href="/reports/isologismos/" class="item">Επιστροφή στα Reports</a>
+</div>
+{% endblock %}
+
+{% block content %}
+    <div class="three column row">
+        <div class="column"></div>
+        <div class="column">
+            <h2 class="ui icon header">
+                <i class="settings icon"></i>
+                <div class="content">
+                    {{ title }}
+                    <div class="sub header">Manage your account settings and set e-mail preferences.</div>
+                </div>
+            </h2>
+        </div>
+        <div class="column"></div>
+    </div>
+
+
+    <div class="twelve wide column ">
+        <table class="ui selectable red table">
+            <thead>
+                  <tr>
+                      <th>Πελάτης</th>
+                      <th>Site Account</th>
+                      <th>Κινητό<br>Τηλέφωνο</th>
+                      <th>Fax</th>
+                      <th>Email</th>
+                      <th>Χρεωστικό Υπολ.</th>
+                      <th>Πιστωτικό Υπολ.</th>
+                      <th>Υπόλοιπο</th>
+                      <th></th>
+                  </tr>
+            </thead>
+            <tbody>
+                {% for costumer in costumer_account %}
+                    <tr>
+                        <td>{{ costumer.full_name }}</td>
+                        <td>{{ costumer.user.username }}</td>
+                        <td>{{ costumer.cellphone }}<br>{{ costumer.phone }}</td>
+                        <td>{{ costumer.fax }}</td>
+                        <td>{{ costumer.user.email }}</td>
+                        <td class="warning">{{ costumer.total_order_value }} {{ currency }}</td>
+                        <td class="info">{{ costumer.template_tag_paid_value }}</td>
+                        {% if costumer.balance > 0  %}
+                            <td class="negative">{{ costumer.template_tag_balance }}</td>
+                        {% else %}
+                            <td class="positive">{{ costumer.template_tag_balance }}</td>
+                        {% endif %}
+                        <td><a href="{% url 'specific_costumer_report' costumer.id %}" class="ui button">Δες το ιστορικό</a></td>
+                    </tr>
+                {% endfor %}
+          </tbody>
+        </table>
+    </div>
+    <div class="four wide column">
+        <form method="post" class="ui form">{% csrf_token %}
+            <input type="text" name="search_pro">
+            <button class="ui blue button" type="submit">Αναζήτηση</button>
+        </form>
+    </div>
+    <div class="row"></div>
+
+    {% if costumer_account %}
+        <div class="row">
+            <div style="margin-left: 3%" class="ui header">Ανάλυση Πελάτη</div>
+        </div>
+
+         <div class="twelve wide column ">
+            <div style="width: 100%" class="row">
+            <table class="ui single line selectable small table">
+                <thead>
+                    <tr>
+                        <th>Ημερομηνία</th>
+                        <th>Είδος Παραστατικού</th>
+                        <th>Πελάτης</th>
+                        <th>Κατάσταση</th>
+                        <th>Σχολια- Τίτλος</th>
+                        <th>Κόστος Πωλήθεντων</th>
+                        <th>Ποσοστό ΦΠΑ- Φπα</th>
+                        <th>Καθαρή Αξία</th>
+                        <th>Έσοδα</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ order.day_added }} </td>
+                            {% if order.costumer_account.is_eshop %}
+                                <td>Eshop</td>
+                            {% else %}
+                                <td>Λιανική</td>
+                            {% endif %}
+                            <td>{{ order.costumer_account.full_name }} </td>
+                            {% if order.status.id == 7 %}
+                                <td class="positive">{{ order.status.title }}</td>
+                            {% elif order.status.title == 'Λιανική - Αναμονή' %}
+                                 <td class="negative">{{ order.status.title }}</td>
+                            {% else %}
+                                <td class="negative">{{ order.status.title }}</td>
+                            {% endif %}
+                            <td><a href="{% url 'reports_specific_order' order.id %}" >{{ order.title }}</a> </td>
+                            <td>{{ order.total_cost|floatformat:2 }}€ </td>
+                            <td>{{ order.taxes }}% - {{ order.template_tag_taxes }}</td>
+                            <td>{{ order.order_clean_value|floatformat:2 }} €</td>
+                            {% if order.status.id == 7 %}
+                            <td class="positive">{{ order.template_tag_paid_value }}</td>
+                            {% else %}
+                                <td class="negative">{{ order.template_tag_paid_value }} </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        </div>
+        <div class="four wide column"></div>
+        <div class="row"></div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends 'report/orders.html' %}
+
+
+{% block content %}
+    <div class="three column row">
+        <div class="column"></div>
+        <div class="column">
+            <h2 class="ui blue icon header">
+                <i class=" blue cart icon"></i>
+                <div class="content">
+                    {{ order }}
+                    <div class="sub header">{{ order.day_created|date }} <br>ID {{ order.code|default_if_none:'Τιμολόγιο Αγοράς' }} -- Τιμολόγιο Αγοράς -- Κατάσταση {% if order.is_paid %}<label class="ui green label">Πληρωμένο</label> {% else %}<label class="ui red label">Μη Πληρωμένο</label>  {% endif %}</div>
+                </div>
+            </h2>
+        </div>
+        <div class="column">
+            <ul>
+                {% for file in orders_files %}
+                    <li><a href="{{ file.file.url }}" target="_blank">{{ file.file.name }}</a> </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="one wide column"></div>
+    <div class="four wide column">
+        <div class="ui segments">
+            <div style='text-align: center' class="ui inverted blue segment">Πληροφορίες</div>
+            <div style='text-align: center' class="ui blue header segment">  Συνολική Αξία {{ order.tag_all_values.4 }}</div>
+            <div style="margin-left: 3%" class="ui celled list">
+                <div class="item">
+                    <div class="content">
+                        <div class="header"><span style="color: green">{{ order.tag_all_values.0 }}</span> -- <span style="color: red">{{ order.tag_all_values.3 }}</span> - {{ order.taxes_modifier }} %</div>
+                        Καθαρή Αξία - ΦΠΑ - % ΦΠΑ
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                        <div class="header">{{ order.tag_all_values.1 }} - {{ order.tag_all_values.2 }}</div>
+                        'Εκπτωση - Αξία μετά την Εκπτωση
+                    </div>
+                </div>
+            </div>
+            <div style='text-align: center' class="ui blue header segment">Στοιχεία</div>
+            <div style="margin-left: 3%" class="ui celled list">
+                <div class="item">
+                    <div class="content">
+                        <div class="blue header">{{ order.get_status_display }}</div>
+                         Κατάσταση
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                        <div class="green header"><a href="{% url 'reports:vendor_detail' order.vendor.id %}">{{ order.vendor }}</a>  -- {{ order.payment_method }}</div>
+                        Προμηθευτής -- Τροπος Πληρωμής
+                    </div>
+                </div>
+            </div>
+            <div style='text-align: center' class="ui red header segment">Πληρωμές --Υπόλοιπο {{ order.tag_remaining_value }}</div>
+            <div style="margin-left: 3%" class="ui celled list">
+                {% for ele in pay_info %}
+                <div class="item">
+                    <div class="content">
+                        <div class="blue header">{{ ele.value }} {{ currency }}, {{ ele.payment_method }}</div>
+                         {{ ele.date_expired }} , {{ ele.get_payment_type_display }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="ten wide column">
+        <table class="ui celled striped table">
+          <thead>
+            <tr>
+                <th colspan="5">
+                    Συνολική Αξία {{ order.tag_total_value }}
+                </th>
+            </tr>
+            <tr>
+                <th></th>
+                <th>Sku</th>
+                <th> Προϊον</th>
+                <th>Ποσότητα</th>
+                <th colspan="2">Τιμή - Εκπτωση - Τελική Τιμή</th>
+                <th>Συνολική Αξία</th>
+                <th>Συνολικη Αξία Μετα ΦΠΑ</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in order_items %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.product.sku|default_if_none:"---" }}</td>
+                    <td><a href="{% url 'reports:products_detail' item.product.id %}">{{ item }}, {% if item.size %} {{ item.size }} {% endif %}</a></td>
+                    <td>{{ item.qty }}</td>
+                    <td colspan="2">{{ item.price }} {{ currency }}, {{ item.discount }} %, {{ item.tag_clean_price }}</td>
+                    <td>{{ item.tag_total_clean_price }}</td>
+                    <td>{{ item.tag_total_final_price }}</td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <table style="margin-top: 20%" class="ui red celled striped table">
+          <thead>
+            <tr>
+                <th colspan="5">
+                    Εντολές Πληρωμών
+                </th>
+            </tr>
+            <tr>
+                <th></th>
+                <th>Ημερομηνία</th>
+                <th>Σχόλια</th>
+                <th>Αξία</th>
+                <th>Τρόπος Πληρωμής</th>
+                <th>Κατάσταση</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in payments_orders.all %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.date_expired|date }}</td>
+                    <td>{{ item.title }}</td>
+                    <td>{{ item.tag_value }}</td>
+                    <td>{{ item.tag_payment }}</td>
+                    <td>{{ item.status }}</td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+    <div class="one wide column"></div>
+
+
+    <div style="margin-bottom: 10%;" class="row"></div>
+
+
+
+
+{% endblock %}
+
+
+

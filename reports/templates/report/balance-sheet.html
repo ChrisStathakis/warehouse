@@ -1,0 +1,603 @@
+{% extends 'report/warehouse.html' %}
+
+{% block down_menu %}
+
+<div class="ui six item bottom fixed menu">
+    <a  href="{% url 'reports:balance_sheet' %}" class="active green item">Balance Sheet</a>
+    <a  href="{% url 'reports:payment_flow' %}" class="item">Ροή Πληρωμών</a>
+    <a  href="" class="item">Ανάλυση Προμηθευτών</a>
+    <a  href="" class="item">Ανάλυση Πελατών</a>
+    <a  href="" class="item">Ανάλυση Κατηγοριών</a>
+</div>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="six wide column"></div>
+        <div class="six wide column">
+            <h2 class="ui blue header">
+              <i class="blue calendar icon"></i>
+              <div class="blue content">
+                Ισολογισμός
+              </div>
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <div class="ui styled fluid accordion">
+                <div class="title">Filters</div>
+                <div class="content">
+                    <form id="form_filter" class="ui form" method="get">
+                        {% include 'snippets/search_date_filter.html' %}
+                        <button class="ui fluid green button" type="submit">Search</button>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="two wide column"></div> 
+    </div>
+
+    <div class="row">
+        <div class="one wide column"></div>
+        <div class="fourteen wide column">
+            <h4 class="ui blue header"> Ανάλυση Εσόδων Εξόδων</h4>
+            <div class="row">
+                <canvas id="myChart3" width="400" height="100"></canvas>
+                    <script>
+                    var ctx = document.getElementById("myChart3").getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: [
+                                {% for ele in incomes_per_month %}
+                                 "{{ ele.month }}",
+                                {% endfor %}
+                                ],
+                            datasets: [
+                                {
+                                    label: '{{ currency }} Κέρδη/Ζημιά ',
+                                    data: [
+                                            {% for ele in profit_losses %}
+                                                {{ ele.1 }},
+                                            {% endfor %}
+                                        ],
+                                    fill:false,
+                                    borderColor:[
+                                            'green'
+                                    ],
+                                    strokeColor: "#fff",
+                                    pointColor: "#fff"
+                                    },
+                                {
+                                    label: '{{ currency }} Έσοδα ',
+                                    data: [
+                                        {% for ele in clean_incomes_per_month %}
+                                            {{ ele.1.0 }},
+                                        {% endfor %}
+                                    ],
+                                    fill:false,
+                                    borderColor:[
+                                        'teal'
+                                    ],
+                                    strokeColor: "black",
+                                    pointColor: "black"
+                            },
+                                {
+                                    label: '{{ currency }} Συνολικά Εξοδα ',
+                                    data: [
+                                        {% for ele in total_expenses_by_month %}
+                                            {{ ele.1.0 }},
+                                        {% endfor %}
+                                    ],
+                                    fill:false,
+                                    borderColor:[
+                                        'red'
+                                    ],
+                                    strokeColor: "black",
+                                    pointColor: "black"
+                                },
+                                {
+                                    label: '{{ currency }} Μισθοδοσία',
+                                    data: [
+                                        {% for ele in payroll_orders_by_month %}
+                                            {{ ele.total_cost }},
+                                        {% endfor %}
+                                    ],
+                                    fill:false,
+                                    borderColor:['blue'],
+                                    pointStrokeColor : "blue",
+                                    strokeColor: "blue",
+                                    pointColor: "blue"
+                                },
+                            {
+                                    label: '{{ currency }} Αποπληρωμές Τιμολογίου',
+                                    data: [
+                                        {% for ele in warehouse_orders_by_month %}
+                                            {{ ele.total_cost }},
+                                        {% endfor %}
+                                    ],
+                                    fill:false,
+                                    borderColor:['red'],
+                                    fillColor: "red",
+                                    strokeColor: "red",
+                                    pointColor: "red"
+                                },
+                            {
+                                    label: '{{ currency }} Λογαριασμοί',
+                                    data: [
+                                        {% for ele in bills_orders_by_month %}
+                                            {{ ele.total_cost }},
+                                        {% endfor %}
+                                    ],
+                                    fill:false,
+                                    borderColor:['#59b8e6'],
+                                    fillColor: "red",
+                                    strokeColor: "red",
+                                    pointColor: "red"
+                                }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero:true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                    </script>
+            </div>
+        </div>
+        <div class="one wide column"></div>
+    </div>
+    <div class="row">
+        <div class="one wide column"></div>
+        <div class="seven wide column">
+            <h4 class="ui red header"> Αποθήκη - Τιμολόγια</h4>
+            <div class="row">
+                 <canvas id="myChart1" width="400" height="100"></canvas>
+                    <script>
+                    var ctx = document.getElementById("myChart1").getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: [
+                                {% for ele in warehouse_orders_total %}
+                                 "{{ ele.0 }}",
+                                {% endfor %}
+                                ],
+                            datasets: [{
+                                label: '{{ currency }} Συνολικές υποχρεώσεις',
+                                data: [
+                                    {% for ele in warehouse_orders_total %}
+                                        {{ ele.1 }},
+                                    {% endfor %}
+                                ],
+                                fill:false,
+                                borderColor: [
+                                    'teal',
+                                ],
+                                strokeColor: "#fff",
+                                pointColor: "#fff"
+                            },
+                                {
+                                    label: '{{ currency }} Υπόλοιπο',
+                                    data: [
+                                        {% for ele in warehouse_orders_remaining %}
+                                            {{ ele }},
+                                        {% endfor %}
+                                    ],
+                                    fill:false,
+                                 borderColor: [
+                                        'red',
+                                    ],
+                                    pointStrokeColor : "red",
+                                    strokeColor: "red",
+                                    pointColor: "red"
+                                }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero:true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                    </script>
+
+            </div>
+        </div>
+        <div class="seven wide column">
+            <h4 class="ui green header"> Έσοδα</h4>
+            <div class="row">
+                <canvas id="myChart" width="400" height="100"></canvas>
+                    <script>
+                    var ctx = document.getElementById("myChart").getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: [
+                                {% for ele in incomes_for_chart %}
+                                 "{{ ele.0 }}",
+                                {% endfor %}
+                                ],
+                            datasets: [{
+                                label: '{{ currency }} Έσοδα ',
+                                data: [
+                                    {% for ele in incomes_for_chart %}
+                                        {{ ele.1 }},
+                                    {% endfor %}
+                                ],
+                                fill:false,
+                                borderColor:[
+                                    'teal'
+                                ],
+                                strokeColor: "#fff",
+                                pointColor: "#fff"
+                            },
+                                {
+                                    label: '{{ currency }} Έσοδα - Κόστος',
+                                    data: [
+                                        {% for ele in chart_clean_incomes %}
+                                            {{ ele }},
+                                        {% endfor %}
+                                    ],
+                                    fill:false,
+                                    borderColor:['blue'],
+                                    pointStrokeColor : "blue",
+                                    strokeColor: "blue",
+                                    pointColor: "blue"
+                                },
+                            {
+                                    label: '{{ currency }} Κόστος',
+                                    data: [
+                                        {% for ele in cost_order_for_chart %}
+                                            {{ ele.1 }},
+                                        {% endfor %}
+                                    ],
+                                    fill:false,
+                                    borderColor:['red'],
+                                    fillColor: "red",
+                                    strokeColor: "red",
+                                    pointColor: "red"
+                                }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero:true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                    </script>
+            </div>
+        </div>
+        <div class="one wide column"></div>
+    </div>
+    <div class="row">
+        <div class="eight wide column">
+            <h2 class="ui center aligned red header">
+                <i class="plug icon"></i>
+                <div class="content">
+                    Εξοδα
+                </div>
+            </h2>
+            <div class="ui tiny four statistics">
+                <div class="blue statistic">
+                    <div class="value">
+                        {{ total_expenses.0 }} {{ currency }}
+                    </div>
+                    <div class="label">
+                      Αγορές Τιμολογίων
+                    </div>
+                </div>
+                <div class="blue statistic">
+                    <div class="value">
+                        {{ total_expenses.1 }} {{ currency }}
+                    </div>
+                    <div class="label">
+                      Λογαριασμοί
+                    </div>
+                </div>
+                <div class="blue statistic">
+                    <div class="value">
+                        {{ total_expenses.2 }} {{ currency }}
+                    </div>
+                    <div class="label">
+                      Έξοδα Προσωπικού
+                    </div>
+                </div>
+                <div class="red statistic">
+                    <div class="value">
+                        {{ total_expenses.3 }} {{ currency }}
+                    </div>
+                    <div class="label">
+                      Σύνολο
+                    </div>
+                </div>
+            </div>
+            <div class="ui segments">
+                <div class="ui segment">
+                    <div class="ui styled fluid accordion">
+                        <div class="title">
+                            <i class="dropdown icon"></i>
+                            Έξοδα από Τιμολόγια
+                        </div>
+                        <div id="warehouse_order_container" class="content">
+                            <table class="ui fixed single line celled table">
+                                <thead>
+                                    <tr>
+                                        <th>Μήνας</th>
+                                        <th>Πίστωση</th>
+                                        <th>Πληρωμές</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for month in warehouse_orders_by_month %}
+                                    <tr>
+                                      <td>{{ month.month }}</td>
+                                      <td>{{ month.total_cost }}  {{ currency }}</td>
+                                      <td>{{ month.total_paid }}  {{ currency }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <button id="ware_order_vendor" data-url="{% url 'reports:ajax_balance_sheet_ware_orders' %}" class="ui blue button"> Ανα Προμηθευτή</button>
+                        </div>
+                        <div class="title">
+                            <i class="dropdown icon"></i>
+                            'Εξοδα Μισθοδοσίας
+                        </div>
+                        <div class="content" id='payroll_container'>
+                          <table class="ui fixed single line celled table">
+                                <thead>
+                                    <tr>
+                                        <th>Μήνας</th>
+                                        <th>Πίστωση</th>
+                                        <th>Πληρωμές</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for month in warehouse_orders_by_month %}
+                                    <tr>
+                                      <td>{{ month.month }}</td>
+                                      <td>{{ month.total_cost }}  {{ currency }}</td>
+                                      <td>{{ month.total_paid }}  {{ currency }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                          </table>
+                          <button id='btn_people' data-url="{% url 'reports:ajax_balance_sheet_payroll' %}" class="ui blue button">Ανάλυση Ανά Άτομο</button> 
+                          <button id='btn_occup' data-url="{% url 'reports:ajax_balance_sheet_payroll' %}" class="ui blue button">Ανάλυση Ανά Επάγγελμα</button>
+                      </div>
+                      <div class="title">
+                          <i class="dropdown icon"></i>
+                          'Εξοδα Λογαριασμοί
+                      </div>
+                      <div class="content">
+                          <table class="ui fixed single line celled table">
+                                <thead>
+                                    <tr>
+                                        <th>Μήνας</th>
+                                        <th>Πίστωση</th>
+                                        <th>Πληρωμές</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for month in payroll_orders_by_month %}
+                                    <tr>
+                                      <td>{{ month.month }}</td>
+                                      <td>{{ month.total_cost }}  {{ currency }}</td>
+                                      <td>{{ month.total_paid }}  {{ currency }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                          </table>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="eight wide column">
+            <h2 class="ui center aligned green header">
+                <i class="plug icon"></i>
+                <div class="content">
+                    Έσοδα
+                </div>
+            </h2>
+            <div class="ui tiny four statistics">
+                <div class="blue statistic">
+                    <div class="value">
+                        {{ total_incomes.0 }} {{ currency }}
+                    </div>
+                    <div class="label">
+                      Έσοδα
+                    </div>
+                </div>
+                <div class="blue statistic">
+                    <div class="value">
+                        {{ total_incomes.1 }} {{ currency }}
+                    </div>
+                    <div class="label">
+                      Επιστροφές
+                    </div>
+                </div>
+                <div class="blue statistic">
+                    <div class="value">
+                        {{ total_incomes.2 }} {{ currency }}
+                    </div>
+                    <div class="label">
+                      Ελλατωματικά
+                    </div>
+                </div>
+                <div class="green statistic">
+                    <div class="value">
+                        {{ total_incomes.3 }} {{ currency }}
+                    </div>
+                    <div class="label">
+                       Καθαρά Κέρδη
+                    </div>
+                </div>
+            </div>
+            <div class="ui segments">
+                <div class="ui segment">
+                    <div class="ui styled fluid accordion">
+                        <div class="title">
+                            <i class="dropdown icon"></i>
+                            Έσοδα Πωλήσεων
+                        </div>
+                        <div class="content">
+                            <table class="ui fixed single line celled table">
+                                <thead>
+                                    <tr>
+                                        <th>Μήνας</th>
+                                        <th>Πίστωση</th>
+                                        <th>Πληρωμές</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for month in warehouse_orders_by_month %}
+                                    <tr>
+                                      <td>{{ month.month }}</td>
+                                      <td>{{ month.total_cost }}  {{ currency }}</td>
+                                      <td>{{ month.total_paid }}  {{ currency }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <button class="ui blue button"> Ανα Προμηθευτή</button>
+                        </div>
+                        <div class="title">
+                            <i class="dropdown icon"></i>
+                            Επιστροφές
+                        </div>
+                        <div class="content">
+                          <table class="ui fixed single line celled table">
+                                <thead>
+                                    <tr>
+                                        <th>Μήνας</th>
+                                        <th>Πίστωση</th>
+                                        <th>Πληρωμές</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for month in warehouse_orders_by_month %}
+                                    <tr>
+                                      <td>{{ month.month }}</td>
+                                      <td>{{ month.total_cost }}  {{ currency }}</td>
+                                      <td>{{ month.total_paid }}  {{ currency }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                          </table>
+                      </div>
+                      <div class="title">
+                          <i class="dropdown icon"></i>
+                          Ελλατωματικά
+                      </div>
+                      <div class="content">
+                          <table class="ui fixed single line celled table">
+                                <thead>
+                                    <tr>
+                                        <th>Μήνας</th>
+                                        <th>Πίστωση</th>
+                                        <th>Πληρωμές</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for month in payroll_orders_by_month %}
+                                    <tr>
+                                      <td>{{ month.month }}</td>
+                                      <td>{{ month.total_cost }}  {{ currency }}</td>
+                                      <td>{{ month.total_paid }}  {{ currency }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                          </table>
+                      </div>
+                    <div class="title">
+                          <i class="dropdown icon"></i>
+                          Καθαρά Έσοδα
+                      </div>
+                      <div class="content">
+                          <table class="ui fixed single line celled table">
+                                <thead>
+                                    <tr>
+                                        <th>Μήνας</th>
+                                        <th>Πίστωση</th>
+                                        <th>Πληρωμές</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for month in clean_incomes_per_month %}
+                                    <tr>
+                                      <td>{{ month.0|date }}</td>
+                                      <td>{{ month.1.0 }}  {{ currency }}</td>
+                                      <td>{{ month.total_paid }}  {{ currency }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                          </table>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div style="margin-bottom: 5%" class="row"></div>
+
+    <script>
+        $('#ware_order_vendor').click(function () {
+            var btn = $(this);
+            var my_form = $('#form_filter').serialize();
+            $.ajax({
+                url: btn.attr('data-url'),
+                dataType: 'json',
+                data: my_form,
+                success: function (data) {
+                    $('#warehouse_order_container').html(data.vendor_analysis)
+                }
+            })
+        })
+
+        $('#btn_people').click(function() {
+            var btn = $(this);
+            var my_form = $('#form_filter').serialize() + "&request_type=people";
+            $.ajax({
+                url: btn.attr('data-url'),
+                dataType: 'json',
+                data: my_form,
+                success: function(data) {
+                    $('#payroll_container').html(data.payroll_analysis)
+                }
+            })
+        })
+
+        $('#btn_occup').click(function() {
+            var btn = $(this);
+            var my_form = $('#form_filter').serialize() + "&request_type=occupation";
+            $.ajax({
+                url: btn.attr('data-url'),
+                dataType: 'json',
+                data: my_form,
+                success: function(data) {
+                    $('#payroll_container').html(data.payroll_analysis)
+                }
+            })
+        })
+    </script>
+{% endblock %}
+

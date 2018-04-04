@@ -1,0 +1,364 @@
+{%  extends 'report/outcome.html' %}
+
+
+{% block content %}
+
+    <div class="three column row">
+        <div class="column"></div>
+        <div class=" column">
+            <h2 class="ui red icon header">
+                <i class="red payment icon"></i>
+                <div class="red content">
+                    Ανάλυση Πληρώμών
+                    <div class="sub header">{{ date_range }}</div>
+                </div>
+            </h2>
+        </div>
+        <div class="column"></div>
+    </div>
+
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <div class="ui fluid styled accordion">
+                <div class="title">
+                    <h4>Filters -- Συνολική Αξία.. {{ payment_total }} {{ currency }}  , Πληρωμένή Αξία..  {{ payment_paid }} {{ currency }}</h4>
+                </div>
+                <div class="content">
+                    <div class="ui segment">
+                        <div class="ui red inverted button ">
+                            <a style="width: 100%;" href="/reports/outcome/payment-analysis/">Καθαρισμός Φίλτρων</a>
+                        </div>
+                    </div>
+                    <div class="ui segment">
+        <form class="ui form" method="get">
+            <div class="ui segments">
+                <div class="ui horizontal segments">
+                    <div style="width:40%" class="ui segment">
+                        <div class="ui sub header">Προμηθευτές</div>
+                        <select multiple="" id='vendor_name' name="vendor_name" class="ui fluid normal dropdown">
+                            <option value="">Επιλογή</option>
+                            {% for ele in vendors %}
+                                <option value="{{ ele.id }}">{{ ele.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div style="width:40%" class="ui segment">
+                        <div  class="ui sub header">Λογαριασμοί</div>
+                        <select multiple="" id='bill_name' name="bill_name" class="ui fluid normal dropdown">
+                          <option value="">Επιλογή</option>
+                            {% for ele in bills_account %}
+                                <option value="{{ ele.id }}">{{ ele.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="ui horizontal segments">
+                <div style="width:40%" class="ui segment">
+                    <div class="ui sub header">Πάγια Έξοδα</div>
+                    <select multiple="" id='asset_name' name="asset_name" class="ui fluid normal dropdown">
+                      <option value="">Επιλογή</option>
+                        {% for ele in assets_accounts %}
+                            <option value="{{ ele.id }}">{{ ele.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="width:40%" class="ui segment">
+                    <div class="ui sub header">Επάγγελμα</div>
+                    <select multiple="" id='person_name' name="person_name" class="ui fluid normal dropdown">
+                      <option value="">Επιλογή</option>
+                        {% for ele in occupation_account %}
+                            <option value="{{ ele.id }}">{{ ele.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                </div>
+
+                <div class="ui segment">
+                    <div class="ui sub header">Τρόπος Πληρωμής</div>
+                    <select multiple="" name="payment_name" class="ui fluid normal dropdown">
+                      <option value="">Επιλογή</option>
+                        {% for ele in payment_method %}
+                            <option value="{{ ele.id }}">{{ ele.title }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="ui sub header">Είδος Πληρωμής</div>
+                    <select multiple="" name="skills" class="ui fluid normal dropdown">
+                      <option value="">Επιλογή</option>
+                        <option value="a">Προκαταβολή</option>
+                        <option value="b">Πλήρωμη Προκαταβολή</option>
+                        <option value="c">Πληρωμή</option>
+                    </select>
+                    <div class="ui sub header">Χρονος</div>
+                    <input name="date_pick" placeholder="{{ date_pick }}" value="{{ date_pick }}">
+                        <input style="width: 100%;margin-top: 3%;height: 100px;" class="ui green inverted button" type="submit">
+                    <div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+                </div>
+            </div>
+        </div>
+        <div class="two wide column"></div>
+    </div>
+
+    <div class="row">
+        <div class="one wide column"></div>
+        <div class="eleven wide column">
+            <h3 class="header">Όλες οι πληρωμές</h3>
+            <table class="ui celled table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Σχόλια</th>
+                        <th>Ημερομηνία</th>
+                        <th>Είδος Πληρωμής</th>
+                        <th>Τρόπος Πληρωμής</th>
+                        <th>Πληρωμένη</th>
+                        <th>Ποσό</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payment_orders %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ payment.title }}</td>
+                            <td>{{ payment.date_expired }}</td>
+                            <td>{{ payment.content_type }}</td>
+                            <td>{{ payment.get_payment_type_display }}{% if payment.bank %} - {{ payment.get_bank_display }}{% endif %}</td>
+                            {% if payment.is_paid %}<td class="positive">Πληρωμένη </td>{% else %}<td class="negative">Μη πληρωμένη</td> {% endif %}
+                            <td class="negative">{{ payment.tag_value }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="four wide column">
+        <div class="row">
+            <div class="ui segments">
+                <div class="ui segment">
+                    <div class="ui top attached tabular menu">
+                        <a style="background-color: gray" class="item active" data-tab="first">Σύνολα</a>
+                        <a style="background-color: green" class="item" data-tab="second">Τρόπος Πληρωμής</a>
+                        {% if vendor_name %}
+                            <a  class="item" data-tab="third">Προμηθευτές</a>
+                        {% endif %}
+                    </div>
+                    <div class="ui bottom attached tab segment active" data-tab="first">
+                        <div class="ui segments">
+                            <div style="text-align: center" class="ui header blue inverted segment">
+                                Συνολικές Πληρωμές
+                            </div>
+                            <div class="ui segment">
+                                <table class="ui table">
+                                      <thead>
+                                        <tr>
+                                            <th>Ομάδα</th>
+                                            <th>Υπόλοιπο</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr>
+                                            <td>Τιμολόγια</td>
+                                            <td>{{ orders_total }} {{ currency }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Λογαριασμοί</td>
+                                            <td>{{ bills_total }} {{ currency }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Μισθοδοσία</td>
+                                            <td>{{ salary_total }} {{ currency }}</td>
+                                        </tr>
+                                      </tbody>
+                                  </table>
+                              </div>
+                          </div>
+                    </div>
+            <div class="ui bottom attached tab segment" data-tab="second">
+                  <div class="ui segments">
+                      <div style="text-align: center" class="ui header blue inverted segment">
+                          Πληροφορίες
+                      </div>
+                      <div class="ui segment">
+                          <table class="ui table">
+                              <thead>
+                                <tr>
+                                    <th>Τρόπος Πληρωμής</th>
+                                    <th>Υπόλοιπο</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                    {% for key,value in list_of_payment.items %}
+                                        <tr>
+                                            <td>{{ key }}</td>
+                                            {% if value %}
+                                                <td>{{ value |floatformat:2 }} €</td>
+                                            {% else %}
+                                                <td> 0 € </td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+            </div>
+            {% if vendor_name %}
+            <div class="ui bottom attached tab segment" data-tab="third">
+                  <div class="ui segments">
+                      <div style="text-align: center" class="ui header blue inverted segment">
+                          Πληροφορίες
+                      </div>
+                      <div class="ui segment">
+                          <table class="ui table">
+                              <thead>
+                                <tr>
+                                    <th>Ονομασία</th>
+                                    <th>Υπόλοιπο Προκαταβολών</th>
+                                    <th>Υπόλοιπο</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                    {% for key,value in data_per_vendor.items %}
+                                        <tr>
+                                            <td>{{ key }}</td>
+                                            {% for ele in value %}
+                                            <td>{{ ele|floatformat:2 }} €</td>
+
+                                            {%  endfor %}
+                                        </tr>
+                                    {% endfor %}
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+            </div>
+            {% endif %}
+
+
+
+        </div>
+                <div class="ui segment">
+            <div class="ui top attached tabular menu">
+        {% if bill_name %}
+            <a  class="item" data-tab="bills">Λογαριασμοί</a>
+        {% endif %}
+        {% if assets_name %}
+          <a class="item" style="background-color: #5f800b" data-tab="assets">Πάγια Έξοδα</a>
+        {% endif %}
+        {% if person_name %}
+          <a  class="item" data-tab="person">Επαγγέλματα</a>
+        {% endif %}
+
+
+    </div>
+    {% if bill_name %}
+    <div class="ui bottom attached tab segment" data-tab="bills">
+          <div class="ui segments">
+              <div style="text-align: center" class="ui header blue inverted segment">
+                  Πληροφορίες
+              </div>
+              <div class="ui segment">
+                  <table class="ui table">
+                      <thead>
+                        <tr>
+                            <th>Ονομασία</th>
+                            <th>Υπόλοιπο</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                            {% for key,value in data_per_bill.items %}
+                                <tr>
+                                    <td>{{ key }}</td>
+                                    <td>{{ value|floatformat:2 }} €</td>
+                                </tr>
+                            {% endfor %}
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+    </div>
+    {% endif %}
+    {% if assets_name %}
+    <div class="ui bottom attached tab segment" data-tab="assets">
+          <div class="ui segments">
+              <div style="text-align: center" class="ui header blue inverted segment">
+                  Πληροφορίες
+              </div>
+              <div class="ui segment">
+                  <table class="ui table">
+                      <thead>
+                        <tr>
+                            <th>Ονομασία</th>
+                            <th>Υπόλοιπο</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                            {% for key,value in data_per_assets.items %}
+                                <tr>
+                                    <td>{{ key }}</td>
+                                    <td>{{ value|floatformat:2 }} €</td>
+                                </tr>
+                            {% endfor %}
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+    </div>
+    {% endif %}
+
+    {% if person_name %}
+        <div class="ui bottom attached tab segment" data-tab="person">
+              <div class="ui segments">
+                  <div style="text-align: center" class="ui header blue inverted segment">
+                      Πληροφορίες
+                  </div>
+                  <div class="ui segment">
+                      <table class="ui table">
+                          <thead>
+                            <tr>
+                                <th>Ονομασία</th>
+                                <th>Υπόλοιπο</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                                {% for key,value in data_per_person.items %}
+                                    <tr>
+                                        <td>{{ key }}</td>
+                                        <td>{{ value|floatformat:2 }} €</td>
+                                    </tr>
+                                {% endfor %}
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+        </div>
+    {% endif %}
+        </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="row" style="margin-bottom: 5%"></div>
+{% endblock %}
+
+<script type="text/javascript">
+$(document).ready(function() {
+    for (var id in {{ vendor_name }}) {
+        var $option = $("<option value=\"" + id + "\">" + championships[id].name + "</option>");
+            $select.append($option);
+        }
+        $select.dropdown('refresh');
+        if (defaultValueId)
+        setTimeout(function () {
+        $select.dropdown('set selected', defaultValueId);
+        }, 1);
+
+  $('input[name="vendor_name"]').dropdown('set selected',{{ vendor_name }});
+
+
+});
+</script>

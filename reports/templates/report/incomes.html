@@ -1,0 +1,531 @@
+{% extends 'report/warehouse.html' %}
+
+
+{% block down_menu %}
+
+<div class="ui six item bottom fixed menu">
+    <a  href="{% url 'reports:reports_income' %}" class="active green item">Πωλήσεις</a>
+    <a  href="{% url 'reports:sell_item_flow' %}" class="item">Ροή Προϊόντων</a>
+    <a  href="{% url 'reports:costumers' %}" class="item">Υπόλοιπα Πελατών</a>
+    <a  href="" class="item">Επιστροφή στα Reports</a>
+</div>
+{% endblock %}
+
+
+
+{% block content %}
+    <div class="row">
+        <div class="six wide column"></div>
+        <div class="six wide column">
+            <h2 class="ui green icon header">
+                <i class="green calendar icon"></i>
+                <div class="green content">
+                    {{ title }}
+                    <div class="sub header">Ανάλυση Πωλήσεων</div>
+                </div>
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="eleven wide column">
+            <div class="ui styled fluid accordion">
+              <div class="title">
+                <i class="dropdown icon"></i>
+                Filters
+              </div>
+              <div class="content">
+                <div style="margin-top: 5%" class="ui segment">
+                    <form id="form_filters" class="ui form" method="get">
+                        <div class="two fields">
+                            <div class="field">
+                                <div class="pagination">
+                                    <span class="step-links">
+                                        {% if queryset.has_previous %}
+                                            <button onclick="this.form.submit()" class="ui tiny blue button" type="input" name="page" value="{{ queryset.previous_page_number }}">{{ queryset.previous_page_number }}</button>
+                                        {% endif %}
+                                        <span class="current">
+                                            <label>Page {{ queryset.number }} of {{ queryset.paginator.num_pages }}. </label>
+                                        </span>
+                                        {% if queryset.has_next %}
+                                            <button onclick="this.form.submit()" class="ui tiny blue button" type="input" name="page" value="{{ queryset.next_page_number }}">{{ queryset.next_page_number }}</button>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="field"></div>
+                        </div>
+                        {% include 'snippets/search_date_filter.html' %}
+                        {% include 'snippets/retail_order_filters.html' %}
+                        <input style="width: 100%;margin-top: 3%;" class="ui green inverted button" type="submit">
+                    </form>
+                    <a href="{% url 'reports:reports_income' %}" style="margin-top: 3%;margin-right: auto;margin-left: 0%;" class="ui red button">
+                        <i class="trash icon"></i>
+                        Καθαρισμός Φίλτρων
+                    </a>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="two wide column"></div>
+    </div>
+
+    {% if current_year_month_analysis %}
+    <div class="row">
+        <div class="ui one wide column"></div>
+        <div class="ui six wide column">
+        <canvas id="myChart1" width="400" height="250"></canvas>
+        <script>
+        var ctx = document.getElementById("myChart1").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Έσοδα", "'Εσοδα Εισπρακτρέα", "Υπόλοιπο", "Κόστος Πωληθέντων", "Επιστροφές", "Καθαρά ¨Εσοδα"],
+                datasets: [{
+                    label: '# Euro',
+                    data: [{{ total_incomes }}, {{ total_paid_value }}, {{ total_diff }},
+                        {{ total_cost }}, {{ total_return }}, {{ total_sum }}
+                    ],
+                    backgroundColor: [
+                        'blue',
+                        'green',
+                        'yellow',
+                        'rgba(255,99,132,1)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255,99,132,1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }
+                ]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+            }
+        });
+        </script>
+        <br>
+    </div>
+        <div class="ui nine wide column">
+        <canvas id="myChart" width="400" height="150"></canvas>
+        <script>
+        var ctx = document.getElementById("myChart").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [
+
+                    {% for month in current_year_month_analysis %}
+                    "{{ month.0 }}",
+                    {% endfor %}
+                    ],
+                datasets: [{
+                    label: 'Εσοδα Τρέχουντος Διαστήματος',
+                    data: [
+                        {% for month in current_year_month_analysis %}
+                        {{ month.1 }},
+                        {% endfor %}
+                    ],
+                    fill:false,
+                    borderColor: [
+                        '#2f5f4f'
+                    ],
+                    borderWidth: 1
+                },
+                {
+                    label: 'Εσοδα Προηγούμενης Χρονιάς',
+                    data: [
+                        {% for month in previous_order_analysis %}
+                            0,
+                        {% endfor %}
+                        {% for month in last_year_month_analysis %}
+                        {{ month.1 }},
+                        {% endfor %}
+                    ],
+                    fill:false,
+                    borderColor: [
+                        '#ff6f69'
+                    ],
+                    borderWidth: 1
+                }
+                ]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+            }
+        });
+        </script>
+    </div>
+    </div>
+       {% else %}
+        <div class="row">
+            <div class="six wide column"></div>
+            <div class="six wide column"><h1 class="header center aligned">Επιλέξτε δεδομένα από τα φίλτρα!</h1></div>
+        </div>
+
+    {% endif %}
+
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <div class="row">
+                <button id="store_analysis" data-url="{% url 'reports:ajax_incomes_store_analysis' %}" class="ui blue button">Store Analysis</button>
+            </div>
+            <div id="analysis-container" class="row">
+            </div>
+        </div>
+        <div class="two wide column"></div>
+    </div>
+
+    <div class="row">
+    <div class="one wide column"></div>
+    <div class="fourteen wide column">
+        <h4>Παραστατικά Πωλήσεων</h4>
+        <div class="row">
+            <table class="ui celled table">
+                <thead>
+                    <tr>
+                        <td></td>
+                        <th>Ημερομηνία</th>
+                        <th>Σχολια- Τίτλος</th>
+                        <th>Κατάστημα-Πωλητής</th>
+                        <th>Κατάσταση</th>
+                        <th>Παραστατικό</th>
+                        <th>Πελάτης</th>
+                        <th>Συνολικα Έσοδα</th>
+                        <th>Κόστος Πωλήθεντων<br>Ποσοστό ΦΠΑ- Φπα</th>
+                        <th>Καθαρή Αξία</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in queryset %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ order.date_created|date }}</td>
+                            <td><a href="{% url 'reports:retail_order_detail' order.id %}" >{{ order }}</a></td>
+                            <td>{{ order.store_related }}</td>
+                            <td>{{ order.get_status_display }}</td>
+                            <td>{{ order.get_order_type_display }}</td>
+                            <td>{{ order.costumer_account }} </td>
+                            <td class="positive">{{ order.tag_paid_value }}</td>
+                            <td>{{ order.tag_cost_value }}<br> {{ order.get_taxes_display }}% - {{ order.tag_total_taxes }} </td>
+                            <td>{{ order.tag_clean_value }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="one wide column">
+    </div>
+</div>
+
+    <div style="margin-top: 5%" class="three column row">
+        <div class="column">
+            <form class="ui form" method="get">{% csrf_token %}
+                <div class="ui header">
+                    Επέλεξε Ημερομηνία για σύγκριση
+                </div>
+                <input  name="date_pick">
+                <input class="ui button" type="submit">
+            </form>
+
+        </div>
+        <div class="column">
+            <h2 class="ui icon header">
+                <i class="settings icon"></i>
+                <div class="content">
+                    Πωλήσεις ανά Κατάστημα ή είδος Καταστήματος
+                    <div class="sub header">Συγκριση πωλήσεων σε σχέση με προήγούμενη χρονιά ή επιλεγμένο διάστημα.</div>
+                </div>
+            </h2>
+        </div>
+        <div class="column"></div>
+    </div>
+    <div class="three column row">
+        <div class="column">
+            <h3 class="ui header">Τρέχων Διάστημα</h3>
+            <table class="ui selectable inverted table">
+                <thead>
+                <tr>
+                    <th>Κατάστημα ή είδος</th>
+                    <th>'Εσοδα</th>
+                    <th>Κοστος Πωληθ./</th>
+                    <th>Διαφορά</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for key,value in current_data_per_user.items %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td class="positive">{{ value.0|floatformat:2 }} €</td>
+                        <td >{{ value.1|floatformat:2 }} €</td>
+                        <td>{{ value.2|floatformat:2 }} €</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class=" column">
+            <h3 class="ui header">Προηγουμενο διάστημα {{ previous_period }}</h3>
+            <table class="ui selectable inverted table">
+                <thead>
+                <tr>
+                    <th>Κατάστημα ή είδος</th>
+                    <th>'Εσοδα</th>
+                    <th>Κοστος Πωληθ./</th>
+                    <th>Διαφορά</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for key,value in previous_data_per_user.items %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td class="positive">{{ value.0|floatformat:2 }} €</td>
+                        <td >{{ value.1|floatformat:2 }} €</td>
+                        <td>{{ value.2|floatformat:2 }} €</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+        <div class="column">
+            <h3 class="ui header">Προηγούμενη χρονιά</h3>
+            <table class="ui selectable inverted table">
+                <thead>
+                <tr>
+                   <th>Κατάστημα ή είδος</th>
+                    <th>'Εσοδα</th>
+                    <th>Κοστος Πωληθ./</th>
+                    <th>Διαφορά</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for key,value in last_data_per_user.items %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td class="positive">{{ value.0|floatformat:2 }} €</td>
+                        <td >{{ value.1|floatformat:2 }} €</td>
+                        <td>{{ value.2|floatformat:2 }} €</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+    <div class="three column row">
+        <div class="column"></div>
+        <div class="column">
+            <h2 class="ui icon header">
+                <i class="settings icon"></i>
+                <div class="content">
+                    Πωλήσεις ανά Τρόπο Πληρωμής
+                    <div class="sub header">Συνολικές Μέρες .. {{ days }}</div>
+                </div>
+            </h2>
+        </div>
+        <div class="column"></div>
+    </div>
+    <div class="three column row">
+        <div class="column">
+            <h3 class="ui header">Προηγουμενο διάστημα {{ previous_period }}</h3>
+            <table class="ui selectable inverted table">
+                <thead>
+                <tr>
+                    <th>Κατάστημα ή είδος</th>
+                    <th>'Εσοδα</th>
+                    <th>Κοστος Πωληθ./</th>
+                    <th>Διαφορά</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for key,value in current_data_per_payment.items %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td class="positive">{{ value.0|floatformat:2 }} €</td>
+                        <td >{{ value.1|floatformat:2 }} €</td>
+                        <td>{{ value.2|floatformat:2 }} €</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="column">
+            <h3 class="ui header">Προηγουμενο διάστημα {{ previous_period }}</h3>
+            <table class="ui selectable inverted table">
+                <thead>
+                <tr>
+                    <th>Κατάστημα ή είδος</th>
+                    <th>'Εσοδα</th>
+                    <th>Κοστος Πωληθ./</th>
+                    <th>Διαφορά</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for key,value in previous_data_per_payment.items %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td class="positive">{{ value.0|floatformat:2 }} €</td>
+                        <td >{{ value.1|floatformat:2 }} €</td>
+                        <td>{{ value.2|floatformat:2 }} €</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="column">
+            <h3 class="ui header">Προηγούμενη χρονιά</h3>
+            <table class="ui selectable inverted table">
+                <thead>
+                <tr>
+                    <th>Κατάστημα ή είδος</th>
+                    <th>'Εσοδα</th>
+                    <th>Κοστος Πωληθ./</th>
+                    <th>Διαφορά</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for key,value in last_data_per_payment.items %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td class="positive">{{ value.0|floatformat:2 }} €</td>
+                        <td >{{ value.1|floatformat:2 }} €</td>
+                        <td>{{ value.2|floatformat:2 }} €</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="three column row">
+        <div class="column"></div>
+        <div class="column">
+            <h2 class="ui icon header">
+                <i class="settings icon"></i>
+                <div class="content">
+                    Πελάτες
+                    <div class="sub header">Συνολικές Μέρες .. {{ days }}</div>
+                </div>
+            </h2>
+        </div>
+        <div class="column"></div>
+    </div>
+    <div class="three column row">
+
+        <div class="column">
+            <h3 class="ui header">Τρέχων Διάστημα</h3>
+            <table class="ui selectable inverted table">
+                <thead>
+                <tr>
+                    <th>Πελάτης</th>
+                    <th>'Εσοδα</th>
+                    <th>ΦΠΑ</th>
+                    <th>Κοστος Πωληθ./</th>
+                    <th>Καθαρή Αξία</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for key, value in incomes_per_costumer.items %}
+                    <tr>
+                      <td>{{ key.full_name }}</td>
+                      <td class="positive">{{ value.0|floatformat:2 }} €</td>
+                      <td>{{ value.1|floatformat:2 }} €</td>
+                      <td>{{ value.3|floatformat:2 }} €</td>
+                      <td>{{ value.2|floatformat:2 }} €</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+        <div class=" column">
+            <h3 class="ui header">Προηγουμενο διάστημα {{ previous_period }}</h3>
+            <table class="ui selectable inverted table">
+                <thead>
+                <tr>
+                    <th>Πελάτης</th>
+                    <th>'Εσοδα</th>
+                    <th>ΦΠΑ</th>
+                    <th>Κοστος Πωληθ./</th>
+                    <th>Καθαρή Αξία</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for key, value in incomes_per_costumer.items %}
+                    <tr>
+                      <td>{{ key.full_name }}</td>
+                      <td class="positive">{{ value.5|floatformat:2 }} €</td>
+                      <td>{{ value.6|floatformat:2 }} €</td>
+                      <td>{{ value.8|floatformat:2 }} €</td>
+                      <td>{{ value.7|floatformat:2 }} €</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="column">
+            <h3 class="ui header">Προηγούμενη χρονιά</h3>
+            <table class="ui selectable inverted table">
+                <thead>
+                <tr>
+                    <th>Πελάτης</th>
+                    <th>'Εσοδα</th>
+                    <th>ΦΠΑ</th>
+                    <th>Κοστος Πωληθ./</th>
+                    <th>Καθαρή Αξία</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for key, value in incomes_per_costumer.items %}
+                    <tr>
+                      <td>{{ key.full_name }}</td>
+                      <td class="positive">{{ value.10|floatformat:2 }} €</td>
+                      <td>{{ value.11|floatformat:2 }} €</td>
+                      <td>{{ value.13|floatformat:2 }} €</td>
+                      <td>{{ value.12|floatformat:2 }} €</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div style="margin-bottom: 5%" class="row"></div>
+    <script type="text/javascript">
+        $('#store_analysis').click(function () {
+            var btn = $(this);
+            var form = $('#form_filters').serialize();
+            $.ajax({
+                url: btn.attr('data-url'),
+                data: form,
+                dataType: 'json',
+                success: function (data) {
+                    $('#analysis-container').html(data.store_analysis_per_month)
+
+                }
+            })
+        })
+    </script>
+
+{% endblock %}

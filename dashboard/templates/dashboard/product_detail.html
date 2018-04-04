@@ -1,0 +1,162 @@
+{% extends 'dashboard/products_list.html' %} {% load static %} {% load widget_tweaks %}
+
+
+{% block content %}
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-8 col-md-7">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">Edit Product</h4>
+                    </div>
+                    <div class="content">
+                        <form method="post">{% csrf_token %}
+                            {% for field in form.visible_fields %}
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>{{ field.label_tag }}</label>
+                                        {{ field }}
+                                        {% if field.help_text %}
+                                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-info btn-fill btn-wd">Update Profile</button>
+                            </div>
+                            <div class="clearfix"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-5">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">Actions</h4>
+                    </div>
+                    <div class="content">
+                        <a href="{% url 'dashboard:copy_product' instance.id %}" class="btn btn-success">Create Copy</a>
+                        <a href="" class="btn btn-warning">Delete</a>
+                        <br><br>
+                        <button class="btn btn-info" id="add_author" onclick="return showAddPopup(this);">Add Brand</button>
+                        <button data-href="{% url 'dashboard:category_popup' %}" class="btn btn-info" id="add_category" onclick="return addCat(this);">Add Category</button>
+                    </div>
+                </div>
+                <div class="card card-user">
+                    <div class="image">
+                        <img {% if instance.image %} src="{{ instance.image.url }}"
+                                {% else %} src="{% static 'assets/images/no-photo.jpg' %}"
+                        {% endif %} alt="..."/>
+                    </div>
+                    <div class="content">
+                        <div class="author">
+                            <img class="avatar border-white" {% if instance.image %}
+                                 src="{{ instance.image.url }}"
+                            {% else %}
+                                 src="{% static 'assets/images/no-photo.jpg' %}"
+                            {% endif %}  alt="..."
+                            />
+                            <h4 class="title">{{ instance }}<br />
+                                <a href="#"><small>{{ instance.brand|default_if_none:"No Brand Selected" }}</small></a>
+                            </h4>
+                        </div>
+                        <p class="description text-center">
+                            {{ instance.category|default_if_none:"No Category Selected" }} <br>
+                            {{ instance.color|default_if_none:"No Color Selected" }} <br>
+                            {{ instance.supply|default_if_none:"No Vendor Selected" }}
+                        </p>
+                    </div>
+                    <hr>
+                    <div class="text-center">
+                        <div class="row">
+                            <div class="col-md-3 col-md-offset-1">
+                                <h5>{{ instance.price }} {{ currency }}<br /><small>Price</small></h5>
+                            </div>
+                            <div class="col-md-4">
+                                <h5>{{ instance.price_discount }} {{ currency }}<br /><small>Discount Price</small></h5>
+                            </div>
+                            <div class="col-md-3">
+                                <h5>{{ instance.price_buy }} {{ currency }}<br /><small>Price Buy</small></h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">Images</h4>
+                    </div>
+                    <div class="content">
+                        <ul class="list-unstyled team-members">
+                            {% for image in images %}
+                            <li>
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <div class="avatar">
+                                            <img src="{{ image.image.url }}" alt="Circle Image" class="img-circle img-no-padding img-responsive">
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        {{ image.image_status }}
+                                        <br />
+                                        <span class="text-muted"><small>Status</small></span>
+                                    </div>
+                                    <div class="col-xs-6 text-right">
+                                        <a href="" class="btn btn-sm btn-success btn-icon"><i class="fa fa-check-square-o"></i></a>
+                                        <a href="" class="btn btn-sm btn-success btn-icon">Secondary</a>
+
+                                        <a href="" class="btn btn-sm btn-warning btn-icon"><i class="fa fa-close"></i></a>
+
+                                    </div>
+                                </div>
+                            </li>
+                            {% empty %}
+                            <li>
+                                <p>No images</p>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <br>
+                        <h4 class="title">Add image</h4>
+                        <form method="post" enctype="multipart/form-data" >{% csrf_token %}
+                            {{ form_image }}
+                            <button type="submit" class="btn btn-success">Save</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+    <script type="text/javascript">
+        function showEditPopup(url) {
+            var win = window.open(url, "Edit",
+                'height=500,width=800,resizable=yes,scrollbars=yes');
+            return false;
+        }
+        function showAddPopup(triggeringLink) {
+            console.log('here!');
+            var name = triggeringLink.id.replace(/^add_/, '');
+            href = '{% url "dashboard:brand_popup" %}';
+            var win = window.open(href, name, 'height=500,width=800,resizable=yes,scrollbars=yes');
+            win.focus();
+            return false;
+        }
+        function addCat(triggeringLink) {
+            console.log(triggeringLink, this);
+            var name = triggeringLink.id.replace(/^add_/, '');
+            href = '{% url "dashboard:category_popup" %}';
+            var win = window.open(href, name,'height=500,width=800,resizable=yes,scrollbars=yes');
+            win.focus();
+            return false;
+        }
+        function closePopup(win, newID, newRepr, id) {
+            $(id).append('<option value=' + newID + ' selected >' + newRepr + '</option>');
+            win.close();
+        }
+</script>
+{% endblock %}

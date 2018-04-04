@@ -1,0 +1,220 @@
+{% extends "reports/misthodosia_main_page.html" %}
+
+
+{% block down_menu %}
+
+<div class="ui six item bottom fixed menu">
+    <a href="/reports/outcome/"  class=" ui blue item">Home</a>
+        <a href="/reports/outcome/payment-analysis/" class=" ui blue item">Ροή Πληρωμών</a>
+        <a href="/reports/outcome/logariasmoi/" class=" ui blue item">Λογαριασμοί</a>
+        <a href="/reports/outcome/pagia-agores/1/" class=" ui blue item">Πάγια έξοδα</a>
+        <a href="/reports/outcome/μισθοδοσία/" class=" ui active inverted blue item">Μισθοδοσία</a>
+</div>
+{% endblock %}
+
+{% block content %}
+    <div class="three column row">
+        <div class="column"></div>
+        <div class="column">
+            <h2 class="ui icon header">
+                <i class="settings icon"></i>
+                <div class="content">
+                    {{ title }}
+                    <div class="sub header">Manage your account settings and set e-mail preferences.</div>
+                </div>
+            </h2>
+        </div>
+        <div class="column"></div>
+    </div>
+
+    <div class="four wide column">
+        <div class="ui segments">
+        <div style ="text-align:center;" class="ui inverted blue segment">Πληροφορίες</div>
+        <div class="ui segment">
+        <table style="font-size:10px;" class="ui bordered table segment">
+            <thead>
+                <tr>
+                    <th>Λογαρ.</th>
+                    <th>Συνολο Χρεωστικό</th>
+                    <th>Σύνολο Πιστωτικό</th>
+                    <th>Yπόλοιπο</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key,value in total_orders_per_bill.items %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        {% for ele in value %}
+                            <td>{{ ele|floatformat:2 }} €</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+        </div>
+    </div>
+    </div>
+    <div class="eight wide column">
+    <div class="ui segments">
+        {% if log_id %}
+        <div style="text-align: center;" class="ui blue inverted segment">
+            {{ log_id.title }}, Συνολικό Υπόλοιπο {{ log_id.show_remain|floatformat:2 }} €,
+        </div>
+        {% else %}
+        <div style="text-align: center;" class="ui blue inverted segment">
+            Λογαριασμοί
+        </div>
+        {% endif %}
+        <div class="ui segment">
+        <table class="ui table segment">
+            <thead>
+                <tr>
+                    <th>Ημερομηνία</th>
+                    <th>Ονομασία</th>
+                    <th>Κατηγορία</th>
+                    <th>Ποσό Πληρωμής</th>
+                    <th>Υπόλοιπο</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ele in log_all %}
+                    <tr>
+                        <td>{{ ele.date }}</td>
+                        <td>{{ ele.title }}</td>
+                        <td>{{ ele.category.title }}</td>
+                        <td>{{ ele.price|floatformat:2 }} €</td>
+                        {% if ele.show_remain == 0 %}
+                        <td style="background-color: #548021">Εξοφλήθη</td>
+                        {% else %}
+                        <td style="background-color: indianred">{{ ele.show_remain|floatformat:2 }} € </td>
+                        {% endif %}
+                        <td></td>
+                    </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+    </div>
+    <div class="four wide column">
+    <div class="ui segment">
+        <div class="ui blue inverted button ">
+            <a style="width: 100%;" href="/reports/outcome/reports/outcome/logariasmoi/">Καθαρισμός Φίλτρων</a>
+        </div>
+    </div>
+
+    <div class="ui segment">
+
+        <form class="ui form" method="post">{% csrf_token %}
+
+            <div class="ui selection dropdown">
+                <input type="hidden" name="bill_name">
+                <i class="dropdown icon"></i>
+                {% if bill_name %}
+                    <div class="item"  data-value="{{ bill_name }}" data-text="{{ bill_name }}">{{ bill_name }}</div>
+                {% else %}
+                    <div class="default text">Λογαριασμός</div>
+                {% endif %}
+                <div class="menu">
+                    {% for ele in log_all_cat %}
+                        <div class="item" data-value="{{ ele.title }}" data-text="{{ ele.title }}">
+                            <i class="male icon"></i>
+                            {{ ele.title }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="ui selection dropdown">
+                <input type="hidden" name="status_name">
+                <i class="dropdown icon"></i>
+                <div class="default text">Κατάσταση</div>
+                <div class="menu">
+                    <div class="item" data-value="b" data-text="Αποπληρωμένες">
+                        <i class="male icon"></i>
+                        Αποπληρωμένες
+                    </div>
+                     <div class="item" data-value="a" data-text="Μη Αποπληρωμένες">
+                        <i class="male icon"></i>
+                        Μη Αποπληρωμένες
+                    </div>
+                </div>
+            </div>
+
+             <div class="ui selection dropdown">
+                <input type="hidden" name="payment_name">
+                <i class="dropdown icon"></i>
+                {% if payment_name %}
+                    <div class="item"  data-value="{{ payment_name }}" data-text="{{ payment_name }}">{{ payment_name }}</div>
+                {% else %}
+                    <div class="default text">Τρόπος Πληρωμής</div>
+                {% endif %}
+                <div class="menu">
+                    {% for ele in payment_method %}
+                        <div class="item" data-value="{{ ele.title }}" data-text="{{ ele.title }}">
+                            <i class="male icon"></i>
+                            {{ ele.title }}
+                        </div>
+
+                    {% endfor %}
+                </div>
+            </div>
+
+            <label>Date</label>
+
+            <input name="date_pick">
+            <input style="width: 100%;" class="ui green inverted button" type="submit">
+        </form>
+    </div>
+    </div>
+
+
+
+{% endblock %}
+
+
+
+
+
+{% block center %}
+
+<div class="ui segments">
+        <div style="text-align: center;" class="ui blue inverted segment">Υπάλληλοι</div>
+        <div class="ui segment">
+        <table class="ui table segment">
+            <thead>
+                <tr>
+                    <th>Ονομασία</th>
+                    <th>Τηλέφωνο</th>
+                    <th>Κινητό</th>
+                    <th>Απασχόληση</th>
+                    <th>Υπόλοιπο</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ele in persons %}
+                    <tr>
+                        <td>{{ ele.title }}</td>
+                        <td>{{ ele.phone }}</td>
+                        <td>{{ ele.phone1 }}</td>
+                        <td>{{ ele.occupation.title }}</td>
+                        <td>{{ ele.salary_paid|floatformat:2  }} €</td>
+                       
+                   
+                    </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block right_side %}
+
+{% endblock %}

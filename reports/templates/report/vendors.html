@@ -1,0 +1,285 @@
+{% extends 'report/warehouse.html' %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="six wide column"></div>
+        <div class="six wide column">
+            <h2 class="ui blue icon header">
+                <i class="blue user icon"></i>
+                <div class="blue content">
+                    Προμηθευτές
+                    <div class="sub header">Περίοδος κινήσεων {{ date_string }}</div>
+                </div>
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <div class="ui styled fluid accordion">
+                <div class="title">
+                    <h4>Filters</h4>
+                </div>
+                <div class="content">
+                    <div style="margin-top: 5%" class="ui segment">
+                        <form id="filter_data" class="ui form" method="get">
+                            <div class="two fields">
+                                <div class="field">
+                                    <div class="pagination">
+                                        <span class="step-links">
+                                            {% if page_obj.has_previous %}
+                                                <button onclick="this.form.submit()" class="ui tiny blue button" type="input" name="page" value="{{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</button>
+                                            {% endif %}
+                                            <span class="current">
+                                                <label>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}. </label>
+                                            </span>
+                                            {% if page_obj.has_next %}
+                                                <button onclick="this.form.submit()" class="ui tiny blue button" type="input" name="page" value="{{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</button>
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui silder checkbox">
+                                        <input name="balance_name" type="checkbox" {% if balance_name %} checked {% endif %}>
+                                        <label>Προμηθευτές με υπόλοιπο</label>
+                                    </div>
+
+                                </div>
+                            </div>
+                            {% include 'snippets/search_date_filter.html' %}
+                            {% include 'snippets/vendor_cate_filter.html' %}
+                            <input style="width: 100%;margin-top: 3%;" class="ui green inverted button" type="submit">
+                        </form>
+                        <a href="{% url 'reports:vendors' %}" style="margin-top: 3%;margin-right: auto;margin-left: 0%;" class="ui red button">
+                            <i class="trash icon"></i>
+                            Καθαρισμός Φίλτρων
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="two wide column"></div>
+
+    </div>
+
+    <div class="row">
+        <div class="ui three wide column"></div>
+        <div class="ui ten wide column">
+            <canvas id="myChart1" width="400" height="150"></canvas>
+            <script>
+            var ctx = document.getElementById("myChart1").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ["Συνολικό Υπόλοιπο Προμηθευτών", "Αξία Τιμολογίων", "Πληρωμένη Αξία Τιμολογίων"],
+                    datasets: [{
+                        label: '# Euro',
+                        data: [{{ chart_data.0 }}, {{ chart_data.1 }}, {{ chart_data.2 }}],
+                        backgroundColor: [
+                            'blue',
+                            'red',
+                            'green',
+                            'rgba(255,99,132,1)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }
+                    ]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+            });
+            </script>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <button class="ui blue button analysis_button" data-text="month"
+                    data-url="{% url 'reports:ajax_vendors_page_analysis' %}">Ανάλυση Ανά Μήνα
+            </button>
+            <button class="ui blue button analysis_button" data-text="vendors"
+                    data-url="{% url 'reports:ajax_vendors_page_analysis' %}">Ανάλυση Ανά Προμηθευτή
+            </button>
+        </div>
+        <div class="two wide column"></div>
+
+        <div class="two wide column"></div>
+        <div class="twelve wide column" id="ajax_container"></div>
+        <div class="two wide column"></div>
+
+
+    </div>
+
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <h4>Όλοι οι Προμηθευτές</h4>
+            <table class="ui celled striped fluid table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Ονομασία</th>
+                        <th colspan="2">Τηλέφωνα</th>
+                        <th>Διεύθυνση - Πόλη</th>
+                        <th>Email - Site</th>
+                        <th>Υπόλοιπο</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key in object_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><a href="{% url 'reports:vendor_detail' key.id %}">{{ key }}</a> </td>
+                            <td colspan="2">{% if key.phone %}{{ key.phone }}{% endif %}, {% if key.phone1 %}{{ key.phone1 }}{% endif %}</td>
+                            <td>{{ key.address }}  {{ key.city }} {{ key.zip_code }}</td>
+                            <td>{{ key.email }} - <a target="_blank" href="{{ key.site }}">{{ key.site }}</a></td>
+                            <td class="warning">{{ key.balance }} {{ currency }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="two wide column"></div>
+    </div>
+
+    <div style="margin-top: 5%" class="three column row">
+        <div class="column">
+            <form class="ui form" method="get">{% csrf_token %}
+                <div class="ui header">
+                    Επέλεξε Ημερομηνία για σύγκριση
+                </div>
+                <input  name="date_pick">
+                <input class="ui button" type="submit">
+            </form>
+
+        </div>
+        <div class="column">
+            <h2 class="ui icon header">
+                <i class="user icon"></i>
+                <div class="content">
+                    Προμηθευτές
+                    <div class="sub header">Αγορές Ανά Προμηθευτή</div>
+                </div>
+            </h2>
+        </div>
+        <div class="column"></div>
+    </div>
+    <div class="three column row">
+        <div class="column">
+            <h3 class="ui header">Προηγούμενη Χρονιά {{ date_start_last_year }} - {{ date_end_last_year }}</h3>
+            <table class="ui selectable inverted table">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Προμηθευτής</th>
+                    <th>Αξια Παραστατικών</th>
+                    <th>Πληρωμένη Αξία</th>
+                    <th>Υπόλοιπο</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for item in analysis_last_year %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ item.vendor__title }}</td>
+                        <td>{{ item.total_value|floatformat:2 }} {{ currency }}</td>
+                        <td >{{ item.total_paid_|floatformat:2 }} {{ currency }}</td>
+                        <td>{{ value.2|floatformat:2 }} €</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class=" column">
+            <h3 class="ui header">Τρέχων Διάστημα {{ date_range }}</h3>
+            <table class="ui selectable inverted table">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Προμηθευτής</th>
+                    <th>Αξια Παραστατικών</th>
+                    <th>Πληρωμένη Αξία</th>
+                    <th>Υπόλοιπο</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for item in analysis.0 %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ item.vendor__title }}</td>
+                        <td>{{ item.total_value|floatformat:2 }} {{ currency }}</td>
+                        <td >{{ item.total_paid_|floatformat:2 }} {{ currency }}</td>
+                        <td>{{ value.2|floatformat:2 }} €</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+        <div class="column">
+            <h3 class="ui header">Προηγούμενη χρονιά</h3>
+            <table class="ui selectable inverted table">
+                <thead>
+                <tr>
+                   <th>Κατάστημα ή είδος</th>
+                    <th>'Εσοδα</th>
+                    <th>Κοστος Πωληθ./</th>
+                    <th>Διαφορά</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for key,value in last_data_per_user.items %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td class="positive">{{ value.0|floatformat:2 }} €</td>
+                        <td >{{ value.1|floatformat:2 }} €</td>
+                        <td>{{ value.2|floatformat:2 }} €</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+    <div style="margin-bottom: 5%" class="row"></div>
+
+    <script type="text/javascript">
+        $('.analysis_button').click(function () {
+            $('#ajax_container').html('<h2>Waiting</h2>');
+            console.log('hit me hard!');
+            var btn = $(this);
+            var my_form = $('#filter_data').serialize();
+            $.ajax({
+                url: btn.attr('data-url'),
+                dataType: 'json',
+                data: my_form + '&choice=' + btn.attr('data-text'),
+                success: function (data) {
+                    $('#ajax_container').html(data.content)
+                }
+            })
+        })
+    </script>
+{% endblock %}
+

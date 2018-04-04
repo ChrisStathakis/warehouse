@@ -1,0 +1,46 @@
+{% extends 'dash_ware/index.html' %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="header"><h4 class="title text-center">Actions</h4></div>
+                    <div class="content">
+                        <form method="post">{% csrf_token %}
+                            {{ form }}
+                            <button type="submit"  class="btn btn-sucess">Save</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="header"><h4 class="title text-center">Actions</h4></div>
+                    <div class="content">
+                        <button id="add_vendor" onclick="return addVendor(this)" class="btn btn-info">Create Vendor</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript">
+        function addVendor(triggerLink) {
+            var name = triggerLink.id.replace(/^add/, '');
+            href = '{% url "dashboard:warehouse_quick_vendor" %}';
+            var win = window.open(href, name, 'height=500,width=500,resizable=yes,scollbars=yes;');
+            win.focus();
+            return false;
+        }
+
+        function closePopup(win, newID, newRepr, id) {
+            $(id).append('<option value=' + newID + ' selected >' + newRepr + '</option>');
+            win.close();
+        }
+    </script>
+{% endblock %}

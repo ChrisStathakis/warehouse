@@ -1,0 +1,193 @@
+{% extends 'reports/warehouse.html' %}
+
+
+{% block down_menu %}
+
+<div class="ui six item bottom fixed menu">
+    <a href="/reports/outcome/"  class=" ui blue item">Home</a>
+    <a href="/reports/outcome/payment-analysis/" class=" ui blue item">Ανάλυση Πληρωμών</a>
+    <a href="/reports/outcome/logariasmoi/" class=" ui  blue item">Λογαριασμοί</a>
+    <a href="/reports/outcome/pagia-agores/{{ pagia_id }}/" class=" ui active blue item">Πάγια έξοδα</a>
+    <a href="reports/outcome/μισθοδοσία/" class=" ui blue item">Μισθοδοσία</a>
+</div>
+{% endblock %}
+
+{% block content %}
+    <div class="three column row">
+        <div class="column">
+            <a style="margin-top: 5%" href="/reports/outcome/pagia-agores/exoterikoi-synergates/" class="ui button segment">Εξωτερικοί Συνεργάτες</a>
+        </div>
+        <div class="column">
+            <h2 class="ui icon header">
+                <i class="settings icon"></i>
+                <div class="content">
+                    {{ title }}
+                    <div class="sub header">Manage your account settings and set e-mail preferences.</div>
+                </div>
+            </h2>
+        </div>
+        <div class="column"></div>
+    </div>
+
+    <div class="four wide column">
+         <div class="ui top attached tabular menu">
+            {% for key,value in sum_pending_category.items %}
+                <a class="item" data-tab="{{ key }}">{{ key }}</a>
+            {% endfor %}
+        </div>
+        <div class="ui segment">
+            `{% for key,value in sum_pending_category.items %}
+                <div class="ui bottom attached tab segment" data-tab="{{ key }}">
+                    <table class="ui celled structured table">
+                        <thead>
+                            <tr>
+                                <th>Τόπος</th>
+                                <th>Πληρώθηκαν</th>
+                                <th>Σε αναμονή</th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            {% for ele in value %}
+                                <tr>
+                                    {% for x in ele %}
+                                        {% if x > 0 %}
+                                            <td>{{ x|floatformat:2 }} €</td>
+                                        {% else %}
+                                            <td>{{ x }} </td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="eight wide column">
+        <div class="ui left floated main menu">
+        <div class="header item">
+            <h2>{{ cat.title }},     Υπόλοιπο:  {{ cat.show_remain|floatformat:2  }} €</h2>
+        </div>
+        <div class="item">
+            <form method="get">
+                <div class="ui search">
+                    <div class="ui icon input">
+                        <input class="prompt" name="search_pro" type="text" placeholder="Αναζήτηση...">
+                        <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                </div>
+            </form>
+        </div>
+
+        </div>
+        <table class="ui celled structured table">
+        <thead>
+            <tr>
+                <th >Κωδικός/Σημειώσεις</th>
+                <th >Εξωτερικός Συνεργάτης</th>
+                <th >Κατηγορία</th>
+                <th >Ημερομηνία Λήξης</th>
+                <th >Αξία</th>
+                <th >Υπόλοιπο</th>
+            </tr>
+
+        </thead>
+        <tbody>
+            {% for ele in buy_orders %}
+                <tr>
+                    <td>{{ ele.title }}</td>
+                    <td>{{ ele.person.title}}</td>
+                    <td>{{ ele.category.title }}</td>
+                    <td>{{ ele.date }}</td>
+
+                    <td class="positive">{{ ele.price|floatformat:2  }} €</td>
+                    {% if ele.show_remain != 0 %}
+                      <td class=" inverted red">{{ ele.show_remain|floatformat:2  }} €</td>
+                    {% else %}
+                      <td class="green">Πληρώθηκε</td>
+                    {% endif %}
+
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <div class="four wide column">
+    <div class="ui segment">
+        <div class="ui blue inverted button ">
+            <a style="width: 100%;" href="/reports/outcome/pagia-agores/1/">Καθαρισμός Φίλτρων</a>
+        </div>
+    </div>
+
+    <div class="ui segment">
+
+        <form class="ui form" method="post">{% csrf_token %}
+            <div class="ui selection dropdown">
+                <input type="hidden" name="bill_name">
+                <i class="dropdown icon"></i>
+                    <div class="default text">Λογαριασμός</div>
+
+                <div class="menu">
+                    {% for ele in all_cate %}
+                        <div class="item" data-value="{{ ele.title }}" data-text="{{ ele.title }}">
+                            <i class="male icon"></i>
+                            {{ ele.title }}
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+            </div>
+
+            <div class="ui selection dropdown">
+                <input type="hidden" name="person_name">
+                <i class="dropdown icon"></i>
+                <div class="default text">Εξωτερικός συνεργάτης</div>
+                <div class="menu">
+                    {% for ele in person %}
+                        <div class="item" data-value="{{ ele.title }}" data-text="{{ ele.title }}">
+                            <i class="male icon"></i>
+                            {{ ele.title }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+             <div class="ui selection dropdown">
+                <input type="hidden" name="payment_name">
+                <i class="dropdown icon"></i>
+                {% if payment_name %}
+                    <div class="item"  data-value="{{ payment_name }}" data-text="{{ payment_name }}">{{ payment_name }}</div>
+                {% else %}
+                    <div class="default text">Τρόπος Πληρωμής</div>
+                {% endif %}
+                <div class="menu">
+                    {% for ele in payment_method %}
+                        <div class="item" data-value="{{ ele.title }}" data-text="{{ ele.title }}">
+                            <i class="male icon"></i>
+                            {{ ele.title }}
+                        </div>
+
+                    {% endfor %}
+                </div>
+            </div>
+
+
+
+            <input  name="date_pick" placeholder="Ημερομηνία" >
+            <input style="width: 100%;margin-top: 3%;" class="ui green inverted button" type="submit">
+        </form>
+    </div>
+
+    </div>
+
+
+
+{% endblock %}
+
+
+
+

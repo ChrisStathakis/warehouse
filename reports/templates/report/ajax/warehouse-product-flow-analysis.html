@@ -1,0 +1,19 @@
+<h3>Product Analysis</h3>
+
+<table class="ui table">
+    <thead>
+        <tr>
+            <th>Προμηθευτής</th>
+            <th>Επιλεγμένη Περίοδος</th>
+            <th>Προηγούμενη Περίοδος</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for vendor in product_analysis %}
+            <tr>
+                <td>{{ vendor.product }}</td>
+                <td>{{ vendor.total_sum }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

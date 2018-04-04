@@ -1,0 +1,180 @@
+{% extends 'report/warehouse.html' %} {% block content %}
+<div class="sixteen wide column">
+    <h2 class="ui center aligned icon header">
+        <i class="circular blue file icon"></i> Προϊόντα
+    </h2>
+</div>
+
+
+<div class="row">
+    <div class="two wide column"></div>
+    <div class="twelve wide column">
+        <div class="ui styled fluid accordion">
+            <div class="title">
+                <i class="dropdown icon"></i> Filters
+            </div>
+            <div class="content">
+                <form class="ui form" method="get" id="filter_form">
+                    <div class="field">
+                        <div class="pagination">
+                            <span class="step-links">
+                                  {% if page_obj.has_previous %}
+                                      <button onclick="this.form.submit()" class="ui tiny blue button" type="input" name="page" value="{{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</button>
+                                  {% endif %}
+                                <span class="current">
+                                    <label>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}. </label>
+                                </span> {% if products.has_next %}
+                            <button onclick="this.form.submit()" class="ui tiny blue button" type="input" name="page" value="{{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</button> {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="three fields">
+                        <div class="field">
+                            {% if discount_name %}
+                            <label for="qty">Εκπτωση</label>
+                            <input type="checkbox" name="discount_name" class="ui checkbox" value="true" placeholder="Discount" checked><br> {% else %}
+                            <label for="qty">Εκπτωση</label>
+                            <input type="checkbox" name="discount_name" class="ui checkbox" value="true" placeholder="Discount"><br> {% endif %}
+                        </div>
+
+                        <div class="field">
+                            {% if qty_name %}
+                            <label for="qty">Απόθεμα</label>
+                            <input type="checkbox" name='qty_name' class="ui checkbox" value="true" placeholder="qty" checked> {% else %}
+                            <label for="qty">Απόθεμα</label>
+                            <input type="checkbox" name='qty_name' class="ui checkbox" value="true" placeholder="qty"> {% endif %}
+                        </div>
+                    </div>
+                     {% include 'snippets/vendor_cate_filter.html' %}
+                     {% include 'snippets/search_date_filter.html' %}
+                    <input style="width: 100%" type="submit" class="ui green button" placeholder="">
+                </form>
+                <a href="{% url 'reports:products' %}" style="margin-left: 50%" class="ui red button">Καθαρισμός Φίτρων</a>
+            </div>
+        </div>
+    </div>
+    <div class="two wide column"></div>
+</div>
+
+<div class="row">
+    <div class="container">
+        <div class="sixteen wide column">
+            <button class="ui blue button warehouse_analysis" data-url="{% url 'reports:ajax_products_analysis' %}"
+                    data-slug="warehouse_analysis" id="button-analysis">Υπολογισμός Υπόλοιπου
+            </button>
+            <button class="ui blue button warehouse_analysis" data-url="{% url 'reports:ajax_products_analysis' %}"
+                    data-slug="vendor_analysis" id="button-analysis">Ανάλυση Ανά Προμηθευτή
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="ui grid container">
+    <div class="four wide column"></div>
+    <div class="twelve wide column" id='ajax_container'></div> 
+</div>
+
+<div class="row">
+    <div class="one wide column"></div>
+    <div class="fourteen wide column">
+        <h2 class="ui header">Όλα τα προϊόντα</h2>
+        <table class="ui small single line selectable table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th><a href="">Κωδικός Προϊόντος</a></th>
+                    <th colspan="2"><a href="">Προιόν</a></th>
+                    <th><a href="">Τιμή Αγοράς</a></th>
+                    <th><a href="">Τιμή Λιανικής/Αρχική Τιμή</a></th>
+                    <th><a href="">Υπόλοιπο</a></th>
+                    <th><a href="">Προμηθευτής</a></th>
+                    <th><a href="">Κατηγορία<br>Κατηγορία Site</a></th>
+                    <th><a href="">Μέγεθος</a></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ele in object_list %}
+                <tr>
+                    <td>{{ ele.id }}</td>
+                    <td>{{ ele.sku|default_if_none:"No Code" }}</td>
+                    <td colspan="2"><a href="{% url 'reports:products_detail' ele.id %}">{{ ele }}</a> {{ ele.color|default_if_none:"" }}</td>
+                    <td style="color:red">{{ ele.tag_price_buy }}</td>
+                    <td class="positive">{{ ele.tag_final_price }}/ {{ ele.price }} {{ currency }}
+                    </td>
+                    {% if ele.show_warehouse_remain %}
+                    <td class="negative">{{ ele.show_warehouse_remain|floatformat:2 }} {{ ele.get_measure_unit_display }}</td>
+                    {% else %}
+                    <td class="positive">{{ ele.show_warehouse_remain|floatformat:2 }} {{ ele.get_measure_unit_display }}
+                    </td>
+                    {% endif %}
+                    <td><a href="">{{ ele.supply|default_if_none:"Δε έχει επιλεγεί Προμηθευτής" }}</a></td>
+                    <td><a href="">{{ ele.category|default_if_none:"Δε έχει επιλεγεί Κατηγορία" }}<br></a></td>
+                    <td>
+                        {% if ele.have_size %}
+                        <p>΄Εχει μεγεθολόγιο</p>
+                        {% else %}
+                        <p>Δε έχει μεγεθολόγιο</p>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Σύνολα</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th>{{ products_count }} Τεμ</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<div class="one wide column"></div>
+
+
+<div class="row"></div>
+<div class="two wide column"></div>
+
+<div style="margin-bottom: 5%" class="row"></div>
+
+<script xmlns="http://www.w3.org/1999/html">
+    $('#search_pro').keyup(function() {
+        console.log('button pressed!dfdf');
+        var my_form = $('#filter_form').serialize();
+        $.ajax({
+            url: "{% url 'reports:ajax_product_search' %}",
+            dataType: 'json',
+            data: my_form,
+            success: function(data) {
+                 $('#ajax_container').html(data.result_data)
+            }   
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $('.warehouse_analysis').click(function() {
+        $('#ajax_container').html('<h2 class="ui header">Περιμένετε λίγο</h2>');
+        var btn = $(this);
+        var my_form = $('#filter_form').serialize();
+        $('#ajax_container').html('<h4>Waiting....</h4>');
+        console.log(my_form);
+        $.ajax({
+            url: btn.attr('data-url'),
+            dataType: 'json',
+            data: my_form + '&analysis='+ btn.attr('data-slug'),
+            success: function(data) {
+                $('#ajax_container').html(data.results)
+            }
+        })
+
+    })
+</script>
+{% endblock %}

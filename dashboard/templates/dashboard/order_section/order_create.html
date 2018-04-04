@@ -1,0 +1,210 @@
+{% extends 'dashboard/products_list.html' %} {% load static %}
+
+{% block content %}
+    <style>
+        .form-control {
+            background-color: #ddd
+        }
+    </style>
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title">Add Product</h4>
+                        </div>
+                        <div class="content">
+                            <form method="get">
+                                <input class="form-control" placeholder="Search" type="text" name="search_name">
+                            </form>
+                            <table class="table">
+                                 <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Product</th>
+                                        <th>Qty</th>
+                                        <th>Price</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    {% for product in object_list %}
+                                    <tr>
+                                        <td>{{ product.id }}</td>
+                                        <td>{{ product }}</td>
+                                        <td>{{ product.tag_final_price }}</td>
+                                        <td><input type="number" value="1" placeholder="1" class="form-control"></td>
+                                        <td><a href="{% url 'dashboard:add_or_create' object.id product.id 1  %}" class="btn btn-success">Add</a></td>
+                                    </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="5">No Products Selected</td>
+                                        </tr>
+                                    {% endfor %}
+                                 </tbody>
+                             </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6">
+                    {% block card_section %}
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title text-center">Order Details</h4>
+                            <a href="" class="btn btn-success"><i class="fa fa-print"></i>Print</a>
+                            <a href="" class="btn btn-info"><i class="fa fa-credit-card"></i>Paid</a>
+
+                        </div>
+                        <div class="content">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Title</td>
+                                        <th>{{ object }}</th>
+                                        <td>Date Added</td>
+                                        <th>{{ object.date_created|date }}</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Order Items Value</td>
+                                        <th>{{ object.tag_value }}</th>
+                                        <td>Shipping Cost - Payment Cost</td>
+                                        <th>{{ object.tag_shipping_value }} - {{ object.tag_payment_value }}</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Costumer Details</td>
+                                        <th>{{ object.first_name }} {{ object.last_name }}</th>
+                                        <td>Address Details</td>
+                                        <th>{{ object.address }} {{ object.zip_code }} {{ object.city }}</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Shipping Method</td>
+                                        <th>{{ object.shipping }}</th>
+                                        <td>Payment Method</td>
+                                        <th>{{ object.get_payment_method_display }}</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Selected Coupons Total Discount {{ object.tag_discount }}</td>
+                                        <td colspan="3">{% for coupon in object.coupons.all %}{{ coupon }}, {% endfor %}</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td colspan="2">
+                                            <h4 class="title text-center">Total Value {{ object.tag_final_price }}</h4>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title text-center">Selected Order Items</h4>
+                        </div>
+                        <div class="content">
+                             <h3 class="title text-center"> Order Items</h3>
+                             <table class="table">
+                                 <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Product</th>
+                                        <th>Qty</th>
+                                        <th>Price</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    {% for product in order_items %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ product.title }}</td>
+                                            <td>{{ product.qty }}</td>
+                                            <td>{{ product.tag_final_price }}</td>
+                                            <td>
+                                                <a href="{% url 'dashboard:edit_order_item' product.id %}" class="btn btn-primary">Edit</a>
+                                                <a href="{% url 'dashboard:delete_order_item' product.id %}" class="btn btn-warning">Delete</a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="5">No Products Selected</td>
+                                        </tr>
+                                    {% endfor %}
+                                 </tbody>
+                             </table>
+                        </div>
+                    </div>
+                        <div class="card">
+                        <div class="header">
+                            <h4 class="title text-center">Costumer Details</h4>
+                        </div>
+                        <div class="content">
+                            <form method="post">{% csrf_token %}
+                                {% for field in form.visible_fields %}
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>{{ field.label_tag }}</label>
+                                            {{ field }}
+                                            {% if field.help_text %}
+                                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-info btn-fill btn-wd">Update Profile</button>
+                                </div>
+                                <div class="clearfix"></div>
+                            </form>
+                        </div>
+                    </div>
+
+                        <div class="card">
+                            <div class="header">
+                                <h4 class="title text-center">Actions</h4>
+                            </div>
+                            <div class="content">
+                                <a href="" class="btn btn-success"><i class="fa fa-print"></i> Print </a>
+
+                                <br><br><br>
+                                <a style="width: 100%;" href="" class="btn btn-warning ">Delete</a>
+                            </div>
+                        </div>
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function showEditPopup(url) {
+            var win = window.opener(url, "Edit", "height=500,width=800,resizable=yes,scrollbars=yes");
+            return false
+        }
+
+        function showAddPopup(triggerLink) {
+            var name = triggeringLink.id.replace(/^add_/, '');
+            href = triggeringLink.href;
+            var win = window.open(href, name, 'height=500,width=800,resizable=yes,scrollbars=yes');
+            win.focus();
+            return false;
+        }
+
+        function closePopup(win, newID, newRepr, id) {
+            $(id).append('<option value=' + newID + ' selected >' + newRepr + '</option>');
+            win.close();
+        }
+    </script>
+
+
+
+{% endblock %}

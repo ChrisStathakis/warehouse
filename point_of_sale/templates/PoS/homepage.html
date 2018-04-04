@@ -1,0 +1,61 @@
+{% extends 'index.html' %}
+
+{% block down_menu %}
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <h1 class="ui header">Επέλεξε Παραστατικό</h1>
+    </div>
+
+    <div class="row">
+
+        <div class="two wide column"></div>
+        <div class="five wide column">
+            <a class="ui red fluid button" href="{% url 'pos:create_return_sale' %}">Επιστροφές</a>
+        </div>
+        <div class="two wide column"></div>
+        <div class="five wide column">
+            <a class="ui green fluid button" href="{% url 'pos:create_sale' %}">Πωλήσεις</a>
+        </div>
+        <div class="two wide column"></div>
+
+    </div>
+
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <table class="ui table">
+                <thead>
+                     <tr>
+                        <th></th>
+                        <th>Date</th>
+                        <th>Title</th>
+                        <th>Seller</th>
+                         <th>Costumer</th>
+                        <th>Type</th>
+                         <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in object_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ order.date_created }}</td>
+                            <td><a class="ui button" href="{% url 'pos:sales' order.id %}">{{ order.title }}</a></td>
+                            <td>{{ order.seller_account|default_if_none:"No seller" }}</td>
+                            <td>{{ order.costumer_account|default_if_none:"No costumer" }}</td>
+                            <td>{% if order.is_sale %}<label class="ui green label">Πώληση</label> {% else %}<label class="ui label red">Επιστροφή</label> {% endif %} </td>
+                            <td>{{ order.tag_final_price }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+
+        </table>
+        </div>
+        <div class="two wide column"></div>
+    </div>
+
+{% endblock content %}

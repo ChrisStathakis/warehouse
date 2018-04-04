@@ -1,0 +1,18 @@
+<table class="ui fixed single line celled table">
+    <thead>
+    <tr>
+        <th>Προμηθευτής</th>
+        <th>Πίστωση</th>
+        <th>Πληρωμές</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for vendor in vendor_analysis %}
+        <tr>
+            <td>{{ vendor.vendor__title }}</td>
+            <td>{{ vendor.total_cost }}  {{ currency }}</td>
+            <td>{{ vendor.total_paid }}  {{ currency }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

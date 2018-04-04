@@ -1,0 +1,68 @@
+{% extends 'reports/warehouse.html' %}
+
+{% block down_menu %}
+<div class="ui six item bottom fixed menu">
+    <a href="/reports/outcome/"  class="ui blue item">Home</a>
+    <a href="/reports/outcome/payment-analysis/" class="ui blue item">Ροή Πληρωμών</a>
+    <a href="/reports/outcome/logariasmoi/" class="ui blue item">Λογαριασμοί</a>
+    <a href="/reports/outcome/pagia-agores/{{ pagia_id }}/" class="ui active blue item">Πάγια έξοδα</a>
+    <a href="/reports/outcome/μισθοδοσία/" class="ui blue item">Μισθοδοσία</a>
+</div>
+{% endblock %}
+
+
+
+
+
+
+{% block content %}
+
+<div class="ui left inverted blue floated main menu">
+        <div class="header item">
+            <h2>Εξωτερικοί συνεργάτες</h2>
+        </div>
+        <div class="item">
+            <form method="get">
+                <div class="ui search">
+                    <div class="ui icon input">
+                        <input class="prompt" name="search_pro" type="text" placeholder="Αναζήτηση...">
+                        <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                </div>
+            </form>
+        </div>
+
+        </div>
+    <table class="ui celled structured table">
+        <thead>
+            <tr>
+                <th >Ονομασία</th>
+                <th>Απασχόληση</th>
+                <th >Τηλέφωνο</th>
+                <th >Κινητό</th>
+                <th >Συνολική Πληρωμή</th>
+                <th >Υπόλοιπο</th>
+            </tr>
+
+        </thead>
+        <tbody>
+            {% for ele in persons %}
+                <tr>
+                    <td>{{ ele.title }}</td>
+                    <td>{{ ele.occupation }}</td>
+                    <td>{{ ele.phone}}</td>
+                    <td>{{ ele.phone1 }}</td>
+                    <td>{{ ele.total_cost|floatformat:2  }} €</td>
+                    {% if show_remain > 0 %}
+                    <td style="background-color: red">{{ ele.show_remain|floatformat:2  }} €</td>
+                    {% else %}
+                    <td>{{ ele.show_remain|floatformat:2  }} €</td>
+                    {% endif %}
+
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
