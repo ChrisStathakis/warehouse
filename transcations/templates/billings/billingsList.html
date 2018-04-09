@@ -7,6 +7,7 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="header"><h4>Billing Invoice</h4></div>
+                    <a href="{% url 'billings:create_bill' %}" class="btn btn-success">Create New Bill</a>
                     <div class="content">
                         <table class="table">
                             <thead>
@@ -45,22 +46,26 @@
                 <div class="card">
                     <div class="header">Actions</div>
                     <div class="content">
-                        <a href="" class="btn btn-success">Create Bill Category</a>
+                        <a href="{% url 'billings:create_bill_cate' %}" class="btn btn-success">Create Bill Category</a>
+
                     </div>
                 </div>
                 <div class="card">
                     <div class='header'>Filters</div>
                     <div class="content">
                         <form method="get">
+                            <input type="checkbox"  name="not_paid"><label for="not_paid">Not Paid</label>
                             <h5>Select Bill</h5>
                             {% for cate in categories %}
-                                <div class="form-check">
-                                    <label class="form-check-label">
-                                      <input type="checkbox" class="form-check-input" name='cate_name' value="{{ cate.id }}">{{ cate }}
-                                    </label>
-                                </div>
+                                <h4>{{ cate }}</h4>
+                                {% for item in cate.fixedcostsitem_set.all %}
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                          <input type="checkbox" class="form-check-input" name='bill_name' value="{{ item.id }}">{{ item }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
                             {% endfor %}
-                                      
                             <button class="btn btn-success">Save</button>
                         </form>
                     </div>

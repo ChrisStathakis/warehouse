@@ -49,7 +49,7 @@
     <div class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <div class="card">
                         <div class="header"><h4>Billings Expiring!</h4></div>
                         <div class="content">
@@ -81,8 +81,20 @@
                             </table>
                         </div>
                     </div>
+                    <br><br>
+                    <div class="card">
+                        <div class="header text-center">
+                            Billing Categories
+                        </div>
+                        <div class="context">
+                            {% for cate in billing_categories %}
+                                <p>{{ cate }}</p>
+                                <p>{{ cate.fixedcostsitem_set.all }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <div class="card">
                         <div class="header"><h4 class="text-center">Payroll</h4></div>
                         <div class='content'>

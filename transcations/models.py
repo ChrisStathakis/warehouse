@@ -77,7 +77,7 @@ class FixedCostInvoice(models.Model):
     date_created = models.DateField(auto_now_add=True, verbose_name='Ημερομηνία Δημιουργίας')
     date_expired = models.DateField(default=timezone.now, verbose_name='Ημερομηνία Λήξης')
     final_price = models.DecimalField(max_digits=50, decimal_places=2, verbose_name='Aξία Παραστατικού')
-    paid_value = models.DecimalField(max_digits=50, decimal_places=2, default=0,verbose_name='Πληρωμένη Αξία')
+    paid_value = models.DecimalField(max_digits=50, decimal_places=2, default=0, verbose_name='Πληρωμένη Αξία')
     payment_method = models.CharField(max_length=1, choices=PAYMENT_TYPE, default='1')
     is_paid = models.BooleanField(default=False, verbose_name='Είναι πληρωμένο')
     payorders = GenericRelation(PaymentOrders)
@@ -125,6 +125,12 @@ class FixedCostInvoice(models.Model):
 
     def tag_is_paid(self):
         return 'Είναι Πληρωμένο' if self.is_paid else 'Δεν είναι πληρωμένη'
+
+    def get_remaining_value(self):
+        return self.final_price - self.paid_value
+
+    def tag_remaining_value(self):
+        return '%s %s' % (self.get_remaining_value(), CURRENCY)
 
 
 @receiver(pre_delete, sender=FixedCostInvoice)

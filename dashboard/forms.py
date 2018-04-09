@@ -108,8 +108,15 @@ class SizeForm(forms.ModelForm):
 
 
 class PaymentForm(forms.ModelForm):
+    object_id = forms.IntegerField(widget=forms.HiddenInput())
+    is_expense = forms.BooleanField(widget=forms.HiddenInput())
 
     class Meta:
         model = PaymentOrders
-        fields = '__all__'
-        exclude = ['date_created']
+        fields = ['date_expired', 'value', 'title', 'payment_type', 'bank', 'is_paid', 'content_type', 'object_id']
+        exclude = ['date_created', ]
+
+    def __init__(self, *args, **kwargs):
+        super(PaymentForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'

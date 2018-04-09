@@ -1,0 +1,71 @@
+{% extends 'billings/index.html' %}
+
+
+{% block content %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <h4 class="text-center">{{ page_title }}</h4>
+                        <div class="content">
+                            <form method='post'>{% csrf_token %}
+                                {{ form }}
+                                <button type='sumbit' class="btn btn-success">Save</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="content">
+                            <a href="{{ back_url }}" class="btn btn-warning">Back</a>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="header"><h3>Payments Remaining Value to be Paid --> {{ instance.tag_remaining_value }}</h3></div>
+                        <div class="content">
+                            <table class="table table-bordered table-responsive">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Title</th>
+                                        <th>Value</th>
+                                        <th>Details</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for invoice in instance.payorders.all %}
+                                        <tr>
+                                            <td>{{ invoice.date_expired }}</td>
+                                            <td>{{ invoice.title|default_if_none:"No Title" }}</td>
+                                            <td>{{ invoice.tag_value }}</td>
+                                            <td>{{ invoice.get_payment_type_display }}, {{ invoice.is_paid }}</td>
+                                            <td><a href="" class="btn btn-warning btn-raised">Delete</a> </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="5">No Payments Added</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <br>
+                            {% if not instance.is_paid %}
+                                <h5>Add Payment Order</h5>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    {{ form_payment }}
+                                    <button type="submit" name="create_payment" class="btn btn-success">Save</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

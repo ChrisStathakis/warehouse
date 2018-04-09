@@ -125,3 +125,16 @@ class CreatePayrollForm(forms.ModelForm):
         super(CreatePayrollForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
+
+
+class CreateBillCategoryForm(forms.ModelForm):
+
+    class Meta:
+        model = FixedCostsItem
+        fields = '__all__'
+        exclude = ['balance',]
+
+    def __init__(self, *args, **kwargs):
+        super(CreateBillCategoryForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
