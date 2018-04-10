@@ -147,6 +147,7 @@ class BillingDetailPage(DetailView):
 class PayrollPage(ListView):
     model = PayrollInvoice
     template_name = 'billings/paymentList.html'
+    paginate_by = 20
 
     def get_queryset(self):
         queryset = PayrollInvoice.objects.all()
@@ -156,7 +157,7 @@ class PayrollPage(ListView):
         queryset = queryset.filter(person__id__in=person_name) if person_name else queryset
         queryset = queryset.filter(person__occupation__id__in=ocup_name) if ocup_name else queryset
         queryset = queryset.filter(category__in=cate_name) if cate_name else queryset
-        queryset = queryset.order_by('date_expired')
+        queryset = queryset.order_by('is_paid', 'date_expired')
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -170,6 +171,17 @@ class PayrollPage(ListView):
         context.update(locals())
         return context
 
+    def post(self, request, *args, **kwargs):
+        ids = []
+        for post_data in request.POST:
+            if 'invoice' in post_data:
+                ids.append(post_data.split('_')[1])
+        for each_id in ids:
+            invoice = PayrollInvoice.objects.get(id=each_id)
+            invoice.is_paid = True
+            invoice.save()
+        messages.success(request, 'The payment of the invoices updated!')
+        return HttpResponseRedirect(reverse('billings:payroll_page'))
 
 @method_decorator(staff_member_required, name='dispatch')
 class CreatePayrollPage(FormView):
@@ -281,7 +293,7 @@ def payroll_invoice_paid(request, dk):
     instance.is_paid = True
     instance.save()
     messages.success(request, 'The %s invoice is paid!' % instance.person.title)
-    return HttpResponseRedirect(reverse('billings:payroll_page'))
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 @staff_member_required

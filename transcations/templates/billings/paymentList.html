@@ -43,10 +43,10 @@
                                         <td>{{ invoice.get_category_display }}</td>
                                         <td>{{ invoice.get_payment_method_display }}</td>
                                         <td>{{ invoice.tag_value }}</td>
-                                        <td>{{ invoice.tag_is_paid }}</td>
+                                        <td>{% if invoice.is_paid %}{{ invoice.tag_is_paid }}{% else %}<a href="{% url 'billings:fast_payroll_paid' invoice.id %}" class="btn btn-success">Paid</a> {% endif %}</td>
                                         <td>
                                             <a href="{% url 'billings:edit_payroll' invoice.id %}" class="btn btn-info">Edit</a>
-                                            <a href="" class="btn btn-success"><i class="fa fa-payment"></i>Paid</a>
+                                            
                                             <a href="" class="btn btn-warning">Delete </a>
                                         </td>
                                     </tr>
@@ -54,11 +54,38 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td><a href="" class="btn btn-info">Create Duplicate</a> </td>
-                                    <td><a href="" class="btn btn-success">Paid</a> </td>
+                                    <td><p>
+                                            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                                                 Create Duplicate
+                                             </button>
+                                         </p>
+                                         <div class="collapse" id="collapseExample">
+                                             <div class="card card-body">
+                                                <div class="form-group">
+                                                    <label for="exampleFormControlSelect1">Choose Month</label>
+                                                    <select class="form-control" id="exampleFormControlSelect1">
+                                                        <option>1</option>
+                                                        <option>2</option>
+                                                        <option>3</option>
+                                                        <option>4</option>
+                                                        <option>5</option>
+                                                    </select>
+                                                </div>
+                                             </div>
+                                             <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                                                <label class="form-check-label" for="defaultCheck1">
+                                                      Paid
+                                                </label>
+                                            </div>
+                                         </div> 
+                                    </td>
+                                    <td><button type='submit' class="btn btn-info" name='mass_paid'>Mass Paid</button> </td>
+                                    <td>
                                 </tr>
                             </tfoot>
                         </table>
+                        
                         </form>
                     </div>
                 </div>
@@ -75,6 +102,23 @@
                     <div class='header'>Filters</div>
                     <div class="content">
                         <form method="get">
+                            <div class="pagination">
+                                <span class="step-links">
+                                    {% if page_obj.has_previous %}<button type="number" class="btn" name='page' value='1'>First</button>
+                                    <button type="number" class="btn" name='page' value='{{ page_obj.previous_page_number }}'>{{ page_obj.previous_page_number }}</button>
+                                    {% endif %}
+                                    
+                                    <span class="current">
+                                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                                    </span>
+                                    
+                                    {% if page_obj.has_next %}
+                                        <button type="number" class="btn" name='page' value='{{ page_obj.next_page_number }}'>{{ page_obj.next_page_number }}</button>
+                                        <button type="number" class="btn" name='page' value='{{ page_obj.paginator.num_pages }}'>Last</button>
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <br><br>
                             <input type="checkbox"  name="not_paid"><label for="not_paid">Not Paid</label>
                             <h5>Select Category</h5>
                             {% for item in categories %}

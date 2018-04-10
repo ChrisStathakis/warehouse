@@ -19,4 +19,7 @@ urlpatterns = [
     path('home/payroll/create-person/', CreatePersonPage.as_view(), name='create_person'),
     path('home/payroll/create-occupation/', CreateOccupPage.as_view(), name='create_occup'),
 
+    # payroll actions
+    path('home/payroll/is-paid/<int:dk>/', view=payroll_invoice_paid, name='fast_payroll_paid')
+
 ]
