@@ -120,6 +120,7 @@ class CreatePayrollForm(forms.ModelForm):
     class Meta:
         model = PayrollInvoice
         fields = '__all__'
+        exclude = ['active']
 
     def __init__(self, *args, **kwargs):
         super(CreatePayrollForm, self).__init__(*args, **kwargs)
@@ -136,5 +137,30 @@ class CreateBillCategoryForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CreateBillCategoryForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+
+
+class CreatePersonForm(forms.ModelForm):
+
+    class Meta:
+        model = Person
+        fields = '__all__'
+        exclude = ['balance',]
+
+    def __init__(self, *args, **kwargs):
+        super(CreatePersonForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+
+
+class CreateOccupForm(forms.ModelForm):
+
+    class Meta:
+        model = Occupation
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(CreateOccupForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'

@@ -207,12 +207,12 @@ class PersonPayrollReport(ListView):
     def get_queryset(self):
         instance = get_object_or_404(Person, id=self.kwargs['dk'])
         queryset = PayrollInvoice.my_query.invoice_per_person(instance=instance)
-        
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super(PersonPayrollReport, self).get_context_data(**kwargs)
+        person = get_object_or_404(Person, id=self.kwargs['dk'])
         payment_orders = ContentType.objects.get_for_model(PaymentOrders)
-        print(payment_orders)
+
         context.update(locals())
         return context

@@ -1,0 +1,111 @@
+{% extends "billings/index.html" %}
+
+{% block content %}
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-info">
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="header"><h4>Payroll Invoice</h4></div>
+                    <a href="{% url 'billings:create_payroll' %}" class="btn btn-success">Create New Payroll Invoice</a>
+                    <div class="content">
+                        <form method="post">{% csrf_token %}
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Date Expired</th>
+                                    <th>Person</th>
+                                    <th>Type</th>
+                                    <th>Payment Method</th>
+                                    <th>Value</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for invoice in object_list %}
+                                    <tr>
+                                        <td>{{ forloop.counter }} <input type="checkbox"  name="invoice_{{ invoice.id }}"></td>
+                                        <td>{{ invoice.date_expired }}</td>
+                                        <td>{{ invoice.person }}</td>
+                                        <td>{{ invoice.get_category_display }}</td>
+                                        <td>{{ invoice.get_payment_method_display }}</td>
+                                        <td>{{ invoice.tag_value }}</td>
+                                        <td>{{ invoice.tag_is_paid }}</td>
+                                        <td>
+                                            <a href="{% url 'billings:edit_payroll' invoice.id %}" class="btn btn-info">Edit</a>
+                                            <a href="" class="btn btn-success"><i class="fa fa-payment"></i>Paid</a>
+                                            <a href="" class="btn btn-warning">Delete </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td><a href="" class="btn btn-info">Create Duplicate</a> </td>
+                                    <td><a href="" class="btn btn-success">Paid</a> </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="header">Actions</div>
+                    <div class="content">
+                        <a href="{% url 'billings:create_person' %}" class="btn btn-success">Create New Person</a>
+                        <a href="{% url 'billings:create_occup' %}" class="btn btn-raised btn-success">Create New Occupation</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class='header'>Filters</div>
+                    <div class="content">
+                        <form method="get">
+                            <input type="checkbox"  name="not_paid"><label for="not_paid">Not Paid</label>
+                            <h5>Select Category</h5>
+                            {% for item in categories %}
+                                <div class="form-check">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" name='cate_name' value="{{ item.0 }}">{{ item.1 }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                            <h5>Select Person</h5>
+                            {% for item in persons %}
+                                <div class="form-check">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" name='person_name' value="{{ item.id }}" {% if item.id|stringformat:"s" in person_name %} checked {% endif %}>{{ item }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                            <h5>Select Occupation</h5>
+                            {% for item in occups %}
+                                <div class="form-check">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" name='occup_name' value="{{ item.id }}" {% if item.id|stringformat:"s" in occup_name %} checked {% endif %}>{{ item }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-success">Save</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -249,6 +249,13 @@ class PayrollInvoice(models.Model):
     def tag_is_paid(self):
         return "Is Paid" if self.is_paid else "Not Paid"
 
+    def get_remaining_value(self):
+        return self.value - self.paid_value
+
+    def tag_remaining_value(self):
+        return '%s %s' % (self.get_remaining_value(), CURRENCY)
+
+
 @receiver(pre_delete, sender=PayrollInvoice)
 def update_on_delete_payrolls(sender, instance, *args, **kwargs):
     get_orders = instance.payorders.all()

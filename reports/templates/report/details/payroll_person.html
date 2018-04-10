@@ -7,8 +7,8 @@
             <h2 class="ui blue icon header">
                 <i class="blue calendar icon"></i>
                 <div class="blue content">
-                    Μισθοδοσία
-                    <div class="sub header">Ημερομηνια Ανάλυσης {{ date_range }}</div>
+                    {{ person }}
+                    <div class="sub header">Επάγγελμα {{ person.occupation.title }}</div>
                 </div>
             </h2>
         </div>
@@ -18,7 +18,7 @@
         <div class="twelve wide column">
             <div class="ui styled fluid accordion">
                 <div class="title">
-                    <h4 class="ui header">Filters, Συνολική Αξία.. {{ total_value }} {{ currency }}  , Πληρωμένη Αξία... {{ paid_value }} {{ currency }}</h4>
+                    <h4 class="ui red header">Filters, Υπόλοιπο.. {{ person.tag_balance }}</h4>
                 </div>
                 <div class="content">
                     <form class="ui form" method="get">
@@ -126,16 +126,15 @@
         <div class="two wide column"></div>
     </div>
 
-    
     <div class="row">
-        <div class="one wide column"></div>
+        <div class="two wide column"></div>
         <div class="six wide column">
             <div class="row">
                 <table class="ui celled striped table">
                     <thead>
                         <tr>
                             <th colspan="7">
-                                Συνολική Αξία {{ order.tag_total_value }}
+                                Παραστατικά Πληρωμών
                             </th>
                         </tr>
                         <tr>
@@ -151,8 +150,8 @@
                         {% for order in object_list %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ order.date_expired }}</td>
-                                <td>{{ order.title }}</td>
+                                <td><button class="ui blue button">{{ order.date_expired }}</button></td>
+                                <td>{{ order.title|default_if_none:"No comment" }}</td>
                                 <td>{{ order.get_category_display }}</td>
                                 <td>{{ order.tag_is_paid }}</td>
                                 <td>{{ order.tag_value }}</td>
@@ -166,8 +165,8 @@
             <table class="ui celled striped table">
                 <thead>
                     <tr>
-                        <th colspan="7">
-                            Συνολική Αξία {{ order.tag_total_value }}
+                        <th class="green" colspan="7">
+                            Εντολές Πληρωμών
                         </th>
                     </tr>
                     <tr>
@@ -180,7 +179,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for order in object_list %}
+                    {% for order in payment_orders.all %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
                             <td>{{ order.date_expired }}</td>
@@ -188,6 +187,10 @@
                             <td>{{ order.get_category_display }}</td>
                             <td>{{ order.tag_is_paid }}</td>
                             <td>{{ order.tag_value }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                        <td colspan="6">Δε υπάρχουν εντολές πληρωμών</td>
                         </tr>
                     {% endfor %}
                 </tbody>
