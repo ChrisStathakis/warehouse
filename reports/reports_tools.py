@@ -73,15 +73,7 @@ def filters_name(request):
     return [search_name, payment_name, is_paid_name, vendor_name, category_name, status_name, date_pick]
 
 
-def filters_payroll(request):
-    search_name = request.GET.get('search_name', None)
-    payment_name = request.GET.getlist('payment_name', None)
-    is_paid_name = request.GET.get('is_paid_name', None)
-    occup_name = request.GET.getlist('occup_name', None)
-    person_name = request.GET.getlist('person_name', None)
-    store_name = request.GET.getlist('store_name', None)
-    date_pick = request.GET.get('date_pick', None)
-    return [search_name, payment_name, is_paid_name, occup_name, person_name, store_name, date_pick]
+
 
 
 def payroll_filter_queryset(request, queryset):

@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q, F
 from django.views.generic import ListView, DetailView
+from django.utils.decorators import method_decorator
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import  Sum
@@ -11,7 +12,8 @@ from inventory_manager.payment_models import PayOrders, CHOICES_
 from dateutil.relativedelta import relativedelta
 from itertools import chain
 import datetime
-from .reports_tools import filters_name, filters_payroll, estimate_date_start_end_and_months, balance_sheet_chart_analysis, balance_sheet_chart_analysis_for_date_expired
+from .tools.outcomes_functions import filters_payroll, filter_payroll_invoice_queryset
+from .reports_tools import filters_name, estimate_date_start_end_and_months, balance_sheet_chart_analysis, balance_sheet_chart_analysis_for_date_expired
 from .tools.general_fuctions import *
 from .tools.outcomes_functions import (outcome_analysis_per_month,
                                        bills_analysis_per_month ,
@@ -159,6 +161,7 @@ class BillsAndAssetsPage(ListView):
         return context
 
 
+@method_decorator(staff_member_required, name='dispatch')
 class PayrollPage(ListView):
     model = PayrollInvoice
     template_name = 'report/outcome-payments.html'
@@ -166,9 +169,8 @@ class PayrollPage(ListView):
 
     def get_queryset(self):
         date_start, date_end, date_range, months_list = estimate_date_start_end_and_months(self.request)
-        search_name, payment_name, is_paid_name, occup_name, person_name, store_name, date_pick = filters_payroll(
-            self.request)
         queryset = PayrollInvoice.objects.filter(date_expired__range=[date_start, date_end])
+        queryset = filter_payroll_invoice_queryset(self.request, queryset)
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -181,7 +183,7 @@ class PayrollPage(ListView):
         persons = Person.objects.all()
         stores = Store.objects.all()
         categories = PAYROLL_CHOICES
-        search_name, payment_name, is_paid_name, occup_name, person_name, store_name, date_pick = filters_payroll(
+        search_name, payment_name, is_paid_name, occup_name, person_name, store_name, cate_name = filters_payroll(
             self.request)
         # totals
         total_value = self.object_list.aggregate(Sum('value'))['value__sum'] if self.object_list.exists() else 0
@@ -192,10 +194,12 @@ class PayrollPage(ListView):
         analysis_per_person = self.object_list.values('person__title').annotate(remai=Sum('value')).order_by('-remai')
         analysis_per_cate = self.object_list.values('category').annotate(occup_value=Sum('value')).order_by('-occup_value')
         choices = PAYROLL_CHOICES
+        '''
         for entry in analysis_per_cate:
-            print(entry)
+            print(entry['category'])
             new_choice = choices[int(entry['category'])-1][1]
             entry['category'] = new_choice
+        '''
         context.update(locals())
         return context
 
@@ -213,6 +217,18 @@ class PersonPayrollReport(ListView):
         context = super(PersonPayrollReport, self).get_context_data(**kwargs)
         person = get_object_or_404(Person, id=self.kwargs['dk'])
         payment_orders = ContentType.objects.get_for_model(PaymentOrders)
+
+        context.update(locals())
+        return context
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class PayrollInvoiceDetail(DetailView):
+    model = PayrollInvoice
+    template_name = ''
+
+    def get_context_data(self, **kwargs):
+        context = super(PayrollInvoiceDetail, self).get_context_data(**kwargs)
 
         context.update(locals())
         return context

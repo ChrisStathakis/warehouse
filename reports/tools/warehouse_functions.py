@@ -4,16 +4,6 @@ from django.shortcuts import render, HttpResponseRedirect
 from reports.tools.general_fuctions import *
 
 
-def reports_products_table_order(request, text, dk):
-    print (text)
-    table_order_by = ToolsTableOrder.objects.get(id=dk)
-    if text == table_order_by.table_order_by:
-        new_text = '-'+str(text)
-        table_order_by.table_order_by = new_text
-    else:
-        table_order_by.table_order_by = text
-    table_order_by.save()
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 def warehouse_get_filters_data(request):

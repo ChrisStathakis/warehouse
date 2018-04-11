@@ -9,6 +9,8 @@ from .models import *
 from .forms import CreateBillForm, CreatePayrollForm, CreateBillCategoryForm, CreatePersonForm, CreateOccupForm
 from dashboard.forms import PaymentForm
 
+from dateutil.relativedelta import relativedelta
+
 
 @method_decorator(staff_member_required, name='dispatch')
 class BillingPaymentPage(TemplateView):
@@ -154,6 +156,8 @@ class PayrollPage(ListView):
         person_name = self.request.GET.getlist('person_name', None)
         ocup_name = self.request.GET.getlist('ocup_name', None)
         cate_name = self.request.GET.getlist('cate_name', None)
+        paid_name = self.request.GET.get('paid_name', None)
+        queryset = queryset.filter(is_paid=False) if paid_name else queryset
         queryset = queryset.filter(person__id__in=person_name) if person_name else queryset
         queryset = queryset.filter(person__occupation__id__in=ocup_name) if ocup_name else queryset
         queryset = queryset.filter(category__in=cate_name) if cate_name else queryset
@@ -168,6 +172,7 @@ class PayrollPage(ListView):
         person_name = self.request.GET.getlist('person_name', None)
         ocup_name = self.request.GET.getlist('ocup_name', None)
         cate_name = self.request.GET.getlist('cate_name', None)
+        paid_name = self.request.GET.get('paid_name', None)
         context.update(locals())
         return context
 
@@ -176,12 +181,25 @@ class PayrollPage(ListView):
         for post_data in request.POST:
             if 'invoice' in post_data:
                 ids.append(post_data.split('_')[1])
-        for each_id in ids:
-            invoice = PayrollInvoice.objects.get(id=each_id)
-            invoice.is_paid = True
-            invoice.save()
-        messages.success(request, 'The payment of the invoices updated!')
+        if 'mass_paid' in request.POST:
+            for each_id in ids:
+                invoice = PayrollInvoice.objects.get(id=each_id)
+                invoice.is_paid = True
+                invoice.save()
+            messages.success(request, 'The payment of the invoices updated!')
+        else:
+            paid = request.POST.get('check_paid', None)
+            months = request.POST.get('months', None)
+            print(months)
+            for each_id in ids:
+                get_order = PayrollInvoice.objects.get(id=each_id)
+                get_order.id = None
+                get_order.is_paid = True if paid else False
+                get_order.date_expired = get_order.date_expired + relativedelta(months=int(months))
+                get_order.save()
+            messages.success(request, 'The payment invoices have created!')
         return HttpResponseRedirect(reverse('billings:payroll_page'))
+
 
 @method_decorator(staff_member_required, name='dispatch')
 class CreatePayrollPage(FormView):

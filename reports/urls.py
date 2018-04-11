@@ -6,7 +6,7 @@ from .views_outcome import *
 from .ajax_views import *
 from reports.ajax_calls.ajax_warehouse_calls import *
 from reports.ajax_calls.ajax_outcomes_calls import *
-from .tools.warehouse_functions import reports_products_table_order
+
 
 app_name = 'reports'
 
@@ -54,26 +54,13 @@ urlpatterns = [
 
     # analyse
     url(r'isologismos/$', BalanceSheet.as_view(), name='balance_sheet'),
-    
-    
-    url(r'products/table-order/(?P<text>\w+)/(?P<dk>\d+)/', view=reports_products_table_order, name='rep_pro_change_order'),
-
-
 
     url(r'category-report/$', view=category_report, name='category_report'),
-    
-    
+
     url(r'vendors/(?P<dk>\d+)/add/(?P<pk>\d+)/$' ,view=add_to_pre_order, name='vendor_info_add_preorder'),
 
     url(r'orders/(?P<dk>\d+)/$',view=order_id, name='report_order_id'),
     url(r'orders/reset-payments/(?P<dk>\d+)/$',view=reports_order_reset_payments, name='report_order_edit'),
-
-
-
-
-
-
-
 
     url(r'costumer-report-balance/$', view = costumers_accounts_report, name='costumers_reports'),
     url(r'costumer-report-balance/(?P<dk>\d+)/$', view=specific_costumer_account, name='specific_costumer_report'),

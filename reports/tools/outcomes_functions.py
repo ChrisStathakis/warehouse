@@ -141,3 +141,27 @@ def outcomes_filter_queryset(request, queryset):
     except:
         pass
     return queryset
+
+
+def filters_payroll(request):
+    search_name = request.GET.get('search_name', None)
+    payment_name = request.GET.getlist('payment_name', None)
+    paid_name = request.GET.get('paid_name', None)
+    occup_name = request.GET.getlist('occup_name', None)
+    person_name = request.GET.getlist('person_name', None)
+    store_name = request.GET.getlist('store_name', None)
+    cate_name = request.GET.getlist('cate_name', None)
+    return [search_name, payment_name, paid_name, occup_name, person_name, store_name, cate_name]
+
+
+def filter_payroll_invoice_queryset(request, queryset):
+    search_name, payment_name, paid_name, occup_name, person_name, store_name, cate_name = filters_payroll(request)
+    try:
+        queryset = queryset.filter(is_paid=False) if paid_name else queryset
+        queryset = queryset.filter(person__id__in=person_name) if person_name else queryset
+        queryset = queryset.filter(person__occupation__id__in=occup_name) if occup_name else queryset
+        queryset = queryset.filter(category__in=cate_name) if cate_name else queryset
+
+    except:
+        queryset = queryset
+    return queryset

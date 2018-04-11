@@ -82,16 +82,16 @@
                         </div>
                         <div class="two fields">
                             <div class="field">
-                                <label>Είδος Πληρωμής</label>
+                                <label>Είδος Παραστατικού</label>
                                 {% for cate in categories %}
                                     {% if cate.id|stringformat:"s" in cate_name %}
                                         <div class="ui checkbox">
-                                            <input type="checkbox" name="occup_name" value="{{ cate.0 }}" checked>
+                                            <input type="checkbox" name="cate_name" value="{{ cate.0 }}" checked>
                                             <label>{{ cate.1 }}</label>
                                         </div>
                                     {% else %}
                                         <div class="ui checkbox">
-                                            <input type="checkbox" name="occup_name" value="{{ cate.0 }}">
+                                            <input type="checkbox" name="cate_name" value="{{ cate.0 }}">
                                             <label>{{ cate.1 }}</label>
                                         </div>
                                     {% endif %}
