@@ -204,9 +204,11 @@ class PayrollPage(ListView):
         return context
 
 
+@method_decorator(staff_member_required, name='dispatch')
 class PersonPayrollReport(ListView):
     model = PayrollInvoice
     template_name = 'report/details/payroll_person.html'
+    paginate_by = 20
 
     def get_queryset(self):
         instance = get_object_or_404(Person, id=self.kwargs['dk'])
@@ -216,8 +218,8 @@ class PersonPayrollReport(ListView):
     def get_context_data(self, **kwargs):
         context = super(PersonPayrollReport, self).get_context_data(**kwargs)
         person = get_object_or_404(Person, id=self.kwargs['dk'])
-        payment_orders = ContentType.objects.get_for_model(PaymentOrders)
-
+        contenttype_obj = ContentType.objects.get_for_model(PayrollInvoice)
+        payment_orders = PaymentOrders.objects.filter(object_id__in=self.object_list.values('id'), content_type=contenttype_obj)
         context.update(locals())
         return context
 

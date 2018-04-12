@@ -31,7 +31,7 @@
                                     {% if person.id|stringformat:"s" in person_name %}
                                         <div class="ui checkbox">
                                             <input type="checkbox" name="person_name" value="{{ person.id }}" checked>
-                                            <label>{{ choice.1 }}</label>
+                                            <label>{{ person }}</label>
                                         </div>
                                     {% else %}
                                         <div class="ui checkbox">
@@ -120,7 +120,7 @@
                         </div>
                         <input style="width: 100%;margin-top: 3%;" class="ui green inverted button" type="submit">
                     </form>
-                    <a href="" style="margin-top: 3%;margin-right: auto;margin-left: 0%;" class="ui red button">
+                    <a href="{{ request.path }}" style="margin-top: 3%;margin-right: auto;margin-left: 0%;" class="ui red button">
                         <i class="trash icon"></i>
                         Καθαρισμός Φίλτρων
                     </a>
@@ -130,6 +130,7 @@
         <div class="two wide column"></div>
     </div>
 
+    
     <div class="row">
         <div class="one wide column"></div>
         <div class="four wide column">
@@ -220,6 +221,7 @@
         </div>
         <div class="one wide column"></div>
         </div>
+        
     <div class="row">
         <div class="one wide column"></div>
         <div class="twelve wide column">

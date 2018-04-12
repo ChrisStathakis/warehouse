@@ -26,9 +26,7 @@ paid_action_payroll.short_description = 'Πληρωμή'
 
 def payroll_invoice_paid(modeladmin, request, queryset):
     for ele in queryset:
-        queryset.update(is_paid=True)
-        queryset.update(paid_value=ele.value)
-        ele.person.save()
+        ele.is_paid = True
 payroll_invoice_paid.short_description = "Πληρωμή"
 
 
