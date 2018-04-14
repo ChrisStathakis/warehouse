@@ -12,7 +12,7 @@ from products.forms import *
 from point_of_sale.models import *
 from transcations.models import *
 from .forms import UpdateProductForm, CreateProductForm, CategorySiteForm, BrandsForm, ColorForm, SizeForm
-
+from products.forms import SizeAttributeForm
 from dateutil.relativedelta import relativedelta
 
 
@@ -89,15 +89,18 @@ def product_detail(request, pk):
     products, currency = True, CURRENCY
     instance = get_object_or_404(Product, id=pk)
     images = instance.get_all_images()
-    print(images)
+    sizes = SizeAttribute.objects.filter(product_related=instance) if instance.size else None
     chars = ProductCharacteristics.objects.filter(product_related=instance)
     related_products = RelatedProducts.objects.filter(title=instance)
-    
+    diff_color = SameColorProducts.objects.filter(title=instance)
     form = UpdateProductForm(request.POST or None, instance=instance)
     form_image = ProductPhotoForm(request.POST or None,
                                   request.FILES or None,
                                   initial={'product': instance,}
                                   )
+    form_size = SizeAttributeForm(request.POST or None, 
+                                   initial={'product_related': instance,
+                                           })
     if form_image.is_valid():
         form_image.save()
         return HttpResponseRedirect(reverse('dashboard:products'))

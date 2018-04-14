@@ -83,6 +83,47 @@
                         </div>
                     </div>
                 </div>
+                {% if instance.size %}
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title">Size Chart</h4>
+                        </div>
+                        <div class="content">
+                            <ul class="list-unstyled team-members">
+                                {% for size in sizes %}
+                                <li>
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <div class="avatar">
+                                                <img src="{{ image.image.url }}" alt="Circle Image" class="img-circle img-no-padding img-responsive">
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-3">
+                                            {{ image.image_status }}
+                                            <br />
+                                            <span class="text-muted"><small>Status</small></span>
+                                        </div>
+                                        <div class="col-xs-6 text-right">
+                                            <a href="" class="btn btn-sm btn-success btn-icon"><i class="fa fa-check-square-o"></i></a>
+                                            <a href="" class="btn btn-sm btn-success btn-icon">Secondary</a>
+    
+                                            <a href="" class="btn btn-sm btn-warning btn-icon"><i class="fa fa-close"></i></a>
+    
+                                        </div>
+                                    </div>
+                                </li>
+                                {% empty %}
+                                <li>
+                                    <p>No images</p>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            <form method='post'>{% csrf_token %}
+                                {{ form_size }}
+                            </form>
+                        </div>
+                    </div>
+                {% endif %}
 
                 <div class="card">
                     <div class="header">

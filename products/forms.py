@@ -53,3 +53,15 @@ class CategoryForm(forms.ModelForm):
         super(CategoryForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
+
+
+class SizeAttributeForm(forms.ModelForm):
+
+    class Meta:
+        model = SizeAttribute
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(SizeAttributeForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'

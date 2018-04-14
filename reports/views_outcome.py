@@ -83,9 +83,11 @@ def payment_analysis(request):
     return render(request, 'report/payment_analysis.html', context)
 
 
+@method_decorator(staff_member_required, name='dispatch')
 class WarehouseOrdersReport(ListView):
     model = Order
     template_name = 'report/orders.html'
+    paginate_by = 20
 
     def get_queryset(self):
         date_start, date_end, date_range, months_list = estimate_date_start_end_and_months(self.request)
