@@ -21,56 +21,6 @@
 </style>
 {% endblock %}
 
-{% block submenu %}
-    <nav class="navbar navbar-default">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar bar1"></span>
-                        <span class="icon-bar bar2"></span>
-                        <span class="icon-bar bar3"></span>
-                    </button>
-                    <a class="navbar-brand" href="{% url 'dashboard:products' %}">Products</a>
-                </div>
-                <div class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="{% url 'dashboard:products' %}">
-                                <i class="ti-panel"></i>
-								<p>Products</p>
-                            </a>
-                        </li>
-                         <li>
-                            <a href="{% url 'dashboard:categories' %}">
-                                <i class="ti-panel"></i>
-								<p>Categories</p>
-                            </a>
-                        </li>
-                         <li>
-                            <a href="{% url 'dashboard:brands' %}">
-                                <i class="ti-panel"></i>
-								<p>Brands</p>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'dashboard:colors' %}">
-                                <i class="ti-panel"></i>
-								<p>Color</p>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'dashboard:sizes' %}">
-                                <i class="ti-panel"></i>
-								<p>Size</p>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-{% endblock %}
-
 {% block content %}
     <div class="content">
         <div class="container-fluid">
@@ -90,13 +40,16 @@
                             <div class="content table-responsive table-full-width">
                                     <table class="table table-striped">
                                         <thead>
-                                        <th></th>
-                                        <th>ID</th>
-                                        <th>Name</th>
-                                        <th>Price</th>
-                                        <th>Category</th>
-                                        <th>Brand</th>
-                                        <th>Qty</th>
+                                        <tr>
+                                            <th></th>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Price</th>
+                                            <th>Category</th>
+                                            <th>Brand</th>
+                                            <th>Qty</th>
+                                            <th>Size Chart</th>
+                                        </tr>
                                         </thead>
                                         <tbody>
                                             {% for product in object_list %}
@@ -112,6 +65,7 @@
                                                 <td>{{ product.category }}</td>
                                                 <td>{{ product.brand }}</td>
                                                 <td>{{ product.qty }}</td>
+                                                <td>{% if product.size|default_if_none:"No sizes" %}{% for size in product.sizeattribute_set.all %}{{ size }}, {% endfor %} {% else %}No size {% endif %}</td>
                                             </tr>
                                             {% endfor %}
                                         </tbody>
@@ -200,14 +154,14 @@
                                                {% for category in categories %}
                                                    {% if category.title|stringformat:"s" in cate_name %}
                                                    <div class="checkbox">
-                                                       <input name="cate_name" value="{{ category.title }}" id="checkbox1" type="checkbox" checked>
+                                                       <input name="cate_name" value="{{ category.id }}" id="checkbox1" type="checkbox" checked>
                                                        <label for="checkbox1">
                                                            {{ category}}
                                                        </label>
                                                    </div>
                                                    {% else %}
                                                    <div class="checkbox">
-                                                       <input name="cate_name" value="{{ category.title }}" id="checkbox1" type="checkbox">
+                                                       <input name="cate_name" value="{{ category.id }}" id="checkbox1" type="checkbox">
                                                        <label for="checkbox1">
                                                            {{ category}}
                                                        </label>
@@ -318,7 +272,7 @@
                                    </div>
                                </div>
                                <button type="submit" class="btn btn-primary">Submit</button>
-                               <button class="btn btn-danger">Reset Filters</button>
+                               <a href="{{ request.path }}" class="btn btn-danger">Reset Filters</a>
                            </form>
                        </div>
                     </div>

@@ -23,8 +23,10 @@
                                     </div>
                                 </div>
                             {% endfor %}
+                            <br>
                             <div class="text-center">
-                                <button type="submit" class="btn btn-info btn-fill btn-wd">Update Profile</button>
+                                <button name="update" type="submit" class="btn btn-info btn-fill btn-wd">Update</button>
+                                <button type="submit" class="btn btn-warning btn-fill btn-wd">Save</button>
                             </div>
                             <div class="clearfix"></div>
                         </form>
@@ -42,6 +44,8 @@
                         <br><br>
                         <button class="btn btn-info" id="add_author" onclick="return showAddPopup(this);">Add Brand</button>
                         <button data-href="{% url 'dashboard:category_popup' %}" class="btn btn-info" id="add_category" onclick="return addCat(this);">Add Category</button>
+                        <button data-href="" class="btn btn-info" id="add_color" onclick="return addColor(this);">Add Color</button>
+                        <button class="btn btn-info" id="add_size" onclick="return addSize(this);">Add size</button>
                     </div>
                 </div>
                 <div class="card card-user">
@@ -179,6 +183,7 @@
                 'height=500,width=800,resizable=yes,scrollbars=yes');
             return false;
         }
+
         function showAddPopup(triggeringLink) {
             console.log('here!');
             var name = triggeringLink.id.replace(/^add_/, '');
@@ -187,17 +192,35 @@
             win.focus();
             return false;
         }
+
         function addCat(triggeringLink) {
             console.log(triggeringLink, this);
             var name = triggeringLink.id.replace(/^add_/, '');
             href = '{% url "dashboard:category_popup" %}';
-            var win = window.open(href, name,'height=500,width=800,resizable=yes,scrollbars=yes');
+            var win = window.open(href, name, 'height=500,width=800,resizable=yes,scrollbars=yes');
             win.focus();
             return false;
         }
+
         function closePopup(win, newID, newRepr, id) {
             $(id).append('<option value=' + newID + ' selected >' + newRepr + '</option>');
             win.close();
+        }
+
+        function addColor(triggeringLink) {
+            var name = triggeringLink.id.replace('^add_/', '');
+            href = '{% url "dashboard:color_popup" %}';
+            var win = window.open(href, name, 'height=500,width=800,resizable=yes,scrollbars=yes');
+            win.focus();
+            return false;
+        }
+
+        function addSize(triggerLink) {
+            var name = triggerLink.id.replace('^add_/', '');
+            var href = '{% url "dashboard:size_popup" %}';
+            var win = window.open(href, name, 'height=500,width=800,resizable=yes,scrollbars=yes');
+            win.focus();
+            return false
         }
 </script>
 {% endblock %}

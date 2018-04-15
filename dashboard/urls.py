@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
 from .views import *
-from  .popups_views import createBrandPopup, get_brand_id, createCategoryPopup
+from  .popups_views import createBrandPopup, get_brand_id, createCategoryPopup, create_color_popup, create_size_popup
 from .views_sells import (EshopOrdersPage, eshop_order_edit, create_eshop_order,
                           add_edit_order_item, edit_order_item, delete_order_item,
                           CartListPage, OrderSettingsPage)
@@ -24,9 +24,11 @@ urlpatterns = [
     path('products/popup/create-brand/', view=createBrandPopup, name='brand_popup'),
     path('products/popup/create-category/', view=createCategoryPopup, name='category_popup'),
     path('products/popup/get_brand_id/', view=get_brand_id, name='get_brand_id'),
-
+    path('products/popup/create-color/', view=create_color_popup, name='color_popup'),
+    path('products/popup/create-size/', view=create_size_popup, name='size_popup'),
 
     path('category/', CategoryPage.as_view(), name='categories'),
+    path('categories-site/', CategorySitePage.as_view(), name='categories_site'),
     path('brands/', BrandPage.as_view(), name='brands'),
     path('colors/', ColorPage.as_view(), name='colors'),
     path('sizes/', SizePage.as_view(), name='sizes'),
@@ -36,6 +38,8 @@ urlpatterns = [
     #  create urls
     path('category/create/', CategoryCreate.as_view(), name='category_create'),
     path('brands/create/', BrandsCreate.as_view(), name='brands_create'),
+    path('colors/create/', ColorCreate, name='color_create'),
+    path('sizes/create/', SizeCreate.as_view(), name='size_create'),
 
     #  delete urls
     path('category/delete/<int:pk>/', view=delete_category, name='delete_category'),
@@ -43,6 +47,7 @@ urlpatterns = [
 
     # edit url
     path('brands/edit/<int:pk>', view=brandEditPage, name='edit_brand'),
+    path('size/edit/<int:pk>', SizeEditPage.as_view(), name='edit_size'),
 
     # redirects
     path('product/copy/<int:pk>/', view=create_copy_item, name='copy_product'),

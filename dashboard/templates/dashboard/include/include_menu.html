@@ -15,65 +15,12 @@
                     <p>Dashboard</p>
                 </a>
             </li>
-            <li {% if products %}class="active" {% endif %}>
-                <a href="{% url 'dashboard:products' %}">
-                    <i class="ti-view-list-alt"></i>
-                    <p>Products</p>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'dashboard:eshop_orders_page' %}">
-                    <i class="ti-view-list-alt"></i>
-                    <p>Orders</p>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'dashboard:users_list' %}">
-                    <i class="ti-view-list-alt"></i>
-                    <p>Users</p>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'dashboard:page_config' %}">
-                    <i class="ti-text"></i>
-                    <p>Pages Config</p>
-                </a>
-            </li>
-
-        </ul>
-        <h4 class="title text-center">Warehouse</h4>
-        <ul class="nav">
             <li {% if dashboard %}class="active" {% endif %}>
                 <a href="{% url 'dashboard:warehouse_home' %}">
                     <i class="ti-panel"></i>
                     <p>Warehouse Home</p>
                 </a>
             </li>
-            <li {% if products %}class="active" {% endif %}>
-                <a href="{% url 'billings:home' %}">
-                    <i class="ti-view-list-alt"></i>
-                    <p>Billing/Payrolls</p>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'dashboard:eshop_orders_page' %}">
-                    <i class="ti-view-list-alt"></i>
-                    <p>Orders</p>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'dashboard:users_list' %}">
-                    <i class="ti-view-list-alt"></i>
-                    <p>Users</p>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'dashboard:page_config' %}">
-                    <i class="ti-text"></i>
-                    <p>Pages Config</p>
-                </a>
-            </li>
-
         </ul>
     </div>
 </div>

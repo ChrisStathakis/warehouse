@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponseRedirect
-from django.views.generic import ListView, DetailView, TemplateView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, TemplateView, CreateView, UpdateView, FormView
 from django.db.models import Q, Sum
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -46,6 +46,7 @@ class ProductsList(ListView):
         # get filters data
         search_name, category_name, brand_name, active_name, color_name, vendor_name, order_name = dashboard_product_get_filter_data(self.request)
         products, currency = True, CURRENCY
+        page_title = 'Product list'
         context.update(locals())
         return context
 
@@ -84,10 +85,10 @@ class ProductsList(ListView):
         return render(self.request, self.template_name)
 
 
-@staff_member_required()
+@staff_member_required
 def product_detail(request, pk):
-    products, currency = True, CURRENCY
     instance = get_object_or_404(Product, id=pk)
+    products, currency, page_title = True, CURRENCY, '%s' % instance.title
     images = instance.get_all_images()
     sizes = SizeAttribute.objects.filter(product_related=instance) if instance.size else None
     chars = ProductCharacteristics.objects.filter(product_related=instance)
@@ -106,11 +107,15 @@ def product_detail(request, pk):
         return HttpResponseRedirect(reverse('dashboard:products'))
     if form.is_valid():
         form.save()
+        messages.success(request, 'The products %s is saves!')
+        if 'update' in request.POST:
+            return HttpResponseRedirect(reverse('dashboard:product_detail', kwargs={'pk': pk}))
         return HttpResponseRedirect(reverse('dashboard:products'))
     context = locals()
     return render(request, 'dashboard/product_detail.html', context)
 
 
+@staff_member_required
 def create_copy_item(request, pk):
     object = get_object_or_404(Product, id=pk)
     object.id = None
@@ -141,6 +146,18 @@ def delete_product(request, dk):
     instance = get_object_or_404(Product, id=dk)
     instance.delete()
     return HttpResponseRedirect(reverse('dashboard:products'))
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class CategorySitePage(ListView):
+    template_name = 'dashboard/category_site_list.html'
+    model = CategorySite
+
+    def get_context_data(self, **kwargs):
+        context = super(CategorySitePage, self).get_context_data(**kwargs)
+        page_title = 'Site Categories'
+        context.update(locals())
+        return context
 
 
 @method_decorator(staff_member_required, name='dispatch')
@@ -202,14 +219,15 @@ class ColorPage(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ColorPage, self).get_context_data(**kwargs)
-        title, create_title, create_url = 'Brands', 'Create Brand', ''
+        page_title, create_title, create_url = 'Colors', 'Create Color', reverse('dashboard:color_create')
+        table_thead = ['id', 'Name', 'Active']
         context.update(locals())
         return context
 
 
 @method_decorator(staff_member_required, name='dispatch')
 class SizePage(ListView):
-    template_name = 'dashboard/page_list.html'
+    template_name = 'dashboard/size_list.html'
     model = Size
 
     @method_decorator(login_required)
@@ -218,7 +236,7 @@ class SizePage(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(SizePage, self).get_context_data(**kwargs)
-        title, create_title, create_url = 'Size', 'Create Size', ''
+        page_title = 'Sizes'
         context.update(locals())
         return context
 
@@ -283,10 +301,6 @@ class ColorCreate(CreateView):
     form_class = ColorForm
     template_name = 'dashboard/page_create.html'
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
     def get_context_data(self, **kwargs):
         context = super(ColorCreate, self).get_context_data(**kwargs)
         title = 'Create Color'
@@ -300,22 +314,23 @@ class ColorCreate(CreateView):
 
 @method_decorator(staff_member_required, name='dispatch')
 class SizeCreate(CreateView):
-    form_class = BrandsForm
-    template_name = 'dashboard/page_create.html'
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    model = Size
+    form_class = SizeForm
+    template_name = 'dashboard/form_view.html'
 
     def get_context_data(self, **kwargs):
         context = super(SizeCreate, self).get_context_data(**kwargs)
-        title = 'Create Size'
+        page_title = form_title = 'Create Size'
         context.update(locals())
         return context
 
     def form_valid(self, form):
+        form.save()
         messages.success(self.request, 'The Brand Created!')
-        return reverse('dashboard:brands')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('dashboard:sizes')
 
 
 @staff_member_required
@@ -328,6 +343,26 @@ def brandEditPage(request, pk):
         return HttpResponseRedirect(reverse('dashboard:brands'))
     context = locals()
     return render(request, 'dashboard/form_view.html', context)
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class SizeEditPage(FormView):
+    form_class = SizeForm
+    template_name = 'dashboard/form_view.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SizeEditPage, self).get_context_data(**kwargs)
+        page_title = form_title = 'Edit Size'
+        context.update(locals())
+        return context
+
+    def get_success_url(self):
+        return reverse('dashboard:sizes')
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'The size had edited')
+        return super().form_valid(form)
 
 
 @staff_member_required

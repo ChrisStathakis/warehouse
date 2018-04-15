@@ -230,6 +230,9 @@ class Size(MPTTModel):
     def __str__(self):
         return self.title
 
+    def get_edit_url(self):
+        return reverse('dashboard:edit_size', kwargs={'pk': self.id})
+
 
 class ProductManager(models.Manager):
     def active_warehouse(self):
