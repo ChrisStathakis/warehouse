@@ -11,8 +11,12 @@ from products.models import *
 from products.forms import *
 from point_of_sale.models import *
 from transcations.models import *
-from .forms import UpdateProductForm, CreateProductForm, CategorySiteForm, BrandsForm, ColorForm, SizeForm
-from products.forms import SizeAttributeForm
+from .forms import (UpdateProductForm, CreateProductForm,
+                    CategorySiteForm, BrandsForm,
+                    ColorForm, SizeForm,
+                    CategorySiteForm,
+                    )
+from products.forms import SizeAttributeForm, ProductPhotoFormSet
 from dateutil.relativedelta import relativedelta
 
 
@@ -95,16 +99,6 @@ def product_detail(request, pk):
     related_products = RelatedProducts.objects.filter(title=instance)
     diff_color = SameColorProducts.objects.filter(title=instance)
     form = UpdateProductForm(request.POST or None, instance=instance)
-    form_image = ProductPhotoForm(request.POST or None,
-                                  request.FILES or None,
-                                  initial={'product': instance,}
-                                  )
-    form_size = SizeAttributeForm(request.POST or None, 
-                                   initial={'product_related': instance,
-                                           })
-    if form_image.is_valid():
-        form_image.save()
-        return HttpResponseRedirect(reverse('dashboard:products'))
     if form.is_valid():
         form.save()
         messages.success(request, 'The products %s is saves!')
@@ -113,6 +107,44 @@ def product_detail(request, pk):
         return HttpResponseRedirect(reverse('dashboard:products'))
     context = locals()
     return render(request, 'dashboard/product_detail.html', context)
+
+
+@staff_member_required
+def product_add_multiple_images(request, dk):
+    instance = get_object_or_404(Product, id=dk)
+    form_title = 'Add Image'
+    initial_data = []
+    for ele in range(4):
+        initial_data.append({'product': instance})
+    formset = ProductPhotoFormSet(initial=initial_data,
+                                  queryset=ProductPhotos.objects.filter(product=instance)
+                                  )
+    if request.POST:
+        formset = ProductPhotoFormSet(request.POST, request.FILES)
+        for form in formset:
+            if form.is_valid():
+                form.save()
+        messages.success(request, 'The images added!')
+        return HttpResponseRedirect(reverse('dashboard:product_detail', kwargs={'pk': dk}))
+    return render(request, 'dashboard/form_set.html', context=locals())
+
+
+@staff_member_required
+def product_add_sizechart(request, dk):
+    instance = get_object_or_404(Product, id=dk)
+    form_title = 'Add Size'
+    initial_data = []
+    for ele in range(10):
+        initial_data.append({'product_related': instance})
+    formset = SizeAttributeFormSet(initial=initial_data)
+    if request.POST:
+        formset = SizeAttributeFormSet(request.POST)
+        for form in formset:
+            if form.is_valid():
+                form.save()
+        messages.success(request, 'The sizes added!')
+        return HttpResponseRedirect(reverse('dashboard:product_detail', kwargs={'pk': dk}))
+    return render(request, 'dashboard/form_set.html', context=locals())
 
 
 @staff_member_required
@@ -277,6 +309,27 @@ class CategoryCreate(CreateView):
 
 
 @method_decorator(staff_member_required, name='dispatch')
+class CategorySiteCreate(CreateView):
+    model = CategorySite
+    template_name = 'dashboard/page_create.html'
+    form_class = CategorySiteForm
+
+    def get_context_data(self, **kwargs):
+        context = super(CategorySiteCreate, self).get_context_data(**kwargs)
+        title = 'Create New Site Category'
+        context.update(locals())
+        return context
+
+    def get_success_url(self):
+        return reverse('dashboard:categories_site')
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'New category added!')
+        return super().form_valid(form)
+
+
+@method_decorator(staff_member_required, name='dispatch')
 class BrandsCreate(CreateView):
     form_class = BrandsForm
     template_name = 'dashboard/page_create.html'
@@ -364,6 +417,17 @@ class SizeEditPage(FormView):
         messages.success(self.request, 'The size had edited')
         return super().form_valid(form)
 
+
+@staff_member_required
+def category_site_edit(request, dk):
+    instance = get_object_or_404(CategorySite, id=dk)
+    form = CategorySiteForm(request.POST or None, instance=instance)
+    form_title = page_title = 'Edit %s' % instance.title
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'The category %s edited successfully' % instance.title)
+    context = locals()
+    return render(request, 'dashboard/form_view.html', context)
 
 @staff_member_required
 def delete_category(request, pk):

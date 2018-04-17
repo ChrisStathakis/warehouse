@@ -64,7 +64,7 @@ urlpatterns = [
      # admin urls
     path('dashboard/', include('dashboard.urls', namespace='dashboard',)),
     path('reports/', include('reports.urls', namespace='reports',)),
-    path('point-of-sale/', include('point_of_sale.urls', namespace='pos',)),
+    path('pos/', include('point_of_sale.urls', namespace='pos',)),
     path('billings/', include('transcations.urls', namespace='billings')),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

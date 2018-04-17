@@ -328,6 +328,8 @@ class Product(models.Model):
         if self.price:
             self.final_price = self.price_discount if self.price_discount > 0 else self.price
         self.is_offer = True if self.price_discount > 0 else False
+        if self.size:
+            self.qty = self.sizeattribute_set.all().aggregate(Sum('qty'))['qty__sum'] if self.sizeattribute_set else 0
         super(Product, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -542,6 +544,8 @@ class ProductPhotos(models.Model):
         return mark_safe('<img width="150px" height="150px" src="%s%s" />' %(MEDIAURL, self.image))
     image_tag_tiny.short_description = 'Εικόνα'
 
+    def tag_status(self):
+        return 'First Picture' if self.is_primary else 'Back Picture' if self.is_back else 'Picture'
 #  --------------------------------------------------------------------------------------------------
 
 

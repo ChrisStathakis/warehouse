@@ -8,7 +8,7 @@
                    <div class="card">
                        <div class="header">
                            <h4 class="title text-center">{{ title }}</h4>
-                           <p class="category"><a href="{{ create_url }}" class="btn btn-success">{{ create_title }}</a></p>
+                           <p class="category"><a href="{% url 'dashboard:category_site_create' %}" class="btn btn-success">Create New Category</a></p>
                        </div>
                        <div class="content table-responsive table-full-width">
                            <table class="table table-striped">
@@ -18,13 +18,14 @@
                                         <th>Title</th>
                                         <th>Status</th>
                                         <th>Parent</th>
+                                        <th>Path</th>
                                     </tr>
                                </thead>
                                <tbody>
                                 {% for object in object_list %}
                                     <tr>
                                         <td>{{ object.id }}</td>
-                                        <td><a href="{{ object.get_edit_url }}">{{ object }}</a></td>
+                                        <td><a href="{% url 'dashboard:edit_category_site' object.id %}">{{ object }}</a></td>
                                         <td>{{ object.active }}</td>
                                         <td>{{ object.show_on_menu }}</td>
                                         <td>{{ object.parent|default_if_none:"No parent" }}</td>

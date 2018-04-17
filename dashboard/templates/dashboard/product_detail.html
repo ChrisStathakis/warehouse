@@ -45,7 +45,6 @@
                         <button class="btn btn-info" id="add_author" onclick="return showAddPopup(this);">Add Brand</button>
                         <button data-href="{% url 'dashboard:category_popup' %}" class="btn btn-info" id="add_category" onclick="return addCat(this);">Add Category</button>
                         <button data-href="" class="btn btn-info" id="add_color" onclick="return addColor(this);">Add Color</button>
-                        <button class="btn btn-info" id="add_size" onclick="return addSize(this);">Add size</button>
                     </div>
                 </div>
                 <div class="card card-user">
@@ -90,7 +89,7 @@
                 {% if instance.size %}
                     <div class="card">
                         <div class="header">
-                            <h4 class="title">Size Chart</h4>
+                            <h4 class="title">Size Chart</h4> <h4 class="title">Add Size <a href="{% url 'dashboard:product_add_sizes' instance.id %}" class="btn btn-info">Add or Edit multiple sizes</a> </h4>
                         </div>
                         <div class="content">
                             <ul class="list-unstyled team-members">
@@ -98,21 +97,15 @@
                                 <li>
                                     <div class="row">
                                         <div class="col-xs-3">
-                                            <div class="avatar">
-                                                <img src="{{ image.image.url }}" alt="Circle Image" class="img-circle img-no-padding img-responsive">
-                                            </div>
+                                            <p>{{ size.title }}</p>
                                         </div>
                                         <div class="col-xs-3">
-                                            {{ image.image_status }}
+                                            Qty: {{ size.qty }} {{ instance.get_measure_unit_display }}
                                             <br />
                                             <span class="text-muted"><small>Status</small></span>
                                         </div>
                                         <div class="col-xs-6 text-right">
-                                            <a href="" class="btn btn-sm btn-success btn-icon"><i class="fa fa-check-square-o"></i></a>
-                                            <a href="" class="btn btn-sm btn-success btn-icon">Secondary</a>
-    
                                             <a href="" class="btn btn-sm btn-warning btn-icon"><i class="fa fa-close"></i></a>
-    
                                         </div>
                                     </div>
                                 </li>
@@ -122,16 +115,14 @@
                                 </li>
                                 {% endfor %}
                             </ul>
-                            <form method='post'>{% csrf_token %}
-                                {{ form_size }}
-                            </form>
+
                         </div>
                     </div>
                 {% endif %}
 
                 <div class="card">
                     <div class="header">
-                        <h4 class="title">Images</h4>
+                        <h4 class="title">Images <a href="{% url 'dashboard:product_add_images' instance.id %}" class="btn btn-info">Add Multiple Images</a> </h4>
                     </div>
                     <div class="content">
                         <ul class="list-unstyled team-members">
@@ -143,17 +134,13 @@
                                             <img src="{{ image.image.url }}" alt="Circle Image" class="img-circle img-no-padding img-responsive">
                                         </div>
                                     </div>
-                                    <div class="col-xs-3">
+                                    <div class="col-xs-6">
                                         {{ image.image_status }}
                                         <br />
-                                        <span class="text-muted"><small>Status</small></span>
+                                        <span class="text-muted"><small>Status: </small>{{ image.tag_status }}</span>
                                     </div>
-                                    <div class="col-xs-6 text-right">
-                                        <a href="" class="btn btn-sm btn-success btn-icon"><i class="fa fa-check-square-o"></i></a>
-                                        <a href="" class="btn btn-sm btn-success btn-icon">Secondary</a>
-
+                                    <div class="col-xs-3 text-right">
                                         <a href="" class="btn btn-sm btn-warning btn-icon"><i class="fa fa-close"></i></a>
-
                                     </div>
                                 </div>
                             </li>
@@ -164,13 +151,39 @@
                             {% endfor %}
                         </ul>
                         <br>
-                        <h4 class="title">Add image</h4>
-                        <form method="post" enctype="multipart/form-data" >{% csrf_token %}
-                            {{ form_image }}
-                            <button type="submit" class="btn btn-success">Save</button>
-                        </form>
                     </div>
                 </div>
+
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">Related Products</h4><a href="" class="btn btn-info">Add Related</a>
+                    </div>
+                    <div class="content">
+                        <table class="table table-responsive">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in related_products %}
+                                    <tr>
+                                        <th>{{ forloop.counter }}</th>
+                                        <th>{{ product }}</th>
+                                        <th><a href="" class="btn btn-warning">Delete</a> </th>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="3">No Related Added</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -215,12 +228,5 @@
             return false;
         }
 
-        function addSize(triggerLink) {
-            var name = triggerLink.id.replace('^add_/', '');
-            var href = '{% url "dashboard:size_popup" %}';
-            var win = window.open(href, name, 'height=500,width=800,resizable=yes,scrollbars=yes');
-            win.focus();
-            return false
-        }
 </script>
 {% endblock %}

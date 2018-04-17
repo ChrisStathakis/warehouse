@@ -1,5 +1,6 @@
 from django.shortcuts import HttpResponseRedirect, redirect, get_object_or_404 ,render
 from django.template.loader import render_to_string
+from django.utils.decorators import method_decorator
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -22,6 +23,7 @@ from dashboard.forms import *
 from account.forms import CreateCostumerPosForm
 
 
+@method_decorator(staff_member_required, name='dispatch')
 class HomePage(ListView):
     template_name = 'PoS/homepage.html'
     model = RetailOrder
@@ -43,7 +45,7 @@ def create_new_sales_order(request):
     new_order.save()
     new_order.title = 'Sale %s' % new_order.id
     new_order.save()
-    return HttpResponseRedirect('/point-of-sale/sales/%s' % new_order.id)
+    return HttpResponseRedirect(reverse('pos:'))
 
 
 @staff_member_required()

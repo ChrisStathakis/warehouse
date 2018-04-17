@@ -1,4 +1,6 @@
 from django import forms
+from django.forms import modelformset_factory
+from django.forms import BaseModelFormSet
 from .models import *
 
 
@@ -31,6 +33,20 @@ class ProductPhotoForm(forms.ModelForm):
             field.widget.attrs['class'] = 'form-control'
 
 
+class BaseProductPhotoFormSet(BaseModelFormSet):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.queryset = ProductPhotos.objects.filter(product=self.model.product)
+
+
+ProductPhotoFormSet = modelformset_factory(ProductPhotos,
+                                           extra=4,
+                                           form=ProductPhotoForm,
+
+                                           )
+
+
 class BrandForm(forms.ModelForm):
 
     class Meta:
@@ -51,6 +67,18 @@ class CategoryForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CategoryForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+
+
+class CategorySiteForm(forms.ModelForm):
+
+    class Meta:
+        model = CategorySite
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(CategorySiteForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
 
@@ -89,3 +117,12 @@ class SizeAttributeForm(forms.ModelForm):
         super(SizeAttributeForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
+
+
+SizeAttributeFormSet = modelformset_factory(SizeAttribute,
+                                            fields='__all__',
+                                            max_num=10,
+                                            extra=10,
+                                            form=SizeAttributeForm,
+                                            )
+

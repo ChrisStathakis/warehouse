@@ -48,13 +48,3 @@ def create_color_popup(request):
         )
     return render(request, 'dashboard/ajax_calls/popup_form.html', {"form": form})
 
-
-@staff_member_required
-def create_size_popup(request):
-    form = SizeForm(request.POST or None)
-    if form.is_valid():
-        instance = form.save()
-        return HttpResponse(
-            '<script>opener.closePopup(window, "%s", "%s", "#id_brand");</script>' % (instance.pk, instance)
-        )
-    return render(request, 'dashboard/ajax_calls/popup_form.html', {"form": form})
