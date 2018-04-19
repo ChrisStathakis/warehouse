@@ -17,13 +17,7 @@
             <td>{{ product.tag_final_price }}</td>
             <td><input id="{{ product.id }}" name="product-{{ product.id }}" type="number" min="1" placeholder="1" value="1"></td>
             <td>
-                <button data-url="{% url 'pos:ajax_add_product' object.id product.id %}" data-value="{{ product.id }}"
-                        {% if is_sale %}
-                            class="ui green button add_product">Add
-                        {% else %}
-                            class="ui red button add_product">Remove
-                        {% endif %}
-                </button>
+                <a href="{% url 'pos:add_to_order' object.id product.id 1 %}" class='ui green button' >Add</a>
             </td>
         </tr>
     {% endfor %}

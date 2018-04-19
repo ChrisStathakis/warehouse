@@ -199,6 +199,10 @@ class RetailOrder(models.Model):
         self.discount = total_value
 
     def save(self, *args, **kwargs):
+        get_all_items = self.retailorderitem_set.all().values('cost', 'final_price', 'qty')
+        self.count_items = get_all_items.count()
+        self.value = get_all_items.aggregate(total=Sum(F('qty') * F('final_price')))['total'] if get_all_items else 0
+        self.total_cost = get_all_items.aggregate(total=Sum(F('qty') * F('cost')))['total'] if get_all_items else 0
         try:
             self.check_coupons()
         except:
@@ -299,8 +303,8 @@ class RetailOrderItem(models.Model):
     cost = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0, verbose_name='Τιμή Μονάδας')
     qty = models.DecimalField(max_digits=6, decimal_places=2, default=1, verbose_name='Ποσότητα')
-    discount = models.DecimalField(max_digits=6, decimal_places=2, default=0, verbose_name='Τιμή Μονάδας')
-    day_added = models.DateField(auto_now=True)
+    discount = models.DecimalField(max_digits=6, decimal_places=2, default=0, verbose_name='Τιμή Μονάδας Με έκπτωση.')
+    day_added = models.DateField(auto_now_add=True)
 
     #  warehouse_managementru
     is_find = models.BooleanField(default=False)
@@ -310,7 +314,7 @@ class RetailOrderItem(models.Model):
     is_return = models.BooleanField(default=False)
     tracker = FieldTracker()
 
-    final_price = models.DecimalField(default=0, max_digits=10, decimal_places=0)
+    final_price = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     my_query = RetailOrderItemManager()
     objects = models.Manager()
 
@@ -325,12 +329,7 @@ class RetailOrderItem(models.Model):
         self.discount = self.title.price_discount
         self.final_price = self.discount if self.discount > 0 else self.price
         super(RetailOrderItem, self).save(*args, **kwargs)
-        order = self.order
-        get_all_items = RetailOrderItem.objects.filter(order=order).values('cost', 'final_price', 'qty')
-        order.count_items = get_all_items.count()
-        order.value = get_all_items.aggregate(total=Sum(F('qty') * F('final_price')))['total'] if get_all_items else 0
-        order.total_cost = get_all_items.aggregate(total=Sum(F('qty') * F('cost')))['total'] if get_all_items else 0
-        order.save()
+        self.order.save()
 
     def get_clean_value(self):
         return self.price * (100-self.order.taxes/100) * (100-Decimal(self.discount)/100)

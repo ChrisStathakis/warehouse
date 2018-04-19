@@ -45,7 +45,7 @@ def create_new_sales_order(request):
     new_order.save()
     new_order.title = 'Sale %s' % new_order.id
     new_order.save()
-    return HttpResponseRedirect(reverse('pos:'))
+    return HttpResponseRedirect(reverse('pos:sales', kwargs={'pk': new_order.id}))
 
 
 @staff_member_required()
@@ -79,6 +79,43 @@ def sales(request, pk):
     object_list = object_list[:10]
     context = locals()
     return render(request, 'PoS/sales.html', context)
+
+
+@staff_member_required
+def add_product_to_order_(request, dk, pk, qty=1):
+    order = get_object_or_404(RetailOrder, id=dk)
+    product = get_object_or_404(Product, id=pk)
+    item_exists = RetailOrderItem.objects.filter(order=order, title=product)
+    if item_exists:
+        item  = item_exists.first()
+        item.qty += qty 
+        item.save()
+    else:
+        new_order_item = RetailOrderItem.objects.create(title=product,
+                                                order=order,
+                                                qty=qty,
+                                                price=product.price,
+                                                discount=product.price_discount,
+                                                cost=product.price_buy
+
+        )
+    return HttpResponseRedirect(reverse('pos:sales', kwargs={'pk': dk}))
+
+
+@staff_member_required
+def edit_order_item(request, pk, type):
+    # if type == 1 then is plus 1, if is ==2 is minus 1
+    instance = get_object_or_404(RetailOrderItem, id=pk)
+    if type == 'add':
+        instance.qty +=1
+        instance.save()
+    if type == 'minus':
+        if instance.qty <2:
+            instance.delete()
+        else:
+            instance.qty -= 1
+            instance.save()
+
 
 
 class SalesPoS(ListView):

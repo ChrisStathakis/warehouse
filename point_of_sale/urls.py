@@ -14,6 +14,9 @@ urlpatterns = [
     path('sales/<int:pk>/', view=sales, name='sales'),
     path('sales/<int:pk>/pay-order/', view=order_paid, name='order_paid'),
 
+    #actions
+    path('sales/add/<int:dk>/<int:pk>/<int:qty>/', view=add_product_to_order_, name='add_to_order'),
+
     # return url
     path('create-return/', view=create_return_order, name='create_return_sale'),
 
