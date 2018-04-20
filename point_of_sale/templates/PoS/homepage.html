@@ -5,28 +5,10 @@
 {% endblock %}
 
 {% block content %}
-
     <div class="row">
-        <h1 class="ui header">Επέλεξε Παραστατικό</h1>
-    </div>
-
-    <div class="row">
-
-        <div class="two wide column"></div>
-        <div class="five wide column">
-            <a class="ui red fluid button" href="{% url 'pos:create_return_sale' %}">Επιστροφές</a>
-        </div>
-        <div class="two wide column"></div>
-        <div class="five wide column">
-            <a class="ui green fluid button" href="{% url 'pos:create_sale' %}">Πωλήσεις</a>
-        </div>
-        <div class="two wide column"></div>
-
-    </div>
-
-    <div class="row">
-        <div class="two wide column"></div>
-        <div class="twelve wide column">
+        <div class="three wide column"></div>
+        <div class="ten wide column">
+            <a class="ui big green fluid button" href="{% url 'pos:create_sale' %}">Πωλήσεις</a>
             <table class="ui table">
                 <thead>
                      <tr>
@@ -52,10 +34,19 @@
                         </tr>
                     {% endfor %}
                 </tbody>
-
-        </table>
+            </table>
+            <a class="ui big red fluid button" href="{% url 'pos:create_return_sale' %}">Επιστροφές</a>
         </div>
-        <div class="two wide column"></div>
     </div>
+
+    <div style="margin-top: 7%" class="row">
+        <div class="three wide column"></div>
+        <div class="ten wide column">
+            <h4 class="center aligned header">Παραστατικά Αποθήκης</h4>
+            <a href="{% url 'pos:warehouse_in_create' %}" class="ui green button">Παραστατικό Εισαγωγής</a> <a href="" class="ui red button">Παραστατικό Εξαγωγής</a>
+        </div>
+    </div>
+
+
 
 {% endblock content %}

@@ -223,8 +223,7 @@ class RetailOrder(models.Model):
                                                      date_expired=datetime.datetime.now(),
                                                      is_expense=False,
                                                      )
-        if self.is_paid:
-            self.status = '7'
+            self.paid_value += new_order.value
         super(RetailOrder, self).save(*args, **kwargs)
         if self.costumer_account:
             self.costumer_account.save()

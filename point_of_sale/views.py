@@ -36,19 +36,20 @@ class HomePage(ListView):
 @staff_member_required()
 def create_new_sales_order(request):
     user = request.user
-    user_account = ExtendsUser.objects.get(user=user)
     new_order = RetailOrder.objects.create(costumer_account=CostumerAccount.objects.first())
-    if user_account:
+    try:
+        user_account = ExtendsUser.objects.get(user=user)
         new_order.seller_account = user
         if user_account.store_related:
             new_order.store_related = user_account.store_related
-    new_order.save()
+    except:
+        user_account = None
     new_order.title = 'Sale %s' % new_order.id
     new_order.save()
     return HttpResponseRedirect(reverse('pos:sales', kwargs={'pk': new_order.id}))
 
 
-@staff_member_required()
+@staff_member_required
 def create_return_order(request):
     user = request.user
     user_account = ExtendsUser.objects.get(user=user)
@@ -60,7 +61,7 @@ def create_return_order(request):
         return HttpResponseRedirect('/point-of-sale/sales/%s' % new_order.id)
 
 
-@staff_member_required()
+@staff_member_required
 def sales(request, pk):
     # initial_data
     object_list = Product.my_query.active_warehouse()
@@ -92,30 +93,13 @@ def add_product_to_order_(request, dk, pk, qty=1):
         item.save()
     else:
         new_order_item = RetailOrderItem.objects.create(title=product,
-                                                order=order,
-                                                qty=qty,
-                                                price=product.price,
-                                                discount=product.price_discount,
-                                                cost=product.price_buy
-
-        )
+                                                        order=order,
+                                                        qty=qty,
+                                                        price=product.price,
+                                                        discount=product.price_discount,
+                                                        cost=product.price_buy
+                                                        )
     return HttpResponseRedirect(reverse('pos:sales', kwargs={'pk': dk}))
-
-
-@staff_member_required
-def edit_order_item(request, pk, type):
-    # if type == 1 then is plus 1, if is ==2 is minus 1
-    instance = get_object_or_404(RetailOrderItem, id=pk)
-    if type == 'add':
-        instance.qty +=1
-        instance.save()
-    if type == 'minus':
-        if instance.qty <2:
-            instance.delete()
-        else:
-            instance.qty -= 1
-            instance.save()
-
 
 
 class SalesPoS(ListView):
@@ -241,8 +225,32 @@ def order_paid(request, pk):
     order = get_object_or_404(RetailOrder, id=pk)
     order.is_paid = True
     order.save()
-    return HttpResponseRedirect('/point-of-sale/')
+    messages.success(request, 'Payment Added!')
+    return HttpResponseRedirect(reverse('pos:sales', kwargs={'pk': pk}))
 
+
+@staff_member_required
+def delete_payment_order(request, dk, pk):
+    instance = get_object_or_404(PaymentOrders, id=pk)
+    order = get_object_or_404(RetailOrder, id=dk)
+    order.is_paid = False
+    order.status = '2'
+    order.save()
+    instance.delete()
+    messages.warning(request, 'Payment order deleted!')
+    return HttpResponseRedirect(reverse('pos:sales', kwargs={'pk': dk}))
+
+
+@staff_member_required
+def delete_order(request, dk):
+    instance = get_object_or_404(RetailOrder, id=dk)
+    for item in instance.retailorderitem_set.all():
+        item.delete()
+    for item in instance.payorders.all():
+        item.delete()
+    instance.delete()
+    messages.warning(request, 'The Retail Order Deleted!')
+    return HttpResponseRedirect(reverse('pos:homepage'))
 
 def AuthorCreatePopup(request):
     form = CreateCostumerPosForm(request.POST or None)
