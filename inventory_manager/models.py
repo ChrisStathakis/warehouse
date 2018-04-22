@@ -78,6 +78,14 @@ class Order(models.Model):
         return self.code
     
     def save(self, *args, **kwargs):
+        all_order_items = self.orderitem_set.all()
+        self.total_price_no_discount = all_order_items.aggregate(total=Sum(F('qty')*F('price')))['total'] if \
+            all_order_items else 0
+        self.total_discount = self.total_price_no_discount
+        self.total_price_after_discount = self.total_price_no_discount - self.total_discount
+        self.total_taxes = self.total_price_after_discount * (100-Decimal(self.get_taxes_modifier_display()))/100
+        self.total_price = self.total_price_after_discount - self.total_taxes
+
         if self.is_paid:
             get_orders = self.payment_orders.all()
             get_orders.update(is_paid=True)
@@ -174,24 +182,12 @@ class OrderItem(models.Model):
 
     def save(self, *args, **kwargs):
         vendor, order, product = self.order.vendor, self.order, self.product
-        old_qty = self.tracker.previous('qty')
-        is_change = self.tracker.has_changed('qty')
+        # old_qty = self.tracker.previous('qty')
+        # is_change = self.tracker.has_changed('qty')
         self.taxes = self.order.taxes_modifier
         self.total_clean_value = self.qty * self.get_clean_price
         self.total_value_with_taxes = self.total_clean_value * ((100+Decimal(self.get_taxes_display()))/100)
         super(OrderItem, self).save(*args, **kwargs)
-        
-        get_all_items = OrderItem.objects.filter(order=order)
-        first_price = get_all_items.aggregate(total=Sum(F('qty')*F('price')))['total'] if get_all_items else 0
-        price_after_discount = first_price*((100-Decimal(self.discount))/100)
-        price_after_taxes = price_after_discount * ((100+Decimal(self.get_taxes_display()))/100)
-        self.order.total_price_no_discount, self.order.total_price_after_discount, self.order.total_price = first_price, price_after_discount, price_after_taxes
-        self.order.total_discount, self.order.total_taxes = price_after_discount - first_price, price_after_taxes - price_after_discount
-        self.order.save()
-        if not product.size:
-            product.qty += self.qty
-            if old_qty:
-                product.qty -= Decimal(old_qty)
         product.price_buy = self.price
         product.order_discount = self.discount
         product.measure_unit = self.unit

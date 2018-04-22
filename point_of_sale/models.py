@@ -207,7 +207,6 @@ class RetailOrder(models.Model):
             self.check_coupons()
         except:
             self.discount = 0
-        self.title = 'Sell Order' if self.is_sale() else 'Return Order'
         self.status = self.status if not self.is_paid else '7'
         self.final_price = self.shipping_cost + self.payment_cost + self.value - self.discount
         self.paid_value = self.payorders.aggregate(Sum('value'))['value__sum'] if self.payorders else 0
@@ -305,7 +304,7 @@ class RetailOrderItem(models.Model):
     discount = models.DecimalField(max_digits=6, decimal_places=2, default=0, verbose_name='Τιμή Μονάδας Με έκπτωση.')
     day_added = models.DateField(auto_now_add=True)
 
-    #  warehouse_managementru
+    #  warehouse_management
     is_find = models.BooleanField(default=False)
 
     #  if needed
@@ -324,11 +323,20 @@ class RetailOrderItem(models.Model):
         return self.title.title
 
     def save(self, *args, **kwargs):
-        self.price = self.title.price
-        self.discount = self.title.price_discount
-        self.final_price = self.discount if self.discount > 0 else self.price
+        if self.order.order_type in ['r', 'b', 'b', 'e']:
+            self.price = self.title.price
+            self.discount = self.title.price_discount
+            self.cost = 0
+            self.final_price = self.discount if self.discount > 0 else self.price
+        else:
+            self.price = 0
+            self.discount = 0
+            self.final_price = 0
+            self.cost = 0
+            self.final_price = 0
         super(RetailOrderItem, self).save(*args, **kwargs)
         self.order.save()
+        self.title.save()
 
     def get_clean_value(self):
         return self.price * (100-self.order.taxes/100) * (100-Decimal(self.discount)/100)
@@ -371,6 +379,11 @@ class RetailOrderItem(models.Model):
     def absolute_url_vendor_page(self):
         return reverse('retail_order_section', kwargs={'dk': self.order.id})
 
+    @staticmethod
+    def check_if_exists(order, product):
+        exists = RetailOrderItem.objects.filter(title=product, order=order)
+        return exists.first() if exists else None
+
 
 @receiver(post_delete, sender=RetailOrderItem)
 def update_order_on_delete(sender, instance, *args, **kwargs):
@@ -382,6 +395,7 @@ def update_order_on_delete(sender, instance, *args, **kwargs):
     order.save()
     if QTY_TRANSACTIONS:
         order_transcation(order_type=order.order_type, instance=instance, qty=instance.qty, substact='minus')
+    instance.title.save()
 
 
 @receiver(post_save, sender=RetailOrderItem)

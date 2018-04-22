@@ -7,8 +7,10 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Sum
 from django.utils.translation import pgettext_lazy
+from django.conf import settings
 from mptt.models import MPTTModel, TreeForeignKey
 from tinymce.models import HTMLField
+
 
 import os
 from time import time
@@ -16,6 +18,7 @@ import datetime
 from decimal import Decimal
 from dashboard.constants import *
 # Create your models here.
+
 
 
 MEDIAURL = 'media'
@@ -330,6 +333,18 @@ class Product(models.Model):
         self.is_offer = True if self.price_discount > 0 else False
         if self.size:
             self.qty = self.sizeattribute_set.all().aggregate(Sum('qty'))['qty__sum'] if self.sizeattribute_set else 0
+        if settings.PRODUCT_TRANSCATIONS:
+            qty_add = self.orderitem_set.all().aggregate(Sum('qty'))['qty__sum'] if self.orderitem_set.all() else 0
+            qty_minus = 0
+            queryset_retail_order = self.retailorderitem_set.all().values('order__order_type').annotate(new_qty=Sum('qty')).order_by('new_qty')\
+            if self.retailorderitem_set.all() else None
+            if queryset_retail_order:
+                for item in queryset_retail_order:
+                    if item['order__order_type'] in ['r', 'e', 'wr', 'd']:
+                        qty_minus += item['new_qty']
+                    else:
+                        qty_minus -= item['new_qty']
+            self.qty = qty_add - qty_minus
         super(Product, self).save(*args, **kwargs)
 
     def __str__(self):

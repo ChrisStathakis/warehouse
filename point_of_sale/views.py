@@ -62,6 +62,18 @@ def create_return_order(request):
 
 
 @staff_member_required
+def create_eshop_order(request):
+    user = request.user
+    user_account = ExtendsUser.objects.get(user=user)
+    new_order = RetailOrder.objects.create(order_type='e')
+    if user_account:
+        new_order.seller_account = user
+        if user_account.store_related:
+            new_order.store_related = user_account.store_related
+        return HttpResponseRedirect('/point-of-sale/sales/%s' % new_order.id)
+
+
+@staff_member_required
 def sales(request, pk):
     # initial_data
     object_list = Product.my_query.active_warehouse()
@@ -86,19 +98,14 @@ def sales(request, pk):
 def add_product_to_order_(request, dk, pk, qty=1):
     order = get_object_or_404(RetailOrder, id=dk)
     product = get_object_or_404(Product, id=pk)
-    item_exists = RetailOrderItem.objects.filter(order=order, title=product)
+    item_exists = RetailOrderItem.check_if_exists(order, product)
     if item_exists:
-        item  = item_exists.first()
-        item.qty += qty 
-        item.save()
+        item_exists.qty += 1
+        item_exists.save()
     else:
-        new_order_item = RetailOrderItem.objects.create(title=product,
-                                                        order=order,
-                                                        qty=qty,
-                                                        price=product.price,
-                                                        discount=product.price_discount,
-                                                        cost=product.price_buy
-                                                        )
+        new_order_item = RetailOrderItem.objects.create(title=product, order=order,)
+    if order.order_type in ['wa', 'wr']:
+        return HttpResponseRedirect(reverse('pos:warehouse_in', kwargs={'dk': dk}))
     return HttpResponseRedirect(reverse('pos:sales', kwargs={'pk': dk}))
 
 

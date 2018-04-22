@@ -40,7 +40,8 @@ urlpatterns = [
 
     # warehouse orders urls
     path('warehouse/order-in/create/', view=create_warehouse_income_order, name='warehouse_in_create'),
-    path('warehouse/order-in/<int:dk>/', WarehouseOrderInPage.as_view(), name='warehouse_in'),
+    path('warehouse/order-in/<int:dk>/', view=warehouse_order_in, name='warehouse_in'),
+
 
     # api
     path('api/', RetailOrderListApiView.as_view(), name='api_rest_order'),

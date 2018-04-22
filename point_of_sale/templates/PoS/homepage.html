@@ -6,7 +6,12 @@
 
 {% block content %}
     <div class="row">
-        <div class="three wide column"></div>
+        <div style="padding-left: 3%" class="three wide column">
+            <h4 class="center aligned header">Παραστατικά Αποθήκης</h4>
+            <a href="{% url 'pos:warehouse_in_create' %}" class="ui green button">Παραστατικό Εισαγωγής</a>
+            <br><br>
+            <a href="" class="ui red button">Παραστατικό Εξαγωγής</a>
+        </div>
         <div class="ten wide column">
             <a class="ui big green fluid button" href="{% url 'pos:create_sale' %}">Πωλήσεις</a>
             <table class="ui table">
@@ -37,15 +42,15 @@
             </table>
             <a class="ui big red fluid button" href="{% url 'pos:create_return_sale' %}">Επιστροφές</a>
         </div>
-    </div>
+        <div class="three wide column">
+             <h4 class="center aligned header">Παραστατικά Eshop</h4>
+            <a href="{% url 'pos:warehouse_in_create' %}" class="ui green button">Παραγγελία Eshop</a>
+            <br><br>
 
-    <div style="margin-top: 7%" class="row">
-        <div class="three wide column"></div>
-        <div class="ten wide column">
-            <h4 class="center aligned header">Παραστατικά Αποθήκης</h4>
-            <a href="{% url 'pos:warehouse_in_create' %}" class="ui green button">Παραστατικό Εισαγωγής</a> <a href="" class="ui red button">Παραστατικό Εξαγωγής</a>
         </div>
     </div>
+
+
 
 
 
