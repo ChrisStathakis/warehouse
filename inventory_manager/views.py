@@ -8,14 +8,24 @@ from products.models import Supply, Category, Color, Size
 
 
 @method_decorator(staff_member_required, name='dispatch')
-class VendorPage(ListView):
-    template_name = ''
+class VendorPageList(ListView):
+    template_name = 'invetory_manager/vendor_list.html'
     model = Supply
     paginate_by = 10
 
     def get_context_data(self):
         queryset = Supply.objects.all()
         return queryset
+
+@method_decorator(staff_member_required, name='dispatch')
+class VendorPageDetail(DetailView):
+    template_name = ''
+    model = Supply
+
+    def get_context_data(self, **kwargs):
+        context = super(VendorPageDetail, self).get_context_data(**kwargs)
+
+        return context
 
 
 @method_decorator(staff_member_required, name='dispatch')

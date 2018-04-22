@@ -85,7 +85,7 @@ def edit_order_item(request, dk):
     form = OrderItemForm(request.POST or None, instance=instance)
     if form.is_valid():
         form.save()
-        return HttpResponseRedirect(reverse('dashboard:warehouse_order_edit', kwargs={'dk': instance.order.id}))
+        return HttpResponseRedirect(reverse('dashboard:warehouse_order_detail', kwargs={'dk': instance.order.id}))
     context = locals()
     return render(request, 'dash_ware/form.html', context)
 

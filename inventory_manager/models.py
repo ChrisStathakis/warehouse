@@ -73,18 +73,19 @@ class Order(models.Model):
 
     class Meta:
         verbose_name_plural = "1. Τιμολόγια"
+        ordering = ['-date_created', ]
 
     def __str__(self):
         return self.code
     
     def save(self, *args, **kwargs):
         all_order_items = self.orderitem_set.all()
-        self.total_price_no_discount = all_order_items.aggregate(total=Sum(F('qty')*F('price')))['total'] if \
-            all_order_items else 0
-        self.total_discount = self.total_price_no_discount
-        self.total_price_after_discount = self.total_price_no_discount - self.total_discount
-        self.total_taxes = self.total_price_after_discount * (100-Decimal(self.get_taxes_modifier_display()))/100
-        self.total_price = self.total_price_after_discount - self.total_taxes
+        self.total_price_no_discount = all_order_items.aggregate(total=Sum(F('qty')*F('price')))['total'] \
+        if all_order_items else 0
+        self.total_price_after_discount = all_order_items.aggregate(total=Sum(F('qty')*F('final_price')))['total']\
+        if all_order_items else 0
+        self.total_taxes = self.total_price_after_discount * (Decimal(self.get_taxes_modifier_display())/100)
+        self.total_price = self.total_price_after_discount + self.total_taxes
 
         if self.is_paid:
             get_orders = self.payment_orders.all()
@@ -173,7 +174,7 @@ class OrderItem(models.Model):
     total_clean_value = models.DecimalField(default=0, max_digits=15, decimal_places=2, verbose_name='Συνολική Αξία χωρίς Φόρους')
     total_value_with_taxes = models.DecimalField(default=0, max_digits=14, decimal_places=2, verbose_name='Συνολική Αξία με φόρους')
     day_added = models.DateField(blank=True, null=True)
-
+    final_price = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     tracker = FieldTracker()
 
     class Meta:
@@ -187,6 +188,7 @@ class OrderItem(models.Model):
         self.taxes = self.order.taxes_modifier
         self.total_clean_value = self.qty * self.get_clean_price
         self.total_value_with_taxes = self.total_clean_value * ((100+Decimal(self.get_taxes_display()))/100)
+        self.final_price = self.price * ((100-Decimal(self.discount))/100)
         super(OrderItem, self).save(*args, **kwargs)
         product.price_buy = self.price
         product.order_discount = self.discount
