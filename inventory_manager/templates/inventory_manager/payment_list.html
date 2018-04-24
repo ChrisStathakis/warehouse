@@ -47,32 +47,99 @@
                    </div>
                </div>
                <div class="col-md-4">
-                   <div class="card">
+                    <div class="card">
                        <div class="header">
                             <h4>Filters</h4>
-
                        </div>
                        <div class="content">
                            <form method="get">
+                                <div class="pagination">
+                                    <span class="step-links">
+                                        {% if page_obj.has_previous %}
+                                            <button type="submit" name='page' value="1" class="btn btn-primary">First Page</button>
+                                            <button type="submit" name='page' value="{{ page_obj.previous_page_number }}" class="btn btn-primary">Previous</button>
+                                        {% endif %}
+                                    
+                                            <span class="current">
+                                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                                            </span>
+                                    
+                                            {% if page_obj.has_next %}
+                                                <button type="submit" name='page' value="{{ page_obj.next_page_number }}" class="btn btn-primary">Next</button>
+                                                <button type="submit" name='page' value="{{ page_obj.paginator.num_pages }}" class="btn btn-primary">Last Page</button>
+                                            
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="checkbox">
+                                        <input name="paid_name" value="h"
+                                            id="checkbox1" type="checkbox" {% if paid_name %} checked {% endif %}>
+                                        <label for="checkbox1">
+                                            Not Paid
+                                        </label>
+                                    </div>
                                <div class="form-group">
-                                   <input type="text" {% if search_name %}value="{{ search_name }}"{% endif %}
-                                          placeholder="Search" class="form-control" name="search_name"/>
+                                   <input type="text" {% if search_name %}value=""{% endif %}
+                                          placeholder="Search" class="form-control" name="search_name"
+                                   />
                                </div>
-                               <div class="checkbox">
-                                    <input name="paid_name" value="paid"
-                                           type="checkbox" {% if size.id|stringformat:"s" == 'paid' %} checked {% endif %}>
-                                    <label>
-                                        Not Paid
-                                    </label>
-                                </div>
+                               <div class="card">
+                                   <div class="header">
+                                       <h5 class="title text-center">Date Start Date End</h5>
+                                   </div>
+                                   <div class="content">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <input name='date_start' type='date' class="form-control">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input name='date_end' type='date' class="form-control">
+                                            </div>
+                                        </div>
+                                   </div>
+                               </div>
+                               
+                                <br><br>
+                               <div id="accordion" role="tablist" aria-multiselectable="true">
+                                   <div class="card">
+                                       <div class="card-header" role="tab" id="headingOne">
+                                           <h6 class="mb-0">
+                                               <a class="collapsed" data-toggle="collapse" data-parent="#accordion"
+                                                  href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                                   Vendors
+                                               </a>
+                                           </h6>
+                                       </div>
+                                       <div id="collapseOne" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                                           <div class="card-block">
+                                               {% for vendor in vendors %}
+                                                   {% if vendor.id|stringformat:"s" in vendor_name %}
+                                                   <div class="checkbox">
+                                                       <input name="vendor_name" value="{{ vendor.id }}"
+                                                              id="checkbox1" type="checkbox" checked>
+                                                       <label for="checkbox1">
+                                                           {{ vendor }}
+                                                       </label>
+                                                   </div>
+                                                   {% else %}
+                                                   <div class="checkbox">
+                                                       <input name="vendor_name" value="{{ vendor.id }}"
+                                                              id="checkbox1" type="checkbox">
+                                                       <label for="checkbox1">
+                                                           {{ vendor }}
+                                                       </label>
+                                                   </div>
+                                                   {% endif %}
+                                               {% endfor %}
+                                           </div>
+                                       </div>
+                                   </div>
+                               </div>
                                <button type="submit" class="btn btn-primary">Submit</button>
-                               <a href="{% url 'dashboard:categories' %}" class="btn btn-danger">Reset Filters</a>
+                               <a href="{{ request.path }}" class="btn btn-danger">Reset Filters</a>
                            </form>
                        </div>
-                   </div>
-                   {% if category_page %}
-                        {% include 'dashboard/include/actions/category_actions.html' %}
-                   {% endif %}
+                    </div>
                </div>
            </div>
        </div>

@@ -90,69 +90,29 @@
                             <div class="content table-responsive table-full-width">
                                     <table class="table table-striped">
                                         <thead>
-                                        <th></th>
-                                        <th>ID</th>
-                                        <th>Name</th>
-                                        <th>Price</th>
-                                        <th>Category</th>
-                                        <th>Brand</th>
-                                        <th>Qty</th>
+                                            <tr>
+                                                <th></th>
+                                                <th>Date</th>
+                                                <th>Code</th>
+                                                <th>Vendor</th>
+                                                <th>Value</th>
+                                                <th>Details</th>
+                                            </tr>
                                         </thead>
                                         <tbody>
-                                            {% for product in object_list %}
+                                            {% for order in object_list %}
                                             <tr>
-                                                <td>
-                                                    <div class="red checkbox">
-                                                        <input id="de_check_active" name="choice_name" type="checkbox" value="{{ product.id }}">
-                                                    </div>
-                                                </td>
-                                                <td>{{ product.id }}</td>
-                                                <td><a href="{% url 'dashboard:warehouse_order_detail' product.id %}">{{ product }}</a></td>
-                                                <td>{{ product.final_price }}</td>
-                                                <td>{{ product.category }}</td>
-                                                <td>{{ product.brand }}</td>
-                                                <td>{{ product.qty }}</td>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ order.date_created|date }}</td>
+                                                <td>{{ order }}</td>
+                                                <td>{{ order.vendor }}</td>
+                                                <td>{{ order.tag_total_value }}</td>
+                                                <td><a href="{% url 'dashboard:warehouse_order_detail' order.id %}" class="btn btn-primary" >Details</td>
                                             </tr>
                                             {% endfor %}
                                         </tbody>
                                     </table>
                                 </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="header">
-                            <h4 class="title text-center">Actions</h4>
-                            </div>
-                            <div class="content">
-                                <div class="form-group">
-                                    <label for="brand_action">Choose Brand</label>
-                                    <select name='change_brand' class="form-control" id="brand_action">
-                                        <option></option>
-                                        {% for brand in brands %}
-                                        <option value="{{ brand.id }}">{{ brand }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="category_action">Choose Warehouse Category</label>
-                                    <select name='change_cate' class="form-control" id="category_action">
-                                        <option></option>
-                                        {% for cate in categories %}
-                                        <option value="{{ cate.id }}">{{ cate }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="category_action">Choose Site Category</label>
-                                    <select name='change_cate_site' class="form-control" id="category_action">
-                                        <option></option>
-                                        {% for cate in site_categories %}
-                                        <option value="{{ cate.id }}">{{ cate }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
                         </div>
                     </form>
                 </div>
@@ -164,59 +124,47 @@
                        </div>
                        <div class="content">
                            <form method="get">
+                                <div class="pagination">
+                                    <span class="step-links">
+                                        {% if page_obj.has_previous %}
+                                            <button type="submit" name='page' value="1" class="btn btn-primary">First Page</button>
+                                            <button type="submit" name='page' value="{{ page_obj.previous_page_number }}" class="btn btn-primary">Previous</button>
+                                        {% endif %}
+                                    
+                                            <span class="current">
+                                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                                            </span>
+                                    
+                                            {% if page_obj.has_next %}
+                                                <button type="submit" name='page' value="{{ page_obj.next_page_number }}" class="btn btn-primary">Next</button>
+                                                <button type="submit" name='page' value="{{ page_obj.paginator.num_pages }}" class="btn btn-primary">Last Page</button>
+                                            
+                                            {% endif %}
+                                        </span>
+                                    </div>
                                <div class="form-group">
                                    <input type="text" {% if search_name %}value=""{% endif %}
                                           placeholder="Search" class="form-control" name="search_name"
                                    />
                                </div>
-                               <div class="checkbox">
-                                   <input id="check_active" name="active_name" type="checkbox" value="1">
-                                   <label for="check_active">Active</label>
-                               </div>
-                               <div class="red checkbox">
-                                   <input id="de_check_active" name="active_name" type="checkbox" value="2">
-                                   <label for="de_check_active">De-Active</label>
-                               </div>
-                               <div class="checkbox">
-                                   <input id="check_feat" name="feat_name" type="checkbox" value="1">
-                                   <label for="check_feat">Featured</label>
-                               </div>
-                               <div class="checkbox">
-                                   <input id="de_check_feat" name=feat_name" type="checkbox" value="2">
-                                   <label for="de_check_feat">Non Featured</label>
-                               </div>
-                               <div id="accordion" role="tablist" aria-multiselectable="true">
-                                   <div class="card">
-                                       <div class="card-header" role="tab" id="headingTwo">
-                                           <h6 class="mb-0">
-                                               <a class="collapsed" data-toggle="collapse" data-parent="#accordion"
-                                                  href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                                   Categories
-                                               </a>
-                                           </h6>
-                                       </div>
-                                       <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
-                                           <div class="card-block">
-                                               {% for category in categories %}
-                                                   {% if category.title|stringformat:"s" in cate_name %}
-                                                   <div class="checkbox">
-                                                       <input name="cate_name" value="{{ category.title }}" id="checkbox1" type="checkbox" checked>
-                                                       <label for="checkbox1">
-                                                           {{ category}}
-                                                       </label>
-                                                   </div>
-                                                   {% else %}
-                                                   <div class="checkbox">
-                                                       <input name="cate_name" value="{{ category.title }}" id="checkbox1" type="checkbox">
-                                                       <label for="checkbox1">
-                                                           {{ category}}
-                                                       </label>
-                                                   </div>
-                                                   {% endif %}
-                                               {% endfor %}
-                                           </div>
-                                       </div>
+                               <div class="card">
+                                   <div class="header">
+                                       <h5 class="title text-center">Date Start Date End</h5>
                                    </div>
+                                   <div class="content">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <input name='date_start' type='date' class="form-control">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input name='date_end' type='date' class="form-control">
+                                            </div>
+                                        </div>
+                                   </div>
+                               </div>
+                               
+                                <br><br>
+                               <div id="accordion" role="tablist" aria-multiselectable="true">
                                    <div class="card">
                                        <div class="card-header" role="tab" id="headingOne">
                                            <h6 class="mb-0">
@@ -229,9 +177,9 @@
                                        <div id="collapseOne" class="collapse" role="tabpanel" aria-labelledby="headingOne">
                                            <div class="card-block">
                                                {% for vendor in vendors %}
-                                                   {% if vendor.title|stringformat:"s" in vendor_name %}
+                                                   {% if vendor.id|stringformat:"s" in vendor_name %}
                                                    <div class="checkbox">
-                                                       <input name="vendor_name" value="{{ vendor.title }}"
+                                                       <input name="vendor_name" value="{{ vendor.id }}"
                                                               id="checkbox1" type="checkbox" checked>
                                                        <label for="checkbox1">
                                                            {{ vendor }}
@@ -239,76 +187,10 @@
                                                    </div>
                                                    {% else %}
                                                    <div class="checkbox">
-                                                       <input name="vendor_name" value="{{ vendor.title }}"
+                                                       <input name="vendor_name" value="{{ vendor.id }}"
                                                               id="checkbox1" type="checkbox">
                                                        <label for="checkbox1">
                                                            {{ vendor }}
-                                                       </label>
-                                                   </div>
-                                                   {% endif %}
-                                               {% endfor %}
-                                           </div>
-                                       </div>
-                                   </div>
-                                   <div class="card">
-                                       <div class="card-header" role="tab" id="headingThree">
-                                           <h6 class="mb-0">
-                                               <a class="collapsed" data-toggle="collapse" data-parent="#accordion"
-                                                  href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                                   Brands
-                                               </a>
-                                           </h6>
-                                       </div>
-                                       <div id="collapseThree" class="collapse" role="tabpanel" aria-labelledby="headingThree">
-                                           <div class="card-block">
-                                               {% for brand in brands %}
-                                                  {% if brand.title|stringformat:"s" in brand_name %}
-                                                   <div class="checkbox">
-                                                       <input name="brand_name" value="{{ brand.title }}"
-                                                              id="checkbox1" type="checkbox" checked>
-                                                       <label for="checkbox1">
-                                                           {{ brand }}
-                                                       </label>
-                                                   </div>
-                                                   {% else %}
-                                                   <div class="checkbox">
-                                                       <input name="brand_name" value="{{ brand.title }}"
-                                                              id="checkbox1" type="checkbox">
-                                                       <label for="checkbox1">
-                                                           {{ brand }}
-                                                       </label>
-                                                   </div>
-                                                   {% endif %}
-                                               {% endfor %}
-                                           </div>
-                                       </div>
-                                   </div>
-                                   <div class="card">
-                                       <div class="card-header" role="tab" id="headingFour">
-                                           <h6 class="mb-0">
-                                               <a class="collapsed" data-toggle="collapse" data-parent="#accordion"
-                                                  href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                                                   Color
-                                               </a>
-                                           </h6>
-                                       </div>
-                                       <div id="collapsFour" class="collapse" role="tabpanel" aria-labelledby="headingFour">
-                                           <div class="card-block">
-                                               {% for color in colors %}
-                                                   {% if color.title|stringformat:"s" in color_name %}
-                                                   <div class="checkbox">
-                                                       <input name="vendor_name" value="{{ color.title }}"
-                                                              id="checkbox1" type="checkbox" checked>
-                                                       <label for="checkbox1">
-                                                           {{ color }}
-                                                       </label>
-                                                   </div>
-                                                   {% else %}
-                                                   <div class="checkbox">
-                                                       <input name="color_name" value="{{ color.title }}"
-                                                              id="checkbox1" type="checkbox">
-                                                       <label for="checkbox1">
-                                                           {{ color }}
                                                        </label>
                                                    </div>
                                                    {% endif %}
@@ -318,7 +200,7 @@
                                    </div>
                                </div>
                                <button type="submit" class="btn btn-primary">Submit</button>
-                               <button class="btn btn-danger">Reset Filters</button>
+                               <a href="{{ request.path }}" class="btn btn-danger">Reset Filters</a>
                            </form>
                        </div>
                     </div>

@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponseRedirect, redirect, reverse, get_object_or_404
-from django.views.generic import ListView, DetailView, UpdateView, FormView
+from django.views.generic import ListView, DetailView, UpdateView, FormView, CreateView
 from django.utils.decorators import method_decorator
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
@@ -17,22 +17,19 @@ from dashboard.forms import PaymentForm
 class VendorPageList(ListView):
     template_name = 'inventory_manager/vendor_list.html'
     model = Supply
-    paginate_by = 20
+    paginate_by = 10
 
     def get_queryset(self):
         queryset = Supply.objects.all()
         search_name = self.request.GET.get('search_name', None)
-        queryset = queryset.filter(Q(title__icontains=search_name)| 
-                                   Q(afm__icontains=search_name) |
-                                   Q(phone__icontains=search_name) |
-                                   Q(phone1__icontains=search_name) |
-                                   Q(email__icontains=search_name)
-                                  ).distinct() if search_name else queryset
+        balance_name = self.request.GET.get('balance_name', None)
+        queryset = self.model.filter_data(queryset, search_name, balance_name)
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super(VendorPageList, self).get_context_data(**kwargs)
         search_name = self.request.GET.get('search_name', None)
+        balance_name = self.request.GET.get('balance_name', None)
         context.update(locals())
         return context
 
@@ -80,17 +77,20 @@ class WarehousePaymentPage(ListView):
         queryset = Order.objects.all()
         search_name = self.request.GET.get('search_name', None)
         paid_name = self.request.GET.get('paid_name', None)
-        queryset = queryset.filter(Q(code__icontains=search_name) |
-                                   Q(vendor__title__icontains=search_name) |
-                                   Q(notes__icontains=search_name)
-                                  ).distinct() if search_name else queryset
-        queryset = queryset.filter(is_paid=False) if paid_name else queryset
+        vendor_name = self.request.GET.getlist('vendor_name', None)
+        date_start = self.request.GET.get('date_start', None)
+        date_end = self.request.GET.get('date_end', None)
+        queryset = self.model.filter_data(queryset, search_name, vendor_name, date_start, date_end, paid_name)
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super(WarehousePaymentPage, self).get_context_data(**kwargs)
         search_name = self.request.GET.get('search_name', None)
         paid_name = self.request.GET.get('paid_name', None)
+        vendor_name = self.request.GET.getlist('vendor_name', None)
+        date_start = self.request.GET.get('date_start', None)
+        date_end = self.request.GET.get('date_end', None)
+        vendors  = Supply.objects.filter(active=True)
         context.update(locals())
         return context
 
@@ -153,3 +153,10 @@ def warehouse_edit_paid_order(request, dk, pk):
                                         )
     context = locals()
     return render(request, 'inventory_manager/form_edit_payment_order.html', context)
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class WarehousePaymentOrderCreate(CreateView):
+    template_name = ''
+    model = PaymentOrders
+    form_class = PaymentForm

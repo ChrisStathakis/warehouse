@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, re
 from django.utils.decorators import method_decorator
 from django.contrib.admin.views.decorators import staff_member_required
 
-from products.models import Product
+from products.models import Product, Supply
 
 from inventory_manager.models import Order, OrderItem
 from inventory_manager.forms import OrderQuickForm, VendorQuickForm, WarehouseOrderForm, OrderItemForm
@@ -15,9 +15,27 @@ class WareHouseOrderPage(ListView):
     model = Order
     paginate_by = 20
 
+    def get_queryset(self):
+        queryset = Order.objects.all()
+        date_start = self.request.GET.get('date_start', None)
+        date_end = self.request.GET.get('date_end', None)
+        search_name = self.request.GET.get('search_name', None)
+        vendor_name = self.request.GET.getlist('vendor_name', None)
+        queryset = self.model.filter_data(queryset,
+                                         search_name,
+                                         vendor_name,
+                                         date_start,
+                                         date_end
+                                         )
+        return queryset
+
     def get_context_data(self, **kwargs):
         context = super(WareHouseOrderPage, self).get_context_data(**kwargs)
-
+        search_name = self.request.GET.get('search_name', None)
+        vendor_name = self.request.GET.getlist('vendor_name', None)
+        date_start = self.request.GET.get('date_start', None)
+        date_end = self.request.GET.get('date_end', None)
+        vendors = Supply.objects.filter(active=True)
         context.update(locals())
         return context
 

@@ -189,6 +189,15 @@ class Supply(models.Model):
         self.balance -= orders.aggregate(Sum('paid_value'))['paid_value__sum'] if orders else 0
         super(Supply, self).save(*args, **kwargs)
 
+    @staticmethod
+    def filter_data(queryset, search_name, balance_name):
+        try:
+            queryset = queryset.filter(title__icontains=search_name) if search_name else queryset
+            queryset = queryset.filter(balance__gte=1) if balance_name else queryset
+        except:
+            queryset = queryset
+        return queryset
+
     def __str__(self):
         return self.title
 

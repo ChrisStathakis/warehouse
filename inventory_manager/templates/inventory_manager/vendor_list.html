@@ -45,15 +45,39 @@
                    <div class="card">
                        <div class="header">
                             <h4>Filters</h4>
-
                        </div>
                        <div class="content">
                            <form method="get">
+                                <div class="pagination">
+                                    <span class="step-links">
+                                        {% if page_obj.has_previous %}
+                                            <button type="submit" name='page' value="1" class="btn btn-primary">First Page</button>
+                                            <button type="submit" name='page' value="{{ page_obj.previous_page_number }}" class="btn btn-primary">Previous</button>
+                                        {% endif %}
+                                        
+                                        <span class="current">
+                                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                                        </span>
+                                        
+                                                {% if page_obj.has_next %}
+                                                    <button type="submit" name='page' value="{{ page_obj.next_page_number }}" class="btn btn-primary">Next</button>
+                                                    <button type="submit" name='page' value="{{ page_obj.paginator.num_pages }}" class="btn btn-primary">Last Page</button>
+                                                
+                                                {% endif %}
+                                            </span>
+                                </div>
                                <div class="form-group">
                                    <input type="text" {% if search_name %}value="{{ search_name }}"{% endif %}
                                           placeholder="Search" class="form-control" name="search_name"/>
                                </div>
-                               
+                               <br>
+                               <div class="checkbox">
+                                    <input name="balance_name" value="h"
+                                           id="checkbox1" type="checkbox">
+                                    <label for="checkbox1">
+                                        Have balance
+                                    </label>
+                                </div>
                                <button type="submit" class="btn btn-primary">Submit</button>
                                <a href="{% url 'dashboard:categories' %}" class="btn btn-danger">Reset Filters</a>
                            </form>

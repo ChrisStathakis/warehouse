@@ -111,7 +111,22 @@ class Order(models.Model):
             self.date_created = self.day_created
         super(Order, self).save(*args, **kwargs)
         self.vendor.save()
-            
+
+
+    @staticmethod
+    def filter_data(queryset, search_name, vendor_name, date_start, date_end, paid_name=None):
+        try:
+            queryset = queryset.filter(vendor__id__in=vendor_name) if vendor_name else queryset
+            queryset = queryset.filter(Q(title__icontains=search_name) |
+                                    Q(vendor__title__icontains=search_name) 
+                                    ).dinstict() if search_name else queryset
+            queryset = queryset.filter(date_created__range=[date_start, date_end]) if date_start else queryset
+            queryset = queryset.filter(is_paid=False) if paid_name else queryset
+        except:
+            queryset = queryset
+        return queryset
+
+
     def images_query(self):
         return self.warehouseorderimage_set.all()
 
