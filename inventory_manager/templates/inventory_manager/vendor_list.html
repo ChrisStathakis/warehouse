@@ -1,0 +1,69 @@
+{% extends 'dash_ware/index.html' %} {% load static %}
+
+{% block content %}
+   <div class="content">
+       <div class="container-fluid">
+           <div class="row">
+               <div class="col-md-8">
+                   <div class="card">
+                       <div class="header">
+                           <h4 class="title text-center">Vendors List</h4>
+                           <p class="category"><a href="{% url 'inventory:vendor_create' %}" class="btn btn-success">Create New Vendor</a></p>
+                       </div>
+                       <div class="content table-responsive table-full-width">
+                           <table class="table table-striped">
+                               <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Title</th>
+                                        <th>Phone</th>
+                                        <th>Afm</th>
+                                        <th>City</th>
+                                        <th>Balance</th>
+                                        <th>Action</th>
+                                    </tr>
+
+                               </thead>
+                               <tbody>
+                                {% for object in object_list %}
+                                    <tr>
+                                        <td>{{ object.id }}</td>
+                                        <td>{{ object }}</td>
+                                        <td>{{ object.phone }}, {{ object.phone1 }}</td>
+                                        <td>{{ object.afm }}</td>
+                                        <td>{{ object.city|default_if_none:"No data" }}</td>
+                                        <td>{{ object.tag_balance }}</td>
+                                        <td><a class="btn btn-info" href="{% url 'inventory:vendor_detail' object.id %}">Details</a></td>
+                                    </tr>
+                                {% endfor %}
+                               </tbody>
+                           </table>
+                       </div>
+                   </div>
+               </div>
+               <div class="col-md-4">
+                   <div class="card">
+                       <div class="header">
+                            <h4>Filters</h4>
+
+                       </div>
+                       <div class="content">
+                           <form method="get">
+                               <div class="form-group">
+                                   <input type="text" {% if search_name %}value="{{ search_name }}"{% endif %}
+                                          placeholder="Search" class="form-control" name="search_name"/>
+                               </div>
+                               
+                               <button type="submit" class="btn btn-primary">Submit</button>
+                               <a href="{% url 'dashboard:categories' %}" class="btn btn-danger">Reset Filters</a>
+                           </form>
+                       </div>
+                   </div>
+                   {% if category_page %}
+                        {% include 'dashboard/include/actions/category_actions.html' %}
+                   {% endif %}
+               </div>
+           </div>
+       </div>
+   </div>
+{% endblock %}

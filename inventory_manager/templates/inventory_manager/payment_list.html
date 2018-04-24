@@ -1,0 +1,80 @@
+{% extends 'dash_ware/index.html' %} {% load static %}
+
+{% block content %}
+   <div class="content">
+       <div class="container-fluid">
+           <div class="row">
+               <div class="col-md-8">
+                   <div class="card">
+                       <div class="header">
+                           <h4 class="title text-center">Vendors List</h4>
+                           <p class="category"><a href="{% url 'inventory:vendor_create' %}" class="btn btn-success">Create New Vendor</a></p>
+                       </div>
+                       <div class="content table-responsive table-full-width">
+                           <table class="table table-striped">
+                               <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Title</th>
+                                        <th>Vendor</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Value</th>
+                                        <th>Paid Value</th>
+                                        <th>Action</th>
+                                    </tr>
+
+                               </thead>
+                               <tbody>
+                                {% for object in object_list %}
+                                    <tr>
+                                        <td>{{ object.id }}</td>
+                                        <td>{{ object.code }}</td>
+                                        <td>{{ object.vendor }}</td>
+                                        <td>{{ object.date_created|date }}</td>
+                                        <td>{{ object.tag_is_paid }}</td>
+                                        <td>{{ object.tag_all_values.4 }}</td>
+                                        <td>{{ object.tag_paid_value }}</td>
+                                        <td>
+                                            <a class="btn btn-info" href="{% url 'inventory:ware_order_paid_detail' object.id %}">Details</a>
+                                            <a class="btn btn-success" href="{% url 'inventory:ware_order_paid' object.id %}">Paid</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                               </tbody>
+                           </table>
+                       </div>
+                   </div>
+               </div>
+               <div class="col-md-4">
+                   <div class="card">
+                       <div class="header">
+                            <h4>Filters</h4>
+
+                       </div>
+                       <div class="content">
+                           <form method="get">
+                               <div class="form-group">
+                                   <input type="text" {% if search_name %}value="{{ search_name }}"{% endif %}
+                                          placeholder="Search" class="form-control" name="search_name"/>
+                               </div>
+                               <div class="checkbox">
+                                    <input name="paid_name" value="paid"
+                                           type="checkbox" {% if size.id|stringformat:"s" == 'paid' %} checked {% endif %}>
+                                    <label>
+                                        Not Paid
+                                    </label>
+                                </div>
+                               <button type="submit" class="btn btn-primary">Submit</button>
+                               <a href="{% url 'dashboard:categories' %}" class="btn btn-danger">Reset Filters</a>
+                           </form>
+                       </div>
+                   </div>
+                   {% if category_page %}
+                        {% include 'dashboard/include/actions/category_actions.html' %}
+                   {% endif %}
+               </div>
+           </div>
+       </div>
+   </div>
+{% endblock %}

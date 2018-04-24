@@ -47,6 +47,9 @@ class PaymentOrders(models.Model):
     def tag_value(self):
         return '%s %s' % (self.value, CURRENCY)
 
+    def tag_is_paid(self):
+        return 'PAID' if self.is_paid else 'NOT PAID'
+
     def status(self):
         return 'Πληρωμένο' if self.is_paid else 'Μη Πληρωμένο'
 

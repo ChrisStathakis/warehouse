@@ -1,0 +1,28 @@
+{% extends "dash_ware/index.html" %}
+
+{% block content %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title text-center">{{ object }}</h4>
+                            <p class="text-center">
+                                Afm {{ object.afm|default_if_none:"No data" }} 
+                                DOY {{ object.doy|default_if_none:"No data" }}
+                                Phones.. {{ object.phone1 }}, {{ object.phone }}
+                            </p>
+                        </div>
+                        <div class="content">
+                            <form method="post">{% csrf_token %}
+                                {{ form }}
+                                <button type='submit' class="btn btn-success">Save</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -10,5 +10,4 @@ django-model-utils
 Pillow
 python-dateutil
 psycopg2
-django-grappelli
 djangorestframework

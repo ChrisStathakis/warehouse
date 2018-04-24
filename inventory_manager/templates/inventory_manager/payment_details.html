@@ -1,0 +1,81 @@
+{% extends "dash_ware/index.html" %}
+
+{% block content %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                {% if messages %}
+                    <div class="col-md-12">
+                        {% for message in messages %}
+                            <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title text-center">{{ instance }}</h4>
+                            <p class="text-center text-info">Date {{ instance.date_created|date }}, Vendor.. {{ instance.vendor }}</p>
+                        </div>
+                        <div class="content">
+                            <h5 class="header-raised text-center">Total Value {{ instance.tag_total_value }}, Paid Value {{ instance.tag_paid_value }}</h5>
+                            <a href="{% url 'dashboard:warehouse_order_detail' instance.id %}" class="btn btn-round btn-primary text-center">Edit</a>
+                            <br><br>
+                            <table class="table table-responsive table-bordered table-info">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Title</th>
+                                        <th>Payment Type</th>
+                                        <th>Paid</th>
+                                        <th>Value</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ele in instance.payment_orders.all %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ ele.title|default_if_none:"Payment Order" }}</td>
+                                            <td>{{ ele.get_payment_type_display }}</td>
+                                            <td>{{ ele.tag_is_paid }}</td>
+                                            <td>{{ ele.tag_value }}</td>
+                                            <td>
+                                                <a href="{% url 'inventory:ware_order_paid_edit' instance.id ele.id %}" class="btn btn-success">Edit</a>
+                                                <a href="{% url 'inventory:ware_order_paid_delete' ele.id %}" class="btn btn-warning">Delete</a>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6">No Payment order added</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    {% block extra_form %}
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title text-center">Add Payment</h4>
+                        </div>
+                        <div class="content">
+                        {{ instance.paid_value }}  {{ instance.total_price }}
+                            {% if instance.tag_form_remain_value %}
+                            <form method="post">{% csrf_token %}
+                                {{ form }}
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </form>
+                            {% else %}
+                                <p>You cant add more orders, You have already capped the value!</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

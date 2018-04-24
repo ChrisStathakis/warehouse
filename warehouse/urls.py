@@ -25,7 +25,7 @@ from point_of_sale.api.views import RetailOrderRetrieveUpdateDestroyApiView, Ret
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('grappelli/', include('grappelli.urls')), # grappelli URLS
+
     path('admin/', admin.site.urls),
     path('', Homepage.as_view(), name='homepage'),
     path('offer/', OffersPage.as_view(), name='offers_page'),
@@ -66,5 +66,6 @@ urlpatterns = [
     path('reports/', include('reports.urls', namespace='reports',)),
     path('pos/', include('point_of_sale.urls', namespace='pos',)),
     path('billings/', include('transcations.urls', namespace='billings')),
+    path('inventory/', include('inventory_manager.urls', namespace='inventory')),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

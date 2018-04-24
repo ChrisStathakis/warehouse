@@ -126,3 +126,16 @@ SizeAttributeFormSet = modelformset_factory(SizeAttribute,
                                             form=SizeAttributeForm,
                                             )
 
+
+
+class VendorForm(forms.ModelForm):
+
+    class Meta:
+        model = Supply
+        fields = "__all__"
+        exclude = ["date_added",]
+
+    def __init__(self, *args, **kwargs):
+        super(VendorForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'

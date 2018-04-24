@@ -149,6 +149,12 @@ class Order(models.Model):
         return '%s %s' %(self.paid_value, CURRENCY)
     tag_paid_value.short_description = 'Πληρωμένη Αξία'
 
+    def tag_is_paid(self):
+        return 'Is Paid' if self.is_paid else 'Not Paid'
+
+    def tag_form_remain_value(self):
+        return True if self.get_remaining_value > 0 else False
+
 
 class WarehouseOrderImage(models.Model):
     order_related = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -182,6 +188,7 @@ class OrderItem(models.Model):
         verbose_name = "Συστατικά Τιμολογίου   "
 
     def save(self, *args, **kwargs):
+        print(self.final_price)
         vendor, order, product = self.order.vendor, self.order, self.product
         # old_qty = self.tracker.previous('qty')
         # is_change = self.tracker.has_changed('qty')
@@ -233,6 +240,7 @@ class OrderItem(models.Model):
     def tag_total_final_price(self):
         return '%s %s' % (round(self.get_total_final_price, 2), CURRENCY)
     tag_total_final_price.short_description = 'Τελική Αξία'
+
 
 
 @receiver(pre_delete, sender=OrderItem)
