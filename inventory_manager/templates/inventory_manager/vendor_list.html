@@ -33,7 +33,10 @@
                                         <td>{{ object.afm }}</td>
                                         <td>{{ object.city|default_if_none:"No data" }}</td>
                                         <td>{{ object.tag_balance }}</td>
-                                        <td><a class="btn btn-info" href="{% url 'inventory:vendor_detail' object.id %}">Details</a></td>
+                                        <td>
+                                            <a class="btn btn-info" href="{% url 'inventory:vendor_detail' object.id %}">Details</a>
+                                            <a class="btn btn-info btn-raised" href="{% url 'inventory:create_check' object.id %}">Create Check</a>
+                                        </td>
                                     </tr>
                                 {% endfor %}
                                </tbody>

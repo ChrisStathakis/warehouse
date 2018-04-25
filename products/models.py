@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import Sum
 from django.utils.translation import pgettext_lazy
 from django.conf import settings
@@ -17,6 +18,7 @@ from time import time
 import datetime
 from decimal import Decimal
 from dashboard.constants import *
+from dashboard.models import PaymentOrders
 # Create your models here.
 
 
@@ -178,6 +180,7 @@ class Supply(models.Model):
     remaining_deposit = models.DecimalField(default=0, decimal_places=2, max_digits=100,
                                             verbose_name='Υπόλοιπο προκαταβολών')
     balance = models.DecimalField(default=0, max_digits=100, decimal_places=2, verbose_name="Υπόλοιπο")
+    payment_orders = GenericRelation(PaymentOrders)
 
     class Meta:
         verbose_name_plural = '9. Προμηθευτές'
@@ -187,6 +190,8 @@ class Supply(models.Model):
         orders = self.order_set.all()
         self.balance = orders.aggregate(Sum('total_price'))['total_price__sum'] if orders else 0
         self.balance -= orders.aggregate(Sum('paid_value'))['paid_value__sum'] if orders else 0
+        self.balance -= self.payment_orders.filter(is_paid=True).aggregate(Sum('value'))['value__sum'] \
+        if self.payment_orders.filter(is_paid=True) else 0
         super(Supply, self).save(*args, **kwargs)
 
     @staticmethod

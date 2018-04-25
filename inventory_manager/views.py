@@ -12,6 +12,8 @@ from .models import Order
 from dashboard.models import PaymentOrders
 from dashboard.forms import PaymentForm
 
+import datetime
+
 
 @method_decorator(staff_member_required, name='dispatch')
 class VendorPageList(ListView):
@@ -157,6 +159,31 @@ def warehouse_edit_paid_order(request, dk, pk):
 
 @method_decorator(staff_member_required, name='dispatch')
 class WarehousePaymentOrderCreate(CreateView):
-    template_name = ''
+    template_name = 'dash_ware/form.html'
     model = PaymentOrders
     form_class = PaymentForm
+
+    def get_initial(self):
+        initial = super(WarehousePaymentOrderCreate, self).get_initial()
+        instance = get_object_or_404(Supply, id=self.kwargs['pk'])
+        initial['object_id'] = instance.id
+        initial['content_type'] = ContentType.objects.get_for_model(instance)
+        initial['date_expired'] = datetime.datetime.now()
+        initial['title'] = '%s' % instance.title
+        initial['is_expense'] = True
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super(WarehousePaymentOrderCreate, self).get_context_data(**kwargs)
+        title = 'Create Check'
+        back_url = ''
+        context.update(locals())
+        return context
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'The check created!')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('inventory:vendor_list')
