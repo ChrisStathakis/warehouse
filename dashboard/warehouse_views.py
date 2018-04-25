@@ -2,11 +2,14 @@ from django.views.generic import ListView, DetailView
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, reverse, HttpResponse
 from django.utils.decorators import method_decorator
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib import messages
 
 from products.models import Product, Supply
 
 from inventory_manager.models import Order, OrderItem
 from inventory_manager.forms import OrderQuickForm, VendorQuickForm, WarehouseOrderForm, OrderItemForm
+
+import datetime
 
 
 @method_decorator(staff_member_required, name='dispatch')
@@ -42,7 +45,9 @@ class WareHouseOrderPage(ListView):
 
 @staff_member_required
 def create_new_warehouse_order(request):
-    form = OrderQuickForm(request.POST or None)
+    form = OrderQuickForm(request.POST or None,
+                          initial = {'date_created': datetime.datetime.now()}
+                          )
     if form.is_valid():
         instance = form.save()
         return HttpResponseRedirect(reverse('dashboard:warehouse_order_detail', kwargs={'dk': instance.id}))
@@ -63,9 +68,14 @@ def quick_vendor_create(request):
 @staff_member_required
 def warehouse_order_detail(request, dk):
     instance = get_object_or_404(Order, id=dk)
-    instance_items = instance.orderitem_set.all()
     products = Product.my_query.active_warehouse().filter(supply=instance.vendor)
     form = WarehouseOrderForm(request.POST or None, instance=instance)
+    if request.POST:
+        print(form.errors)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'The order Edited!')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     context = locals()
     return render(request, 'dash_ware/order_detail.html', context)
 

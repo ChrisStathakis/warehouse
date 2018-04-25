@@ -109,6 +109,7 @@ def warehouse_order_paid(request, pk):
 @staff_member_required
 def warehouser_order_paid_detail(request, pk):
     instance = get_object_or_404(Order, id=pk)
+    vendor = instance.vendor
     create = True
     form = PaymentForm(request.POST or None, initial={'value': instance.get_remaining_value,
                                                       'content_type': ContentType.objects.get_for_model(instance),
@@ -127,6 +128,25 @@ def warehouser_order_paid_detail(request, pk):
     context = locals()
     return render(request, 'inventory_manager/payment_details.html', context)
 
+
+@staff_member_required
+def warehouse_check_order_convert(request, dk, pk):
+    instance = get_object_or_404(PaymentOrders, id=dk)
+    order = get_object_or_404(Order, id=dk)
+    if instance.value <= order.total_price:
+        instance.object_id = dk
+        instance.content_type = ContentType.objects.get_for_model(order)
+        instance.is_paid = True
+        instance.save()
+    else:
+        instance.value -= order.total_price
+        instance.save()
+        new_payment_order = PaymentOrders.objects.create(content_type=ContentType.objects.get_for_model(order),
+                                                         object_id=pk,
+                                                         title = '%s' % order.title,
+                                                        )
+ 
+        
 
 @staff_member_required
 def warehouse_order_paid_delete(request, pk):
@@ -181,9 +201,48 @@ class WarehousePaymentOrderCreate(CreateView):
         return context
 
     def form_valid(self, form):
-        form.save()
-        messages.success(self.request, 'The check created!')
+        print(form)
+        if form.is_valid():
+            print('works!')
+            form.save()
+            messages.success(self.request, 'The check created!')
         return super().form_valid(form)
 
     def get_success_url(self):
         return reverse('inventory:vendor_list')
+
+
+@staff_member_required
+def edit_check_order(request, pk):
+    instance = get_object_or_404(PaymentOrders, id=pk)
+    form = PaymentForm(request.POST or None, instance=instance, initial={'is_expense': True})
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'The Check order is edited')
+        return HttpResponseRedirect(reverse('inventory:vendor_detail', kwargs={'pk': instance.object_id }))
+    print(form.errors)
+    page_title = 'Edit %s' % (instance.title)    
+    context = locals()
+    return render(request, 'dash_ware/form.html', context)
+
+
+    def get_success_url(self):
+        instance = get_object_or_404(PaymentOrders, id=self.kwargs['pk'])
+        return reverse('inventory:vendor_detail', kwargs={'pk': instance.object_id })
+
+
+@staff_member_required
+def delete_check_order(request, pk):
+    instance = get_object_or_404(PaymentOrders, id=pk)
+    instance.delete()
+    messages.warning(request, 'The Payment Order deleted!')
+    return HttpResponseRedirect(reverse('inventory:vendor_detail', kwargs={'pk': instance.object_id}))
+
+
+@staff_member_required
+def check_order_paid(request, pk):
+    instance = get_object_or_404(PaymentOrders, id=pk)
+    instance.is_paid = True
+    instance.save()
+    messages.success(request, 'The order is paid.')
+    return HttpResponseRedirect(reverse('inventory:vendor_detail', kwargs={'pk': instance.object_id}))

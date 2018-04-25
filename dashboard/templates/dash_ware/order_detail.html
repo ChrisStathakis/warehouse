@@ -22,18 +22,23 @@
                         <hr>
                         <div class="text-center">
                             <div class="row">
-                                <div class="col-md-3 col-md-offset-1">
-                                            <h5>{{ instance.tag_all_values.0 }}<br /><small>Clean Value</small></h5>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <h5>{{ instance.tag_all_values.3 }}<br /><small>Taxes</small></h5>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <h5>{{ instance.tag_all_values.4 }}<br /><small>Total Value</small></h5>
-                                        </div>
-                                    </div>
+                                <div class="col-md-3">
+                                    <h5>{{ instance.tag_all_values.0 }}<br /><small>Clean Value</small></h5>
                                 </div>
+                                <div class="col-md-3">
+                                    <h5>{{ instance.tag_all_values.3 }}<br /><small>Taxes</small></h5>
+                                </div>
+                                <div class="col-md-3">
+                                    <h5>{{ instance.tag_discount }}<br /><small>Discounts</small></h5>
+                                </div>
+                                <div class="col-md-3">
+                                    <h5>{{ instance.tag_all_values.4 }}<br /><small>Total Value</small></h5>
+                                </div>
+                                <br>
+                                <a href="" class="btn btn-success">Go to Payments</a>
                             </div>
+                        </div>
+                    </div>
 
                     <div class="card">
                         <div class="header">
@@ -85,7 +90,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                    {% for product in instance_items %}
+                                    {% for product in instance.orderitem_set.all %}
                                         <tr>
                                             <td>{{ product.product.code|default_if_none:"No Code" }}</td>
                                             <td>{{ product.product }}</td>

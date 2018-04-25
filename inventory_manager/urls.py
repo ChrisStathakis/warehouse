@@ -8,7 +8,9 @@ urlpatterns = [
     path('vendor-detail/<int:pk>/', VendorPageDetail.as_view(), name='vendor_detail'),
     path('vendor-list/create/', VendorPageCreate.as_view(), name='vendor_create'), 
     path('vendor/create-check/<int:pk>/', WarehousePaymentOrderCreate.as_view(), name='create_check'),
-
+    path('vendor/details/check-order-edit/<int:pk>/', view= edit_check_order, name='edit_check'),
+    path('vendor/check/delete/<int:dk>/', view=delete_check_order, name='delete_check'),
+    path('vendor/check-order/paid/<int:pk>/', view=check_order_paid , name='paid_check'),
 
     path('payment/list/', WarehousePaymentPage.as_view(), name='payment_list'),
     path('payment/paid/<int:pk>/', view=warehouse_order_paid, name='ware_order_paid'),

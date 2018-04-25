@@ -21,6 +21,7 @@
                             <h5 class="header-raised text-center">Total Value {{ instance.tag_total_value }}, Paid Value {{ instance.tag_paid_value }}</h5>
                             <a href="{% url 'dashboard:warehouse_order_detail' instance.id %}" class="btn btn-round btn-primary text-center">Edit</a>
                             <br><br>
+                            <h5>Vendor Checks</h5>
                             <table class="table table-responsive table-bordered table-info">
                                 <thead>
                                     <tr>
@@ -49,6 +50,43 @@
                                     <tr>
                                         <td colspan="6">No Payment order added</td>
                                     </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="header">
+                            <div class="title text-center">Vendor Checks</div>
+                        </div>
+                        <div class="content">
+                            <table class="table table-responsive table-bordered table-info">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Title</th>
+                                        <th>Payment Type</th>
+                                        <th>Paid</th>
+                                        <th>Value</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ele in vendor.payment_orders.all %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ ele.title|default_if_none:"Payment Order" }}</td>
+                                            <td>{{ ele.get_payment_type_display }}</td>
+                                            <td>{{ ele.tag_is_paid }}</td>
+                                            <td>{{ ele.tag_value }}</td>
+                                            <td>
+                                                <a href="{% url 'inventory:ware_order_paid_edit' instance.id ele.id %}" class="btn btn-success">Pay with this</a>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="6">No Payment order added</td>
+                                        </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>

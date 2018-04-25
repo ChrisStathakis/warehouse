@@ -4,18 +4,51 @@
     <div class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <div class="card">
                         <div class="header">
                             <h4 class="text-center title">{{ object }}</h4>
                         </div>
                         <div class="content">
-                            <h5>Balance.. {{ object.tag_balance }}  Payment...{{ object.remaining_deposit }}</h5>
+                            <h5>Balance.. {{ object.tag_balance }}  Not paid Check...{{ object.tag_deposit }}</h5>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th></th>
+                                        <th>Title</th>
+                                        <th>Payment Type</th>
+                                        <th>Value</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in object.payment_orders.all %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ order }}</td>
+                                            <td>{{ order.tag_payment }}</td>
+                                            <td>{{ order.tag_value }}</td>
+                                            <td>{{ order.status }}</td>
+                                            <td>
+                                                <a href="{% url 'inventory:edit_check' order.id %}" class="btn btn-info">Edit</a>
+                                                <a href="{% url 'inventory:delete_check' order.id %}" class="btn btn-warning">Delete</a>
+                                                {% if not order.is_paid %}
+                                                <a href="{% url 'inventory:paid_check' order.id %}" class="btn btn-success">Paid</a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <td colspan="6">No Checks added!</td>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-6">
                     <div class="card">
                         <div class="header">
                             <h4 class="title text-center">{{ object }}</h4>

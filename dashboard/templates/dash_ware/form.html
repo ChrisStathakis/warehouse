@@ -10,6 +10,7 @@
                         <h4 class="text-center">{{ page_title }}</h4>
                         <div class="content">
                             <form method='post'>{% csrf_token %}
+                                {{ form.errors }}
                                 {{ form }}
                                 <button type='sumbit' class="btn btn-success">Save</button>
                             </form>

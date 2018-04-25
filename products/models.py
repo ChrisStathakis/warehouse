@@ -192,6 +192,8 @@ class Supply(models.Model):
         self.balance -= orders.aggregate(Sum('paid_value'))['paid_value__sum'] if orders else 0
         self.balance -= self.payment_orders.filter(is_paid=True).aggregate(Sum('value'))['value__sum'] \
         if self.payment_orders.filter(is_paid=True) else 0
+        self.remaining_deposit = self.payment_orders.filter(is_paid=False).aggregate(Sum('value'))['value__sum'] \
+        if self.payment_orders.filter(is_paid=False) else 0
         super(Supply, self).save(*args, **kwargs)
 
     @staticmethod
@@ -214,6 +216,9 @@ class Supply(models.Model):
 
     def tag_balance(self):
         return ("{0:.2f}".format(round(self.balance, 2))) + ' %s'%(CURRENCY)
+
+    def tag_deposit(self):
+        return "%s %s" % (self.remaining_deposit, CURRENCY)
 
     def tag_phones(self):
         return '%s' % self.phone if self.phone else ' ' + ', %s' % self.phone1 if self.phone1 else ' '     

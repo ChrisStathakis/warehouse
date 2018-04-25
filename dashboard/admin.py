@@ -6,7 +6,7 @@ from .models import *
 
 @admin.register(PaymentOrders)
 class PaymentOrdersAdmin(admin.ModelAdmin):
-	pass
+	list_display = ['title', 'date_expired', 'content_type', 'value', 'is_paid']
 		
 
 

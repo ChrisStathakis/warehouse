@@ -92,7 +92,7 @@ class OrderItemAdminForm(forms.ModelForm):
 
 
 class OrderQuickForm(forms.ModelForm):
-
+    date_created = forms.DateTimeField(widget=forms.DateInput(attrs={'type': 'date'}))
     class Meta:
         model = Order
         fields = ['date_created', 'code', 'vendor', 'payment_method',]

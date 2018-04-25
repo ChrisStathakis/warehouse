@@ -85,7 +85,7 @@ class Order(models.Model):
         self.total_price_after_discount = all_order_items.aggregate(total=Sum(F('qty')*F('final_price')))['total']\
         if all_order_items else 0
         self.total_taxes = self.total_price_after_discount * (Decimal(self.get_taxes_modifier_display())/100)
-        self.total_price = self.total_price_after_discount + self.total_taxes
+        self.total_price = self.total_price_after_discount + self.total_taxes - self.total_discount
 
         if self.is_paid:
             get_orders = self.payment_orders.all()
@@ -167,6 +167,9 @@ class Order(models.Model):
     def tag_is_paid(self):
         return 'Is Paid' if self.is_paid else 'Not Paid'
 
+    def tag_discount(self):
+        return '%s %s' % (self.total_discount, CURRENCY)
+
     def tag_form_remain_value(self):
         return True if self.get_remaining_value > 0 else False
 
@@ -212,6 +215,7 @@ class OrderItem(models.Model):
         self.total_value_with_taxes = self.total_clean_value * ((100+Decimal(self.get_taxes_display()))/100)
         self.final_price = self.price * ((100-Decimal(self.discount))/100)
         super(OrderItem, self).save(*args, **kwargs)
+        self.order.save()
         product.price_buy = self.price
         product.order_discount = self.discount
         product.measure_unit = self.unit
@@ -232,7 +236,7 @@ class OrderItem(models.Model):
         return '%s %s' % (self.price, CURRENCY)
 
     def tag_qty(self):
-        return '%s %s' % (self.qty, self.unit)
+        return '%s %s' % (self.qty, self.get_unit_display())
 
     def tag_clean_price(self):
         return '%s %s' % (round(self.get_clean_price, 2), CURRENCY)
