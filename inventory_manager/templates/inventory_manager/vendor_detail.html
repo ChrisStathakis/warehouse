@@ -15,7 +15,7 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th></th>
+                                        <th>Date</th>
                                         <th>Title</th>
                                         <th>Payment Type</th>
                                         <th>Value</th>
@@ -27,6 +27,7 @@
                                     {% for order in object.payment_orders.all %}
                                         <tr>
                                             <td>{{ forloop.counter }}</td>
+                                            <td>{{ order.date_expired|date }}</td>
                                             <td>{{ order }}</td>
                                             <td>{{ order.tag_payment }}</td>
                                             <td>{{ order.tag_value }}</td>

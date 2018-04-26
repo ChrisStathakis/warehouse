@@ -52,13 +52,15 @@ def estimate_date_start_end_and_months(request):
     day_now, start_year = datetime.datetime.now(), datetime.datetime(datetime.datetime.now().year, 2, 1)
     date_pick = request.GET.get('date_pick', None)
     start_year, day_now, date_range = clean_date_filter(request, date_pick, date_start=start_year, date_end=day_now)
-
+    months_list=12
     # gets the total months of the year
+    '''
     months_list, month = [], 1
     months = diff_month(start_year, day_now)
     while month <= months + 1:
         months_list.append(datetime.datetime(datetime.datetime.now().year, month, 1).month)
         month += 1
+    '''
     return [start_year, day_now, date_range, months_list]
 
 

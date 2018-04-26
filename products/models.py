@@ -415,6 +415,9 @@ class Product(models.Model):
     def tag_remain_warehouse_final_price(self):
         return '%s %s' % (self.final_price*self.qty, CURRENCY)
 
+    def tag_qty(self):
+        return '%s %s' % (self.qty, self.get_measure_unit_display())
+
     @property
     def image(self):
         try:

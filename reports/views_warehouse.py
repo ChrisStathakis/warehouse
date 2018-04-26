@@ -162,15 +162,16 @@ def vendor_detail(request, pk):
     category_name, vendor_name, color_name, discount_name, qty_name = warehouse_get_filters_data(request)
 
     # data
-    products = Product.my_query.active_warehouse().filter(supply=instance)
+    products = Product.my_query.active_warehouse().filter(supply=instance)[:100]
     warehouse_orders = Order.objects.filter(vendor=instance, date_created__range=[date_start, date_end])
-    paychecks = list(chain(instance.payment_orders.filter(date_expired__in=[date_start, date_end]),
+    
+    paychecks = list(chain(instance.payment_orders.all().filter(date_expired__range=[date_start, date_end]),
                            PaymentOrders.objects.filter(content_type=ContentType.objects.get_for_model(Order),
-                                                        object_id__in=warehouse_orders.values_list('id')
+                                                        object_id__in=warehouse_orders.values('id'),
                                                         ) 
                           )
                     )
-    order_item_sells = RetailOrderItem.objects.filter(title__in=products, order__date_created__in=[date_start, date_end])
+    order_item_sells = RetailOrderItem.objects.filter(title__in=products, order__date_created__range=[date_start, date_end])
     context = locals()
     return render(request, 'report/details/vendors_id.html', context)
 
