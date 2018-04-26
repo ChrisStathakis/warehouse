@@ -1,4 +1,4 @@
-from django.shortcuts import render, render_to_response, HttpResponseRedirect, redirect, get_object_or_404
+from django.shortcuts import render, render_to_response, HttpResponseRedirect, redirect, get_object_or_404, get_list_or_404
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView
@@ -152,7 +152,30 @@ class Vendors(LoginRequiredMixin, ListView):
         return context
 
 
-class VendorDetail(LoginRequiredMixin, DetailView):
+@staff_member_required
+def vendor_detail(request, pk):
+    instance = get_object_or_404(Supply, id=pk)
+    # filters_data
+    date_start, date_end, date_range, months_list = estimate_date_start_end_and_months(request)
+    vendors, categories, categories_site, colors, sizes = initial_data_from_database()
+    date_pick = request.GET.get('date_pick', None)
+    category_name, vendor_name, color_name, discount_name, qty_name = warehouse_get_filters_data(request)
+
+    # data
+    products = Product.my_query.active_warehouse().filter(supply=instance)
+    warehouse_orders = Order.objects.filter(vendor=instance, date_created__range=[date_start, date_end])
+    paychecks = list(chain(instance.payment_orders.filter(date_expired__in=[date_start, date_end]),
+                           PaymentOrders.objects.filter(content_type=ContentType.objects.get_for_model(Order),
+                                                        object_id__in=warehouse_orders.values_list('id')
+                                                        ) 
+                          )
+                    )
+    order_item_sells = RetailOrderItem.objects.filter(title__in=products, order__date_created__in=[date_start, date_end])
+    context = locals()
+    return render(request, 'report/details/vendors_id.html', context)
+
+@method_decorator(staff_member_required, name='dispatch')
+class VendorDetail(DetailView):
     template_name = 'report/details/vendors_id.html'
     model = Supply
 
@@ -170,7 +193,12 @@ class VendorDetail(LoginRequiredMixin, DetailView):
         # products section
         products = products.filter(category__id__in=category_name) if category_name else products
         warehouse_orders = Order.objects.filter(day_created__range=[date_start, date_end], vendor=self.object)
-
+        paychecks_vendors = self.object.payment_orders.all()
+        paychecks_orders = PaymentOrders.objects.filter(content_type=ContentType.objects.get_for_model(Order),
+                                                        object_id__in=warehouse_orders.values_list('id')
+                                                        )
+        paychecks = list(chain(paychecks_vendors, paychecks_orders))
+        print(paychecks)
         context.update(locals())
         return context
 

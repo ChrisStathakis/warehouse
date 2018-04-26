@@ -5,6 +5,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
+from django.core.paginator import EmptyPage, Paginator, PageNotAnInteger
 
 from products.models import Supply, Category, Color, Size
 from products.forms import VendorForm
@@ -26,6 +27,7 @@ class VendorPageList(ListView):
         search_name = self.request.GET.get('search_name', None)
         balance_name = self.request.GET.get('balance_name', None)
         queryset = self.model.filter_data(queryset, search_name, balance_name)
+
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -131,7 +133,7 @@ def warehouser_order_paid_detail(request, pk):
 
 @staff_member_required
 def warehouse_check_order_convert(request, dk, pk):
-    instance = get_object_or_404(PaymentOrders, id=dk)
+    instance = get_object_or_404(PaymentOrders, id=pk)
     order = get_object_or_404(Order, id=dk)
     if instance.value <= order.total_price:
         instance.object_id = dk
@@ -139,14 +141,21 @@ def warehouse_check_order_convert(request, dk, pk):
         instance.is_paid = True
         instance.save()
     else:
+        new_payment_order = PaymentOrders.objects.create(content_type=ContentType.objects.get_for_model(order),
+                                                         object_id=dk,
+                                                         title='%s' % order.code,
+                                                         date_expired=instance.date_expired,
+                                                         payment_type=instance.payment_type,
+                                                         bank=instance.bank,
+                                                         value=order.total_price,
+                                                         is_expense=True,
+                                                         is_paid=True
+                                                         )
         instance.value -= order.total_price
         instance.save()
-        new_payment_order = PaymentOrders.objects.create(content_type=ContentType.objects.get_for_model(order),
-                                                         object_id=pk,
-                                                         title = '%s' % order.title,
-                                                        )
+    messages.success(request, 'The check order is converted')
+    return HttpResponseRedirect(reverse('inventory:ware_order_paid_detail', kwargs={'pk': dk}))
  
-        
 
 @staff_member_required
 def warehouse_order_paid_delete(request, pk):

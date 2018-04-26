@@ -42,7 +42,8 @@ class PaymentOrders(models.Model):
             self.date_created = self.date_expired
         super(PaymentOrders, self).save(*args, **kwargs)
         get_order = self.content_object
-        get_order.save()
+        if get_order:
+            get_order.save()
 
     def tag_value(self):
         return '%s %s' % (self.value, CURRENCY)
@@ -59,9 +60,15 @@ class PaymentOrders(models.Model):
 
 @receiver(post_delete, sender=PaymentOrders)
 def update_on_delete(sender, instance, *args, **kwargs):
+    print('here')
     get_order = instance.content_object
-    get_order.is_paid = False
-    get_order.save()
+    try:
+        get_order.is_paid = False
+        get_order.paid_value = 0
+        get_order.save()
+    except:
+        t=t
+
 
 
 class Store(models.Model):

@@ -80,7 +80,7 @@
                                             <td>{{ ele.tag_is_paid }}</td>
                                             <td>{{ ele.tag_value }}</td>
                                             <td>
-                                                <a href="{% url 'inventory:ware_order_paid_edit' instance.id ele.id %}" class="btn btn-success">Pay with this</a>
+                                                <a href="{% url 'inventory:order_convert' instance.id ele.id %}" class="btn btn-success">Pay with this</a>
                                             </td>
                                         </tr>
                                     {% empty %}

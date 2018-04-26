@@ -18,7 +18,7 @@ urlpatterns = [
     url(r'products/$', ReportProducts.as_view(), name='products'),
     url(r'products/(?P<pk>\d+)/', ProductDetail.as_view(), name='products_detail'),
     url(r'vendors/$', Vendors.as_view(), name='vendors'),
-    url(r'vendors/(?P<pk>\d+)/$', VendorDetail.as_view(), name='vendor_detail'),
+    url(r'vendors/(?P<pk>\d+)/$', view=vendor_detail, name='vendor_detail'),
     path('warehouse-categories', view=warehouse_category_reports, name='warehouse_categories'),
     path('warehouse-category/<int:pk>', WarehouseCategoryReport.as_view(), name='warehouse_category_detail'),
     url(r'orders/$', view=warehouse_orders, name='warehouse_orders'),

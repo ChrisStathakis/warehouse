@@ -11,6 +11,7 @@ urlpatterns = [
     path('vendor/details/check-order-edit/<int:pk>/', view= edit_check_order, name='edit_check'),
     path('vendor/check/delete/<int:dk>/', view=delete_check_order, name='delete_check'),
     path('vendor/check-order/paid/<int:pk>/', view=check_order_paid , name='paid_check'),
+    path('vendor-detail/convert-order/<int:dk>/<int:pk>/', view=warehouse_check_order_convert, name='order_convert'),
 
     path('payment/list/', WarehousePaymentPage.as_view(), name='payment_list'),
     path('payment/paid/<int:pk>/', view=warehouse_order_paid, name='ware_order_paid'),

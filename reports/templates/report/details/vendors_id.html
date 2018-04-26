@@ -72,15 +72,15 @@
                             <thead>
                                 <tr>
                                     <th></th>
-                                    <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/description/{{ tools_table.id }}/" >Κωδικός Τιμολογίου</a></th>
-                                    <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/title/{{ tools_table.id }}/">Προϊόν</a></th>
-                                    <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/category/{{ tools_table.id }}/">Κατηγορία</a></th>
-                                    <th style="width: 5%"><a href="/αποθήκη/εργαλεία/table-order-by/price_buy/{{ tools_table.id }}/" >Τελευταία τιμή Τιμολογίου</a></th>
-                                    <th style="width: 5%"><a href="/αποθήκη/εργαλεία/table-order-by/price/{{ tools_table.id }}/">Τιμή Πώλησης/Χονδρικής</a></th>
-                                    <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/edit/{{ tools_table.id }}/">Κατάσταση Site,Κατάσταση Αποθήκης</a></th>
-                                    <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/reserve/{{ tools_table.id }}/">Απόθεμα</a></th>
-                                    <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/edit/{{ tools_table.id }}/">Κόστος Υπολοίπου</a></th>
-                                    <th style="width: 10%"><a href="/αποθήκη/εργαλεία/table-order-by/supplier/{{ tools_table.id }}/">Αξία Υπολοίπου (MarkUp)</a></th>
+                                    <th style="width: 10%"><a href="" >Κωδικός Τιμολογίου</a></th>
+                                    <th style="width: 10%"><a href="">Προϊόν</a></th>
+                                    <th style="width: 10%"><a href="">Κατηγορία</a></th>
+                                    <th style="width: 5%"><a href="" >Τελευταία τιμή Τιμολογίου</a></th>
+                                    <th style="width: 5%"><a href="">Τιμή Πώλησης/Χονδρικής</a></th>
+                                    <th style="width: 10%"><a href="">Κατάσταση Site,Κατάσταση Αποθήκης</a></th>
+                                    <th style="width: 10%"><a href="">Απόθεμα</a></th>
+                                    <th style="width: 10%"><a href="">Κόστος Υπολοίπου</a></th>
+                                    <th style="width: 10%"><a href="">Αξία Υπολοίπου (MarkUp)</a></th>
                                     
                                 </tr>
                             </thead>
@@ -159,11 +159,47 @@
                         </table>
                     </div>
                 </div>
+
+            <div class="ui divider row"></div>
+            <div class="ui accordion">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    <h2 style="display: inline" class="ui center sub header">
+                           Επιταγές, Πληρωμές κτλ
+                    </h2>
+                </div>
+                <div class="content">
+                    <table class="ui single line  selectable table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Ημερομηνία</th>
+                                <th>Τίτλος Παραστατικου</th>
+                                <th>Συνολικό Ποσό</th>
+                                <th>Τρόπος Πληρωμής</th>
+                                <th>Κατάσταση</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ele in paychecks %}
+                                <tr>
+                                    <td>{{ forloop.counter }}
+                                    <td>{{ ele.date_expired|date }}</td>
+                                    <td>{{ ele.title }}</td>
+                                    <td>{{ ele.tag_value }}</td>
+                                    <td>{{ ele.get_payment_type_display }}</td>
+                                    <td>{{ ele.tag_is_paid }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
             
             <div class="ui divider row">
 
             </div>
-            <div class="row">
+            <div style="margin-top: 15%" class="row">
                 <h2 class="ui center aligned icon header">
                     <i class="calendar icon"></i>
                     Ανάλυση
