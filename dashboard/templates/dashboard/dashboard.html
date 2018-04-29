@@ -54,12 +54,13 @@
                         <li class="dropdown">
                               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <i class="ti-bell"></i>
+                                    
 									<p>Order Settings</p>
 									<b class="caret"></b>
                               </a>
                               <ul class="dropdown-menu">
-                                <li><a href="#">Cart</a></li>
-                                <li><a href="#">Costumers</a></li>
+                                <li><a href="{% url 'dashboard:shipping_view' %}">Shipping Method</a></li>
+                                <li><a href="#">Payment Method</a></li>
                                 <li><a href="#">Color</a></li>
                                 <li><a href="#">Size</a></li>
                                 <li><a href="#">Characteristics</a></li>
@@ -182,22 +183,38 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="header">
-                                <h4 class="title">Users Behavior</h4>
-                                <p class="category">24 Hours performance</p>
+                                <h4 class="title">Orders</h4>
+                                <p class="category">New Eshop Orders</p>
                             </div>
                             <div class="content">
-                                <div id="chartHours" class="ct-chart"></div>
-                                <div class="footer">
-                                    <div class="chart-legend">
-                                        <i class="fa fa-circle text-info"></i> Open
-                                        <i class="fa fa-circle text-danger"></i> Click
-                                        <i class="fa fa-circle text-warning"></i> Click Second Time
-                                    </div>
-                                    <hr>
-                                    <div class="stats">
-                                        <i class="ti-reload"></i> Updated 3 minutes ago
-                                    </div>
-                                </div>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Title</th>
+                                            <th>Price</th>
+                                            <th>Costumer</th>
+                                            <th>Address</th>
+                                            <th>Phone</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in eshop_orders %}
+                                            <tr>
+                                                <td>{{ order.date_created|date }}</td>
+                                                <td>{{ order }}</td>
+                                                <td>{{ order.tag_final_price }}</td>
+                                                <td>{{ order.costumer_account }}</td>
+                                                <td>{{ order.address }}, {{ order.city }}, {{ order.zip_code }}</td>
+                                                <td>{{ order.tag_phones }}</td>
+                                                <td><a href='{% url "dashboard:eshop_order_edit" order.id %}' class="btn btn-success">Details</a></td>
+                                            </tr>
+                                        {% empty %}
+
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

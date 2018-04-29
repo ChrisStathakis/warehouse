@@ -1,0 +1,65 @@
+{% extends 'report/warehouse.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="six wide column"></div>
+        <div class="six wide column">
+            <h2 class="ui blue icon header">
+                <i class="blue money bill alternate outline icon"></i>
+                <div class="blue content">
+                    Προκαταβολές, επιταγές κτλ
+                    <div class="sub header">Περίοδος κινήσεων {{ date_string }}</div>
+                </div>
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <div class="ui styled fluid accordion">
+                <div class="title"><h4>Filters</h4></div>
+                <div class="content">
+                    <div class="ui segment">
+                        <form method="get" class="ui form">
+                            {% include 'snippets/search_date_filter.html' %}
+                            <div class="two fields">
+                                <div class="field">
+                                    <label>Προμηθευτές</label>
+                                    {% for vendor in vendors %}
+                                        {% if vendor.id|stringformat:"s" in vendor_name %}
+                                            <div class="ui slider checkbox">
+                                                <input type="checkbox" checked name="vendor_name" value="{{ vendor.id }}">
+                                                <label>{{ vendor }}</label>
+                                            </div>
+                                        {% else %}
+                                            <div class="ui slider checkbox">
+                                                <input type="checkbox" name="vendor_name" value="{{ vendor.id }}">
+                                                <label>{{ vendor }}</label>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="field">
+                                    <label>Κατάσταση</label>
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" name="paid_name" value="t">
+                                        <label>Πληρωμένη</label>
+                                    </div>
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" name="paid_name" value="f">
+                                        <label>Μη Πληρωμένη</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <br><br>
+                        <button type="submit" class="ui fluid green button">Αποθήκευση</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

@@ -43,18 +43,10 @@ def product_action(action_type):
 def grab_orders_filter_data(request):
     not_paid_name = request.GET.get('not_paid_name', None)
     paid_name = request.GET.get('paid_name', None)
-    not_printed_name = request.GET.get('not_printed_name', None)
+    printed_name = request.GET.get('printed_name', None)
     status_name = request.GET.getlist('status_name', None)
     payment_name = request.GET.getlist('payment_type_name', None)
-    return not_paid_name, paid_name, not_printed_name, status_name, payment_name
-
-
-def orders_filtering(request, queryset):
-    not_paid_name, paid_name, not_printed_name, status_name, payment_name = grab_orders_filter_data(request)
-    queryset = queryset.filter(is_printed=False) if not_printed_name == '1' else queryset
-
-    return queryset
-
+    return not_paid_name, paid_name, printed_name, status_name, payment_name
 
 #  print views
 

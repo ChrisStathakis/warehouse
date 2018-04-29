@@ -4,7 +4,8 @@ from .views import *
 from  .popups_views import createBrandPopup, get_brand_id, createCategoryPopup, create_color_popup
 from .views_sells import (EshopOrdersPage, eshop_order_edit, create_eshop_order,
                           add_edit_order_item, edit_order_item, delete_order_item,
-                          CartListPage, OrderSettingsPage)
+                          CartListPage, OrderSettingsPage, print_invoice, 
+                          ShippingPage, ShippingEditPage, ShippingCreatePage, delete_shipping,)
 from .views_pages import *
 from .user_views import *
 from .tools_views import *
@@ -72,10 +73,16 @@ urlpatterns = [
     path('eshop-orders/add-or-edit/<int:dk>/<int:pk>/<int:qty>/', view=add_edit_order_item, name='add_or_create'),
     path('eshop-orders/edit-order-item/<int:dk>/', view=edit_order_item, name='edit_order_item'),
     path('eshop-orders/delete-order-item/<int:dk>/', view=delete_order_item, name='delete_order_item'),
+    path('eshop-orders/print/<int:pk>/', view=print_invoice, name='print_invoice'),
 
     path('cart-list/', CartListPage.as_view(), name='cart_list'),
     path('order-settings-page/', OrderSettingsPage.as_view(), name='settings_page'),
     path('create-coupon/', view=create_coupon, name='create_coupon'),
+
+    path('warehouse/order/shipping/', ShippingPage.as_view(), name='shipping_view'),
+    path('warehouse/order/shipping/detail/<int:pk>/', ShippingEditPage.as_view(), name='shipping_edit_view'),
+    path('warehouse/order/shipping/delete/<int:pk>/', view=delete_shipping, name='shipping_delete_view'),
+    path('warehouse/order/shipping/create/', ShippingCreatePage.as_view(), name='shipping_create_view'),
 
     # user urls
     path('users-list/', UsersPage.as_view(), name='users_list'),
@@ -100,4 +107,6 @@ urlpatterns = [
     path('warehouse/order/add-item/<int:dk>/<int:pk>/', view=warehouse_add_order_item, name='add_order_item'),
     path('warehouse/order/add-item/<int:dk>/edit/', view=edit_order_item, name='edit_order_item'),
     path('warehouse/order/add-item/<int:dk>/delete/', view=delete_order_item, name='delete_order_item'),
+
+
 ]

@@ -71,7 +71,6 @@ def warehouse_order_detail(request, dk):
     products = Product.my_query.active_warehouse().filter(supply=instance.vendor)
     form = WarehouseOrderForm(request.POST or None, instance=instance)
     if request.POST:
-        print(form.errors)
         if form.is_valid():
             form.save()
             messages.success(request, 'The order Edited!')

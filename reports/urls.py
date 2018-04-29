@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'products/$', ReportProducts.as_view(), name='products'),
     url(r'products/(?P<pk>\d+)/', ProductDetail.as_view(), name='products_detail'),
     url(r'vendors/$', Vendors.as_view(), name='vendors'),
+    url(r'vendors/check-orders/', CheckOrderPage.as_view(), name='check_orders'),
     url(r'vendors/(?P<pk>\d+)/$', view=vendor_detail, name='vendor_detail'),
     path('warehouse-categories', view=warehouse_category_reports, name='warehouse_categories'),
     path('warehouse-category/<int:pk>', WarehouseCategoryReport.as_view(), name='warehouse_category_detail'),

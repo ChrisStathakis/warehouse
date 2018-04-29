@@ -119,3 +119,8 @@ def ajax_balance_sheet_payroll(request):
     context = locals()
     data['payroll_analysis'] = render_to_string(request=request, template_name='report/ajax/ajax_payroll_balance_sheet.html', context=context)
     return JsonResponse(data)
+
+
+@staff_member_required
+def ajax_vendor_detail_product_analysis(request):
+    data = {}

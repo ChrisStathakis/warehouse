@@ -210,7 +210,6 @@ class WarehousePaymentOrderCreate(CreateView):
         return context
 
     def form_valid(self, form):
-        print(form)
         if form.is_valid():
             print('works!')
             form.save()
@@ -230,7 +229,7 @@ def edit_check_order(request, pk):
         messages.success(request, 'The Check order is edited')
         return HttpResponseRedirect(reverse('inventory:vendor_detail', kwargs={'pk': instance.object_id }))
     print(form.errors)
-    page_title = 'Edit %s' % (instance.title)    
+    page_title = 'Edit %s' % instance.title
     context = locals()
     return render(request, 'dash_ware/form.html', context)
 

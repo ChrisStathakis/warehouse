@@ -23,8 +23,9 @@
                                  <thead>
                                     <tr>
                                         <th>#</th>
+                                        <th>Image</th>
+                                        <th>Sku</th>
                                         <th>Product</th>
-                                        <th>Qty</th>
                                         <th>Price</th>
                                         <th>Actions</th>
                                     </tr>
@@ -33,9 +34,17 @@
                                     {% for product in object_list %}
                                     <tr>
                                         <td>{{ product.id }}</td>
+                                        <td><a href="{{ product.get_absolute_url }}" target="_blank">
+                                            {% if product.image %}
+                                            <img class="img-thumbnail" style="width: 80px;height: 60px;" src="{{ product.image.url }}">
+                                            {% else %}
+                                            <img class="img-thumbnail" style="width: 80px;height: 60px;" src="{% static 'home/no_image.png' %}">
+                                            {% endif %}
+                                            </a>
+                                        </td>
+                                        <td>{{ product.sku }}</td>
                                         <td>{{ product }}</td>
                                         <td>{{ product.tag_final_price }}</td>
-                                        <td><input type="number" value="1" placeholder="1" class="form-control"></td>
                                         <td><a href="{% url 'dashboard:add_or_create' object.id product.id 1  %}" class="btn btn-success">Add</a></td>
                                     </tr>
                                         {% empty %}
@@ -54,7 +63,7 @@
                     <div class="card">
                         <div class="header">
                             <h4 class="title text-center">Order Details</h4>
-                            <a href="" class="btn btn-success"><i class="fa fa-print"></i>Print</a>
+                            <a href="{% url 'dashboard:print_invoice' object.id %}" class="btn btn-success"><i class="fa fa-print"></i>Print</a>
                             <a href="" class="btn btn-info"><i class="fa fa-credit-card"></i>Paid</a>
 
                         </div>

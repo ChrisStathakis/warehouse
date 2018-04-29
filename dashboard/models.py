@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.dispatch import receiver
 from django.db.models.signals import post_delete, pre_save
 from django.utils import timezone
-from django.db.models import Sum
+from django.db.models import Sum, Q
 
 from .constants import *
 
@@ -36,6 +36,16 @@ class PaymentOrders(models.Model):
 
     def __str__(self):
         return "Επιταγη %s" % self.id
+
+    @staticmethod
+    def filter_warehouse_orders(queryset, search_name, vendor_name, paid_name):
+        queryset = queryset.filter(title__icontains=search_name) if search_name else queryset
+        queryset = queryset if 't' in paid_name and 'f' in paid_name else queryset.filter(is_paid=True) \
+        if 't' in paid_name else queryset.filter(is_paid=False)
+        #q_vendor = queryset.filter(content_type=ContentType.objects.get_for_model(Supply))
+        #q_order = queryset.filter(content_type=ContentType.objects.get_for_model(Order))
+        #q_vendor = q_vendor.filter(object__id__in=vendor_name) if vendor_name else q_vendor
+        #q_order =q_order.filter()
 
     def save(self, *args, **kwargs):
         if not self.date_created:

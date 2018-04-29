@@ -165,8 +165,8 @@ class RetailOrder(models.Model):
     address = models.CharField(max_length=100, null=True, blank=True, verbose_name='Διεύθυνση')
     state = models.CharField(max_length=100, null=True, blank=True, verbose_name='Νομός')
     zip_code = models.IntegerField(null=True, blank=True, verbose_name='ΤΚ')
-    cellphone = models.IntegerField(null=True, blank=True, verbose_name='Κινητό')
-    phone = models.IntegerField(null=True, blank=True, verbose_name='Σταθερό Τηλεφωνο')
+    cellphone = models.CharField(null=True, blank=True, verbose_name='Κινητό', max_length=10)
+    phone = models.CharField(null=True, blank=True, verbose_name='Σταθερό Τηλεφωνο', max_length=10)
     email = models.EmailField(null=True, blank=True, )
     costumer_submit = models.BooleanField(default=True, verbose_name='Επιβεβαίωση')
     eshop_order_id = models.CharField(max_length=10, blank=True, null=True)
@@ -283,6 +283,24 @@ class RetailOrder(models.Model):
 
     def is_printed(self):
         return 'Printed' if self.printed else 'Not Printed'
+    
+    def tag_phones(self):
+        return 'CellPhone.. %s, Phone %s' % (self.cellphone, self.phone) if self.phone else self.cellphone
+
+    @staticmethod
+    def eshop_orders_filtering(queryset, search_name, paid_name, printed_name, status_name, payment_name):
+        queryset = queryset.filter(Q(title__icontains=search_name) |
+                                   Q(costumer_account__title__icontains=search_name) |
+                                   Q(cell_phone__icontains=search_name) |
+                                   Q(address__icontains=search_name) |
+                                   Q(city__icontains=search_name) |
+                                   Q(zip_code__icontains=search_name) |
+                                   Q(phone__icontains=search_name) |
+                                   Q(first_name__icontains=search_name) |
+                                   Q(last_name__icontains=search_name)
+                                   ).dinstict() if search_name else queryset
+        queryset = queryset.filter(printed=False) if printed_name else queryset
+        return queryset
 
 
 @receiver(post_delete, sender=RetailOrder)

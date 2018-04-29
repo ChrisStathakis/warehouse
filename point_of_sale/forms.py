@@ -150,3 +150,15 @@ class RetailOrderWarehouseIncomeForm(forms.ModelForm):
         super(RetailOrderWarehouseIncomeForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
+
+
+class ShippingForm(forms.ModelForm):
+
+    class Meta:
+        model = Shipping
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(ShippingForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'

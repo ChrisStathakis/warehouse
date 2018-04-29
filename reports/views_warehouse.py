@@ -122,7 +122,8 @@ class ProductDetail(LoginRequiredMixin, DetailView):
         return context
 
 
-class Vendors(LoginRequiredMixin, ListView):
+@method_decorator(staff_member_required, name='dispatch')
+class Vendors(ListView):
     model = Supply
     template_name = 'report/vendors.html'
     paginate_by = 50
@@ -152,6 +153,25 @@ class Vendors(LoginRequiredMixin, ListView):
         return context
 
 
+@method_decorator(staff_member_required, name='dispatch')
+class CheckOrderPage(ListView):
+    template_name = 'report/check_orders.html'
+    model = PaymentOrders
+    paginate_by = 30
+
+    def get_queryset(self):
+        queryset = PaymentOrders.objects.all()
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(CheckOrderPage, self).get_context_data(**kwargs)
+        vendors = Supply.objects.filter(active=True)
+        context.update(locals())
+        return context
+
+
+
 @staff_member_required
 def vendor_detail(request, pk):
     instance = get_object_or_404(Supply, id=pk)
@@ -175,6 +195,7 @@ def vendor_detail(request, pk):
     context = locals()
     return render(request, 'report/details/vendors_id.html', context)
 
+
 @method_decorator(staff_member_required, name='dispatch')
 class VendorDetail(DetailView):
     template_name = 'report/details/vendors_id.html'
@@ -187,7 +208,7 @@ class VendorDetail(DetailView):
         vendors, categories, categories_site, colors, sizes = initial_data_from_database()
         date_pick = self.request.GET.get('date_pick', None)
         category_name, vendor_name, color_name, discount_name, qty_name = warehouse_get_filters_data(self.request)
-        products = warehouse_filters_data(self.request, 
+        products = warehouse_filters_data(self.request,
                                           [category_name, vendor_name, color_name, discount_name, qty_name],
                                           self.object.product_set.all()
                                           )

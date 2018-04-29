@@ -1,42 +1,5 @@
 {% extends 'dashboard/dashboard.html' %}
 
-{% block submenu %}
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar bar1"></span>
-                        <span class="icon-bar bar2"></span>
-                        <span class="icon-bar bar3"></span>
-                    </button>
-                    <a class="navbar-brand" href="#">Dashboard</a>
-                </div>
-                <div class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <i class="ti-panel"></i>
-								<p>Orders</p>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'dashboard:cart_list' %}">
-                                <i class="ti-panel"></i>
-								<p>Cart</p>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'dashboard:settings_page' %}">
-                                <i class="ti-panel"></i>
-								<p>Settings</p>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        {% endblock %}
 
 {% block content %}
     <div class="content">
@@ -45,40 +8,34 @@
                 <div class="col-md-8">
                         <div class="card">
                             <div class="header">
-                                <h4 class="title text-center">Products</h4>
+                                <h4 class="title text-center">Shippings</h4>
                                 <p class="category">
-                                    <a href="{% url 'dashboard:eshop_order_create' %}"
-                                       class="btn btn-success">Create Order
+                                    <a href="{% url 'dashboard:shipping_create_view' %}"
+                                       class="btn btn-success">Create Shipping 
                                     </a>
                                 </p>
                             </div>
                             <div class="content table-responsive table-full-width">
                                     <table class="table table-striped">
                                         <thead>
-                                        <th></th>
-                                        <th>ID</th>
-                                        <th>Date</th>
-                                        <th>Name</th>
-                                        <th>Costumer</th>
-                                        <th>Status</th>
-                                        <th>Printed</th>
-                                        <th>Price</th>
+                                            <tr>
+                                                <th>Ordering</th>
+                                                <th>Title</th>
+                                                <th>Status</th>
+                                                <th>Order Price Limit</th>
+                                                <th>Value</th>
+                                                <th>Actions</th>
+                                            </tr>
                                         </thead>
                                         <tbody>
                                             {% for order in object_list %}
                                             <tr>
-                                                <td>
-                                                    <div class="red checkbox">
-                                                        <input id="de_check_active" name="choice_name" type="checkbox" value="{{ order.id }}">
-                                                    </div>
-                                                </td>
-                                                <td>{{ order.id }}</td>
-                                                <td>{{ order.date_created|date }}</td>
-                                                <td><a href="{% url 'dashboard:eshop_order_edit' order.id  %}">{{ order }}</a></td>
-                                                <td>{{ order.costumer_account }}</td>
-                                                <td>{{ order.get_status_display }}</td>
-                                                <td>{{ order.is_printed }}</td>
-                                                <td>{{ order.tag_final_price }}</td>
+                                                <td>{{ order.ordering }}</td>
+                                                <td>{{ order }}</td>
+                                                <td>{{ order.status }}</td>
+                                                <td>{{ order.value_limit }}</td>
+                                                <td>{{ order.value }}</td>
+                                                <td><a class="btn btn-primary" href="{% url 'dashboard:shipping_edit_view' order.id %}">Edit</a></td>
                                             </tr>
                                             {% endfor %}
                                         </tbody>

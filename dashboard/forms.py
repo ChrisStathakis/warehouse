@@ -2,8 +2,9 @@ from django import forms
 from .models import *
 from products.models import Product, CategorySite, Brands, Color, Size
 from mptt.forms import MoveNodeForm
-from  mptt.exceptions import InvalidMove
+from mptt.exceptions import InvalidMove
 
+import datetime
 
 class UpdateProductForm(forms.ModelForm):
 
@@ -110,6 +111,7 @@ class SizeForm(forms.ModelForm):
 class PaymentForm(forms.ModelForm):
     object_id = forms.IntegerField(widget=forms.HiddenInput())
     is_expense = forms.BooleanField(widget=forms.HiddenInput())
+    date_expired = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'type': 'date',}))
 
     class Meta:
         model = PaymentOrders

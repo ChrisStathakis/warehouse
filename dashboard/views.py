@@ -27,6 +27,7 @@ class DashBoard(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(DashBoard, self).get_context_data(**kwargs)
         new_orders = RetailOrder.objects.filter(status='1')
+        eshop_orders = new_orders.filter(order_type='e')
         context.update(locals())
         return context
 

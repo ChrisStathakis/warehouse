@@ -133,8 +133,7 @@ class OrderItemForm(forms.ModelForm):
 
     class Meta:
         model = OrderItem
-        fields = '__all__'
-        exclude = ['day_added', 'total_clean_value', 'total_value_with_taxes', 'size']
+        fields = ['qty', 'price', 'unit', 'discount', 'product', 'order']
 
     def __init__(self, *args, **kwargs):
         super(OrderItemForm, self).__init__(*args, **kwargs)
