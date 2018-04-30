@@ -15,6 +15,7 @@ from point_of_sale.models import *
 from point_of_sale.forms import EshopRetailForm, EshopOrderItemForm, ShippingForm
 from transcations.models import *
 from .tools_views import grab_orders_filter_data
+from dashboard.models import PaymentMethod
 
 
 
@@ -170,13 +171,30 @@ class ShippingCreatePage(CreateView):
 
     def form_valid(self, form):
         form.save()
+        messages.success(self.request, 'New shipping form created')
+        return super().form_valid(form)
 
 
 @method_decorator(staff_member_required, name='dispatch')
 class ShippingEditPage(UpdateView):
-    form_class = ''
-    template_name = ''
+    form_class = ShippingForm
+    template_name = 'dash_ware/form.html'
     model = Shipping
+
+    def get_context_data(self, **kwargs):
+        context = super(ShippingEditPage, self).get_context_data(**kwargs)
+        page_title = 'Edit %s' % self.object
+        back_url = reverse('dashboard:shipping_view')
+        context.update(locals())
+        return context
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'The %s edited!' % self.object)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('dashboard:shipping_view')
 
 
 @staff_member_required
@@ -184,3 +202,15 @@ def delete_shipping(request, pk):
     instance = get_object_or_404(Shipping, id=pk)
     instance.delete()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class PaymentMethodPage(ListView):
+    template_name = ''
+    model = PaymentMethod
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class PaymentMethodCreatePage(CreateView):
+    model = PaymentMethod
+    template_name = ''

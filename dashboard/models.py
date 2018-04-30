@@ -77,14 +77,22 @@ def update_on_delete(sender, instance, *args, **kwargs):
         get_order.paid_value = 0
         get_order.save()
     except:
-        t=t
-
+        t=''
 
 
 class Store(models.Model):
     title = models.CharField(max_length=150, unique=True)
     margin = models.IntegerField(default=0)
     markup = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.title
+
+
+class PaymentMethod(models.Model):
+    title = models.CharField(unique=True, max_length=100)
+    active = models.BooleanField(default=True)
+    site_active = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title

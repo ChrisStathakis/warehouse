@@ -45,113 +45,15 @@
                 </div>
 
                 <div class="col-md-4">
-                    <div class="card">
-                       <div class="header">
-                            <h4>Filters</h4>
-                       </div>
-                       <div class="content">
-                           <form method="get">
-                               <div class="pagination">
-                                   <input type='text' name='page' value='1' hidden>
-                                   <span class="step-links">
-                                       {% if page_obj.has_previous %}
-                                            <button class="btn btn-primary" type="submit" name='page' value="1">First Page</button>
-                                            <button class="btn btn-primary" type="submit" name="page" value="{{ page_obj.previous_page_number }}">Previous</button>
-                                       {% endif %}
-                                       <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-                                       {%  if page_obj.has_next %}
-                                            <button class="btn btn-primary" type='submit' name="page" value="{{ page_obj.next_page_number }}">Next</button> 
-                                       {% endif %}
-                                   </span>
-                               </div>
-                               <div class="form-group">
-                                   <input type="text" {% if search_name %}value=""{% endif %}
-                                          placeholder="Search" class="form-control" name="search_name"
-                                   />
-                               </div>
-                               <div class="checkbox">
-                                   <input id="printed_name" name="printed_name" type="checkbox" value="1" {% if printed_name %} checked {% endif %}>
-                                   <label for="printed_name">Not Printed</label>
-                               </div>
-                               <div class="checkbox">
-                                   <input id="paid_name" name="paid_name" type="checkbox" value="1">
-                                   <label for="paid_name">Paid</label>
-                               </div>
-                               <div class="checkbox">
-                                   <input id="not_paid_name" name=paid_name" type="checkbox" value="2">
-                                   <label for="not_paid_name">Not Paid</label>
-                               </div>
-                               <div id="accordion" role="tablist" aria-multiselectable="true">
-                                   <div class="card">
-                                       <div class="card-header" role="tab" id="headingTwo">
-                                           <h6 class="mb-0">
-                                               <a class="collapsed" data-toggle="collapse" data-parent="#accordion"
-                                                  href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                                   Status
-                                               </a>
-                                           </h6>
-                                       </div>
-                                       <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
-                                           <div class="card-block">
-                                               {% for status in status_list %}
-                                                   {% if category.title|stringformat:"s" in cate_name %}
-                                                   <div class="checkbox">
-                                                       <input name="status_name" value="{{ status.0 }}" id="checkbox1" type="checkbox" checked>
-                                                       <label for="checkbox1">
-                                                           {{ status.1 }}
-                                                       </label>
-                                                   </div>
-                                                   {% else %}
-                                                   <div class="checkbox">
-                                                       <input name="status_name" value="{{ status.0 }}" id="checkbox1" type="checkbox">
-                                                       <label for="checkbox1">
-                                                           {{ status.1 }}
-                                                       </label>
-                                                   </div>
-                                                   {% endif %}
-                                               {% endfor %}
-                                           </div>
-                                       </div>
-                                   </div>
-                                   <div class="card">
-                                       <div class="card-header" role="tab" id="headingOne">
-                                           <h6 class="mb-0">
-                                               <a class="collapsed" data-toggle="collapse" data-parent="#accordion"
-                                                  href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                                                   Payment Type
-                                               </a>
-                                           </h6>
-                                       </div>
-                                       <div id="collapseOne" class="collapse" role="tabpanel" aria-labelledby="headingOne">
-                                           <div class="card-block">
-                                               {% for payment_method in payment_method_list %}
-                                                   {% if vendor.title|stringformat:"s" in vendor_name %}
-                                                   <div class="checkbox">
-                                                       <input name="payment_method_name" value="{{ payment_method.0 }}"
-                                                              id="checkbox1" type="checkbox" checked>
-                                                       <label for="checkbox1">
-                                                           {{ payment_method.1 }}
-                                                       </label>
-                                                   </div>
-                                                   {% else %}
-                                                   <div class="checkbox">
-                                                       <input name="payment_method_name" value="{{ payment_method.0 }}"
-                                                              id="checkbox1" type="checkbox">
-                                                       <label for="checkbox1">
-                                                           {{ payment_method.1 }}
-                                                       </label>
-                                                   </div>
-                                                   {% endif %}
-                                               {% endfor %}
-                                           </div>
-                                       </div>
-                                   </div>
-                               </div>
-                               <button type="submit" class="btn btn-primary">Submit</button>
-                               <a href="{{ request.path }}" class="btn btn-danger">Reset Filters</a>
-                           </form>
-                       </div>
-                    </div>
+                    {% if messages %}
+                        <div class="card">
+                            <div class="header">
+                                {% for message in messages %}
+                                    <p class="text-center">{{ message }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
                </div>
            </div>
        </div>

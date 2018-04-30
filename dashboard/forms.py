@@ -122,3 +122,15 @@ class PaymentForm(forms.ModelForm):
         super(PaymentForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
+
+
+class PaymentMethodForm(forms.ModelForm):
+
+    class Meta:
+        model = PaymentMethod
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(PaymentMethodForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
