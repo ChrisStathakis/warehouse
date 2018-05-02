@@ -5,20 +5,7 @@
     <bookmark url="file://$PROJECT_DIR$/inventory_manager/signals.py" line="3" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b7d923eb-e391-4225-8674-25f55f96125b" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/dashboard/migrations/0009_paymentmethod.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/inventory_manager/migrations/0058_auto_20180430_0851.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/point_of_sale/migrations/0056_auto_20180430_0851.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test_data.sqlite3" afterPath="$PROJECT_DIR$/test_data.sqlite3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/warehouse.iml" afterPath="$PROJECT_DIR$/.idea/warehouse.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dashboard/forms.py" afterPath="$PROJECT_DIR$/dashboard/forms.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dashboard/models.py" afterPath="$PROJECT_DIR$/dashboard/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dashboard/templates/dashboard/order_section/shipping.html" afterPath="$PROJECT_DIR$/dashboard/templates/dashboard/order_section/shipping.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dashboard/views_sells.py" afterPath="$PROJECT_DIR$/dashboard/views_sells.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/requirements.txt" afterPath="$PROJECT_DIR$/requirements.txt" />
-    </list>
+    <list default="true" id="b7d923eb-e391-4225-8674-25f55f96125b" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -544,8 +531,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31078225" sideWeight="0.50208336" order="6" side_tool="true" content_ui="tabs" />
