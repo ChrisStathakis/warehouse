@@ -45,7 +45,7 @@ def grab_orders_filter_data(request):
     paid_name = request.GET.get('paid_name', None)
     printed_name = request.GET.get('printed_name', None)
     status_name = request.GET.getlist('status_name', None)
-    payment_name = request.GET.getlist('payment_type_name', None)
+    payment_name = request.GET.getlist('payment_name', None)
     return not_paid_name, paid_name, printed_name, status_name, payment_name
 
 #  print views

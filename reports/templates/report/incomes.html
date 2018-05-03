@@ -190,6 +190,9 @@
         <div class="twelve wide column">
             <div class="row">
                 <button id="store_analysis" data-url="{% url 'reports:ajax_incomes_store_analysis' %}" class="ui blue button">Store Analysis</button>
+                <button id="payment_analysis" data-url="{% url 'reports:ajax_payment_analysis' %}" class="ui blue button">Ανάλυση Ανά Πληρωμή</button>
+                <button id="store_analysis" data-url="{% url 'reports:ajax_incomes_store_analysis' %}" class="ui blue button">Ανάλυση Ανά Κατάσταση</button>
+                <button id="store_analysis" data-url="{% url 'reports:ajax_incomes_store_analysis' %}" class="ui blue button">Επιστροφές - Ακυρώσεις</button>
             </div>
             <div id="analysis-container" class="row">
             </div>
@@ -218,7 +221,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for order in queryset %}
+                    {% for order in object_list %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
                             <td>{{ order.date_created|date }}</td>
@@ -513,6 +516,20 @@
     </div>
     <div style="margin-bottom: 5%" class="row"></div>
     <script type="text/javascript">
+        $('#payment_analysis').click(function() {
+            console.log('woeks!!')
+            var btn= $(this);
+            var form = $('#form_filters').serialize();
+            $.ajax({
+                url: btn.attr('data-url'),
+                data: form,
+                dataType: 'json',
+                success: function(data) {
+                    $('#analysis-container').html(data.payment_analysis)
+                }
+            })
+        })
+
         $('#store_analysis').click(function () {
             var btn = $(this);
             var form = $('#form_filters').serialize();

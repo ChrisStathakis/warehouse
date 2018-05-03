@@ -124,3 +124,20 @@ def ajax_balance_sheet_payroll(request):
 @staff_member_required
 def ajax_vendor_detail_product_analysis(request):
     data = {}
+
+
+@staff_member_required
+def ajax_retail_orders_payment_analysis(request):
+    data = dict()
+    date_start, date_end, date_range, months_list = estimate_date_start_end_and_months(request)
+    queryset = RetailOrder.my_query.sells_orders(date_start, date_end)
+    queryset, search_name, store_name, seller_name, order_type_name, status_name, is_paid_name, date_pick = \
+            retail_orders_filter(request, queryset)
+    data_analysis = queryset.values('payment_method__title').annotate(total_data=Sum('final_price')).order_by('total_data')
+    context = locals()
+    data['payment_analysis'] = render_to_string(request=request,
+                                                template_name='report/ajax/retail_analysis.html',
+                                                context=context,
+                                                )
+    return JsonResponse(data)
+                

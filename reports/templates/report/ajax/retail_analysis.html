@@ -1,0 +1,26 @@
+
+ 
+    <div class="column">
+        <h3 class="ui header">Τρέχων Διάστημα</h3>
+        <table class="ui selectable inverted table">
+            <thead>
+            <tr>
+                <th>Κατάστημα ή είδος</th>
+                <th>'Εσοδα</th>
+                <th>Κοστος Πωληθ./</th>
+                <th>Διαφορά</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for ele in data_analysis %}
+                <tr>
+                    <td>{{ ele.payment_method__title }}</td>
+                    <td class="positive"> {{ ele.total_data }} {{ currency }}</td>
+                    <td >{{ value.1|floatformat:2 }} €</td>
+                    <td>{{ value.2|floatformat:2 }} €</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    

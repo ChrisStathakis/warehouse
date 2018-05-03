@@ -17,14 +17,32 @@ MEASURE_UNITS = (
 
 STATUS = (('1', ''),('2', ''),('3', ''),('4', ''),)
 
+class PaymentMethodManager(models.Manager):
+
+    def active(self):
+        return super(PaymentMethodManager, self).filter(active=True)
+
+    def active_for_site(self):
+        return super(PaymentMethodManager, self).filter(active=True, site_active=True)
+
 
 class PaymentMethod(models.Model):
     title = models.CharField(unique=True, max_length=100)
     active = models.BooleanField(default=True)
     site_active = models.BooleanField(default=False)
+    additional_cost = models.DecimalField(decimal_places=2, max_digits=10, default=0)
+    limit_value = models.DecimalField(decimal_places=2, max_digits=10, default=0)
+    objects = models.Manager()
+    my_query = PaymentMethodManager()
 
     def __str__(self):
         return self.title
+
+    def tag_additional_cost(self):
+        return '%s %s' % (self.additional_cost, CURRENCY)
+
+    def tag_limit_value(self):
+        return '%s %s' % (self.limit_value, CURRENCY)
 
 
 class PaymentOrders(models.Model):

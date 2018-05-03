@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'warehouse-products-flow/$', view=warehouse_order_items_movements, name='warehouse_order_items_flow'),
 
     # incomes
-    url(r'incomes/$', view=reports_income, name='reports_income'),
+    url(r'incomes/$', ReportsIncome.as_view(), name='reports_income'),
     url(r'incomes/(?P<dk>\d+)/$', view=reports_specific_order, name='retail_order_detail'),
     url(r'income-flow-items/$', RetailItemsFlow.as_view(), name='sell_item_flow'),
     path('incomes/costumers-page/', CostumersReport.as_view(), name='costumers'),
@@ -50,6 +50,7 @@ urlpatterns = [
     path('warehouse/products-flow/analysis/', view=ajax_warehouse_product_movement_vendor_analysis, name='ware_pro_flow_analysis'),
     path('warehouse/ajax-outcome/', view=ajax_outcomes, name='ajax_outcomes'),
     path('incomes/store-analysis/', view=ajax_incomes_per_store, name='ajax_incomes_store_analysis'),
+    path('incomes/payment-analysis/', view=ajax_retail_orders_payment_analysis, name='ajax_payment_analysis'),
     path('balance-sheet/ajax/warehouse-orders', view=ajax_balance_sheet_warehouse_orders, name='ajax_balance_sheet_ware_orders'),
     path('balance-sheet/ajax/payroll', view=ajax_balance_sheet_payroll, name='ajax_balance_sheet_payroll'),
 

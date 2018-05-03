@@ -96,7 +96,7 @@ class RetailOrderManager(models.Manager):
         return super(RetailOrderManager, self).filter(date_created__range=[date_start, date_end]).order_by('-date_created')
 
     def sells_orders(self, date_start, date_end):
-        return self.all_orders_by_date_filter(date_start, date_end).filter(order_type__in=['r', 'e'])
+        return self.all_orders_by_date_filter(date_start, date_end).filter(order_type__in=['r', 'e']).exclude(status__in=['5', '6'])
 
     def sellings_done(self):
         return super(RetailOrderManager, self).filter(status__id__in=[7,8]).exclude(order_type='b').order_by('-date_created')
@@ -298,6 +298,10 @@ class RetailOrder(models.Model):
 
     @staticmethod
     def eshop_orders_filtering(queryset, search_name, paid_name, printed_name, status_name, payment_name):
+        queryset = queryset.filter(printed=False) if printed_name else queryset
+        queryset = queryset.filter(payment_method__id__in=payment_name) if payment_name else queryset
+        queryset = queryset.filter(status__in=status_name) if status_name else queryset
+        queryset = queryset.filter(is_paid=False) if paid_name else queryset
         queryset = queryset.filter(Q(title__icontains=search_name) |
                                    Q(costumer_account__title__icontains=search_name) |
                                    Q(cell_phone__icontains=search_name) |
@@ -308,8 +312,7 @@ class RetailOrder(models.Model):
                                    Q(first_name__icontains=search_name) |
                                    Q(last_name__icontains=search_name)
                                    ).dinstict() if search_name else queryset
-        queryset = queryset.filter(printed=False) if printed_name else queryset
-        queryset = queryset.filter(payment_method__id__in=payment_name) if payment_name else queryset
+        
         return queryset
 
 

@@ -23,6 +23,8 @@
                                                 <th>Title</th>
                                                 <th>Status</th>
                                                 <th>Site Status</th>
+                                                <th>Additional Fee</th>
+                                                <th>Limit Order Value</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -33,6 +35,8 @@
                                                 <td>{{ order }}</td>
                                                 <td>{{ order.active }}</td>
                                                 <td>{{ order.site_active }}</td>
+                                                <td>{{ order.tag_additional_cost }}</td>
+                                                <td>{{ order.tag_limit_value }}</td>
                                                 <td><a class="btn btn-primary" href="{% url 'dashboard:payment_edit_view' order.id %}">Edit</a></td>
                                             </tr>
                                             {% endfor %}

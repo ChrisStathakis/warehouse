@@ -1,4 +1,5 @@
 from django import forms
+from dashboard.models import PaymentMethod
 from dashboard.constants import PAYMENT_TYPE
 from point_of_sale.models import Shipping
 from .models import FirstPage, Banner
@@ -18,7 +19,7 @@ class PersonalInfoForm(forms.Form):
 
     notes = forms.CharField(required=False, widget=forms.Textarea())
 
-    payment_method = forms.ChoiceField(required=True, choices=PAYMENT_TYPE)
+    payment_method = forms.ModelChoiceField(required=True, queryset=PaymentMethod.my_query.active_for_site())
     shipping_method = forms.ModelChoiceField(required=True, queryset=Shipping.objects.all())
     agreed = forms.BooleanField(label='Agree to Terms', required=True)
 

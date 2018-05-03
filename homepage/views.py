@@ -342,10 +342,8 @@ class CartPage(View):
 def checkout_page(request):
     form = PersonalInfoForm(request.POST or None)
     user = request.user.is_authenticated
-    print(user)
     if user:
         profile = CostumerAccount.objects.get(user=user)
-        print(profile)
         form = PersonalInfoForm(initial={'email': profile.user.email,
                                          'first_name': profile.first_name,
                                          'last_name': profile.user.last_name,
@@ -353,6 +351,7 @@ def checkout_page(request):
                                          'city': profile.shipping_city,
                                          'zip_code': profile.shipping_zip_code,
                                          'cellphone': profile.phone,
+                                         
                                          })
     menu_categories, cart, cart_items = initial_data(request)
     if 'login_button' in request.POST:

@@ -74,6 +74,45 @@ class HomepageProductWarning(ListView):
     model = Product 
     template_name = ''
     paginate_by = 50
+
+
+class ReportsIncome(ListView):
+    model = RetailOrder
+    template_name = 'report/incomes.html'
+    paginate_by = 100
+
+    def get_queryset(self):
+        date_start, date_end, date_range, months_list = estimate_date_start_end_and_months(self.request)
+        queryset = RetailOrder.my_query.sells_orders(date_start, date_end)
+        queryset, search_name, store_name, seller_name, order_type_name, status_name, is_paid_name, date_pick = \
+            retail_orders_filter(self.request, queryset)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(ReportsIncome, self).get_context_data(**kwargs)
+
+        date_start, date_end, date_range, months_list = estimate_date_start_end_and_months(self.request)
+        last_year_start, last_year_end = date_start - relativedelta(years=1), date_end - relativedelta(years=1)
+        last_year_queryset = RetailOrder.my_query.sells_orders(last_year_start, last_year_end)
+        last_year_queryset, search_name, store_name, seller_name, order_type_name, status_name, is_paid_name, date_pick = \
+            retail_orders_filter(
+            self.request, last_year_queryset)
+
+        # filters and initial data
+        seller_account, stores = User.objects.filter(is_staff=True), Store.objects.all()
+        shipping, payment_methods, order_type_name, order_status, currency = Shipping.objects.all(), PaymentMethod.my_query.active(), \
+                                                                            ORDER_TYPES, ORDER_STATUS, CURRENCY
+        days = date_end - date_start
+
+        # feed the charts
+        total_incomes, total_paid_value, total_diff, total_cost, total_return, total_sum = incomes_analysis(self.object_list)
+        current_year_month_analysis = incomes_analysis_per_month(date_start, date_end, self.object_list)
+        last_year_month_analysis = incomes_analysis_per_month(last_year_start, last_year_end, last_year_queryset)
+        store_analysis = self.object_list.values('store_related__title').annotate(country_population=Sum('final_price')).\
+            order_by('-country_population')
+
+        context.update(locals())
+        return context
         
 
 @staff_member_required
