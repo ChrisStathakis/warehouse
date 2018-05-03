@@ -5,7 +5,9 @@ from  .popups_views import createBrandPopup, get_brand_id, createCategoryPopup, 
 from .views_sells import (EshopOrdersPage, eshop_order_edit, create_eshop_order,
                           add_edit_order_item, edit_order_item, delete_order_item,
                           CartListPage, OrderSettingsPage, print_invoice, 
-                          ShippingPage, ShippingEditPage, ShippingCreatePage, delete_shipping,)
+                          ShippingPage, ShippingEditPage, ShippingCreatePage, delete_shipping,
+                          PaymentMethodPage, PaymentMethodCreatePage, PaymentMethodEditPage, delete_payment_method,
+                          )
 from .views_pages import *
 from .user_views import *
 from .tools_views import *
@@ -83,6 +85,11 @@ urlpatterns = [
     path('warehouse/order/shipping/detail/<int:pk>/', ShippingEditPage.as_view(), name='shipping_edit_view'),
     path('warehouse/order/shipping/delete/<int:pk>/', view=delete_shipping, name='shipping_delete_view'),
     path('warehouse/order/shipping/create/', ShippingCreatePage.as_view(), name='shipping_create_view'),
+
+    path('warehouse/order/payment-method/', PaymentMethodPage.as_view(), name='payment_view'),
+    path('warehouse/order/payment-method/detail/<int:pk>/', PaymentMethodEditPage.as_view(), name='payment_edit_view'),
+    path('warehouse/order/payment-method/delete/<int:pk>/', view=delete_payment_method, name='payment_delete_view'),
+    path('warehouse/order/payment-method/create/', PaymentMethodCreatePage.as_view(), name='payment_create_view'),
 
     # user urls
     path('users-list/', UsersPage.as_view(), name='users_list'),

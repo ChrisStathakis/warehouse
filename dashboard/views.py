@@ -152,6 +152,7 @@ def product_add_sizechart(request, dk):
 def create_copy_item(request, pk):
     object = get_object_or_404(Product, id=pk)
     object.id = None
+    object.slug = None
     object.save()
     return redirect(object.get_edit_url())
 

@@ -18,12 +18,21 @@ MEASURE_UNITS = (
 STATUS = (('1', ''),('2', ''),('3', ''),('4', ''),)
 
 
+class PaymentMethod(models.Model):
+    title = models.CharField(unique=True, max_length=100)
+    active = models.BooleanField(default=True)
+    site_active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
+
+
 class PaymentOrders(models.Model):
     is_paid = models.BooleanField(default=False)
     title = models.CharField(max_length=150, blank=True, null=True)
     date_expired = models.DateField(auto_created=True)
     date_created = models.DateTimeField(blank=True, null=True)
-    payment_type = models.CharField(max_length=1, choices=PAYMENT_TYPE, default='1')
+    payment_type = models.ForeignKey(PaymentMethod, null=True, on_delete=models.SET_NULL)
     value = models.DecimalField(max_digits=50, decimal_places=2, default=0)
     bank = models.CharField(max_length=1, choices=BANKS, default='0')
     is_expense = models.BooleanField(default=True)
@@ -89,10 +98,4 @@ class Store(models.Model):
         return self.title
 
 
-class PaymentMethod(models.Model):
-    title = models.CharField(unique=True, max_length=100)
-    active = models.BooleanField(default=True)
-    site_active = models.BooleanField(default=False)
 
-    def __str__(self):
-        return self.title

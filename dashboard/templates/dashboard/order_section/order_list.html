@@ -1,42 +1,5 @@
 {% extends 'dashboard/dashboard.html' %}
 
-{% block submenu %}
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar bar1"></span>
-                        <span class="icon-bar bar2"></span>
-                        <span class="icon-bar bar3"></span>
-                    </button>
-                    <a class="navbar-brand" href="#">Dashboard</a>
-                </div>
-                <div class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <i class="ti-panel"></i>
-								<p>Orders</p>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'dashboard:cart_list' %}">
-                                <i class="ti-panel"></i>
-								<p>Cart</p>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'dashboard:settings_page' %}">
-                                <i class="ti-panel"></i>
-								<p>Settings</p>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        {% endblock %}
 
 {% block content %}
     <div class="content">
@@ -168,20 +131,20 @@
                                        <div id="collapseOne" class="collapse" role="tabpanel" aria-labelledby="headingOne">
                                            <div class="card-block">
                                                {% for payment_method in payment_method_list %}
-                                                   {% if vendor.title|stringformat:"s" in vendor_name %}
+                                                   {% if payment_method.id|stringformat:"s" in payment_name %}
                                                    <div class="checkbox">
-                                                       <input name="payment_method_name" value="{{ payment_method.0 }}"
+                                                       <input name="payment_name" value="{{ payment_method.id }}"
                                                               id="checkbox1" type="checkbox" checked>
                                                        <label for="checkbox1">
-                                                           {{ payment_method.1 }}
+                                                           {{ payment_method }}
                                                        </label>
                                                    </div>
                                                    {% else %}
                                                    <div class="checkbox">
-                                                       <input name="payment_method_name" value="{{ payment_method.0 }}"
+                                                       <input name="payment_name" value="{{ payment_method.id }}"
                                                               id="checkbox1" type="checkbox">
                                                        <label for="checkbox1">
-                                                           {{ payment_method.1 }}
+                                                           {{ payment_method }}
                                                        </label>
                                                    </div>
                                                    {% endif %}

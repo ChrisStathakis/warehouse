@@ -6,7 +6,7 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_delete
 
 from products.models import *
-from dashboard.models import PaymentOrders
+from dashboard.models import PaymentOrders, PaymentMethod
 from decimal import Decimal
 import os
 
@@ -55,7 +55,7 @@ class Order(models.Model):
     day_created = models.DateTimeField(auto_created=True, default=datetime.datetime.now(), verbose_name='Ημερομηνία') # primary mother fucker
     date_created = models.DateTimeField(blank=True, null=True)
     notes = models.TextField(null=True, blank=True, verbose_name="")
-    payment_method = models.CharField(max_length=1, choices=PAYMENT_TYPE, default='2')
+    payment_method = models.ForeignKey(PaymentMethod, null=True, on_delete=models.SET_NULL)
     total_price_no_discount = models.DecimalField(default=0, max_digits=15, decimal_places=2, verbose_name="Αξία προ έκπτωσης")
     total_discount = models.DecimalField(default=0, max_digits=15, decimal_places=2, verbose_name="Αξία έκπτωσης")
     total_price_after_discount = models.DecimalField(default=0, max_digits=15, decimal_places=2, verbose_name="Αξία μετά την έκπτωση")
@@ -112,7 +112,6 @@ class Order(models.Model):
         super(Order, self).save(*args, **kwargs)
         self.vendor.save()
 
-
     @staticmethod
     def filter_data(queryset, search_name, vendor_name, date_start, date_end, paid_name=None):
         try:
@@ -125,7 +124,6 @@ class Order(models.Model):
         except:
             queryset = queryset
         return queryset
-
 
     def images_query(self):
         return self.warehouseorderimage_set.all()

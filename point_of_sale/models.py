@@ -15,7 +15,7 @@ from model_utils import FieldTracker
 from products.models import *
 from inventory_manager.models import *
 from dashboard.constants import *
-from dashboard.models import Store, PaymentOrders
+from dashboard.models import Store, PaymentOrders, PaymentMethod
 from cart.models import Cart, Coupons
 
 
@@ -47,6 +47,12 @@ def order_transcation(order_type, instance, qty, substact,): #  substact can be 
     product.save()
     if costumer:
         costumer.save()
+
+
+def payment_method_default():
+    exists = PaymentMethod.objects.exists()
+    return PaymentMethod.objects.first() if exists else None
+
 
 #-------------------------Lianiki, epistrofes--------------------------------------------------------------------------------------
 
@@ -138,8 +144,11 @@ class RetailOrder(models.Model):
     date_edited = models.DateTimeField(auto_now=True, verbose_name='Ημερομηνία Επεξεργασίας')
     order_type = models.CharField(max_length=1, choices=ORDER_TYPES, default='r')
     title = models.CharField(max_length=50, blank=True, null=True, verbose_name='Τίτλος')
-
-    payment_method = models.CharField(max_length=1, choices=PAYMENT_TYPE, default='1')
+    payment_method = models.ForeignKey(PaymentMethod,
+                                       null=True,
+                                       on_delete=models.SET_NULL,
+                                       # default=payment_method_default()
+                                       )
     store_related = models.ForeignKey(Store, blank=True, null=True, on_delete=models.CASCADE)
     value = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Αξία Παραγγελίας')
     discount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Έκπτωση', )
@@ -300,6 +309,7 @@ class RetailOrder(models.Model):
                                    Q(last_name__icontains=search_name)
                                    ).dinstict() if search_name else queryset
         queryset = queryset.filter(printed=False) if printed_name else queryset
+        queryset = queryset.filter(payment_method__id__in=payment_name) if payment_name else queryset
         return queryset
 
 

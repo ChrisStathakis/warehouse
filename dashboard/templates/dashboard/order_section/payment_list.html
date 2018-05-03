@@ -1,0 +1,60 @@
+{% extends 'dashboard/dashboard.html' %}
+
+
+{% block content %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8">
+                        <div class="card">
+                            <div class="header">
+                                <h4 class="title text-center">Payment Method</h4>
+                                <p class="category">
+                                    <a href="{% url 'dashboard:payment_create_view' %}"
+                                       class="btn btn-success">Create Payment Method
+                                    </a>
+                                </p>
+                            </div>
+                            <div class="content table-responsive table-full-width">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Title</th>
+                                                <th>Status</th>
+                                                <th>Site Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for order in object_list %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ order }}</td>
+                                                <td>{{ order.active }}</td>
+                                                <td>{{ order.site_active }}</td>
+                                                <td><a class="btn btn-primary" href="{% url 'dashboard:payment_edit_view' order.id %}">Edit</a></td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                            </div>
+                        </div>
+                </div>
+
+                <div class="col-md-4">
+                    {% if messages %}
+                        <div class="card">
+                            <div class="header">
+                                {% for message in messages %}
+                                    <p class="text-center">{{ message }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+               </div>
+           </div>
+       </div>
+   </div>
+
+{% endblock %}

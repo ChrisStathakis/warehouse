@@ -70,7 +70,6 @@ class Homepage(View):
         first_page = FirstPage.objects.filter(active=True).first() if FirstPage.objects.filter(active=True) else None
         featured_products, new_products, offer_products = first_page_initial_data()
         banners = Banner.objects.filter(active=True)
-        print(new_products)
         menu_categories, cart, cart_items = initial_data(self.request)
         if 'search_name' in request.GET:
             search_name = request.GET.get('search_name')

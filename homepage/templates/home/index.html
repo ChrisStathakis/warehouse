@@ -60,6 +60,7 @@
                                     {% endfor %}
                                 </div>
                             </div>
+                            {% if new_products.count > 4 %}
                             <div class="carousel-item">
                                 <div class="row">
                                     {% for product in new_products %}
@@ -69,6 +70,8 @@
                                     {% endfor %}
                                 </div>
                             </div>
+                            {% endif %}
+                            {% if new_products.count > 8 %}
                             <div class="carousel-item">
                                 <div class="row">
                                     {% for product in new_products %}
@@ -78,6 +81,7 @@
                                     {% endfor %}
                                 </div>
                             </div>
+                            {% endif %}
                         </div>
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         <span class="sr-only">Previous</span>
