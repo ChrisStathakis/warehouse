@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponseRedirect
-from django.views.generic import ListView, DetailView, TemplateView, CreateView, UpdateView, FormView
+from django.views.generic import ListView, DetailView, TemplateView, CreateView, UpdateView, FormView, View
+from django.http import JsonResponse
 from django.db.models import Q, Sum
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -16,6 +17,7 @@ from .forms import (UpdateProductForm, CreateProductForm,
                     ColorForm, SizeForm,
                     CategorySiteForm,
                     )
+from products.forms_popup import ProductPhotoUploadForm
 from products.forms import SizeAttributeForm, ProductPhotoFormSet
 from dateutil.relativedelta import relativedelta
 
@@ -108,6 +110,38 @@ def product_detail(request, pk):
         return HttpResponseRedirect(reverse('dashboard:products'))
     context = locals()
     return render(request, 'dashboard/product_detail.html', context)
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class ProductAddMultipleImages(View):
+    template_name = 'dashboard/form_set.html'
+
+    def get(self, request, dk):
+        object = get_object_or_404(Product, id=dk)
+        photos = ProductPhotos.objects.filter(product=object)
+        form = ProductPhotoForm()
+        return render(request, self.template_name, context=locals())
+
+    def post(self, request, dk):
+        instance = get_object_or_404(Product, id=dk)
+        form = ProductPhotoUploadForm()
+        if request.POST:
+            form = ProductPhotoUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                photo = ProductPhotos.objects.create(product=instance,
+                                                     image=form.cleaned_data.get('image')
+                                                     )
+                data = {'is_valid': True,
+                        'name': photo.product.title,
+                        'url': photo.image.url
+                        }
+            else:
+                print('form', form.errors)
+                data = {'is_valid': False}
+        else:
+            print('no request post', form.errors)
+            data = {'is_valid': False}
+        return JsonResponse(data)
 
 
 @staff_member_required

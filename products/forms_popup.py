@@ -15,3 +15,6 @@ class CategoryForm(forms.ModelForm):
         model = Category
         fields = '__all__'
 
+
+class ProductPhotoUploadForm(forms.Form):
+    image = forms.ImageField()
