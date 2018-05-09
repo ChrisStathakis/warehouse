@@ -16,6 +16,7 @@
                                     <tr>
                                         <th>id</th>
                                         <th>Title</th>
+                                        <th>Ordering Value</th>
                                         <th>Status</th>
                                         <th>Parent</th>
                                         <th>Path</th>
@@ -26,6 +27,7 @@
                                     <tr>
                                         <td>{{ object.id }}</td>
                                         <td><a href="{% url 'dashboard:edit_category_site' object.id %}">{{ object }}</a></td>
+                                        <td>{{ object.order }}</td>
                                         <td>{{ object.active }}</td>
                                         <td>{{ object.show_on_menu }}</td>
                                         <td>{{ object.parent|default_if_none:"No parent" }}</td>
@@ -44,6 +46,9 @@
                        </div>
                        <div class="content">
                            <form method="get">
+                               {% if page_obj.has_previous %}
+
+                               {% endif %}
                                <div class="form-group">
                                    <input type="text" {% if search_name %}value="{{ search_name }}"{% endif %}
                                           placeholder="Search" class="form-control" name="search_name"/>

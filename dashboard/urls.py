@@ -53,7 +53,7 @@ urlpatterns = [
 
     # edit url
     path('category/detail/<int:pk>/', CategoryDetail.as_view(), name='category_detail'),
-    path('category/site/<int:dk>/', view=category_site_edit, name='edit_category_site'),
+    path('category/site/<int:pk>/', CategorySiteEdit.as_view(), name='edit_category_site'),
     path('brands/edit/<int:pk>', view=brandEditPage, name='edit_brand'),
     path('size/edit/<int:pk>', SizeEditPage.as_view(), name='edit_size'),
 

@@ -220,9 +220,19 @@ def delete_product(request, dk):
 class CategorySitePage(ListView):
     template_name = 'dashboard/category_site_list.html'
     model = CategorySite
+    paginate_by = 50
+
+    def get_queryset(self):
+        queryset = CategorySite.objects.all()
+        search_name = self.request.GET.get('search_name', None)
+        active_name = self.request.GET.get('active_name', None)
+        queryset = CategorySite.filter_data(queryset, search_name, active_name)
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super(CategorySitePage, self).get_context_data(**kwargs)
+        search_name = self.request.GET.get('search_name', None)
+        active_name = self.request.GET.get('active_name', None)
         page_title = 'Site Categories'
         context.update(locals())
         return context
@@ -453,6 +463,20 @@ class SizeEditPage(FormView):
         messages.success(self.request, 'The size had edited')
         return super().form_valid(form)
 
+
+@method_decorator(staff_member_required, name='dispatch')
+class CategorySiteEdit(UpdateView):
+    model = CategorySite
+    form_class = CategorySiteForm
+    template_name = 'dashboard/page_create.html'
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'The category edited successfuly!')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('dashboard:categories_site')
 
 @staff_member_required
 def category_site_edit(request, dk):

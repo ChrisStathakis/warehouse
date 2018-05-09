@@ -51,16 +51,15 @@ class CategorySiteManager(models.Manager):
         return super(CategorySiteManager, self).filter(status='a', parent__isnull=True)
 
 
-class CategorySite(MPTTModel):
+class CategorySite(models.Model):
     active = models.BooleanField(default=True)
     title = models.CharField(max_length=120,unique=True)
     image = models.ImageField(blank=True, null=True, upload_to=category_site_directory_path, help_text='610*410')
     content = models.TextField(blank=True, null=True)
     date_added = models.DateField(auto_now=True)
     meta_description = models.CharField(max_length=300, blank=True)
-    parent = TreeForeignKey(
-            'self', null=True, blank=True, on_delete=models.CASCADE, related_name='children',
-            verbose_name=pgettext_lazy('Category field', 'parent'))
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.CASCADE)
+    order = models.IntegerField(default=1)
     slug = models.SlugField(blank=True, null=True, allow_unicode=True)
     show_on_menu = models.BooleanField(default=False, verbose_name='Active on Navbar')
     my_query = CategorySiteManager()
@@ -69,6 +68,7 @@ class CategorySite(MPTTModel):
     class Meta:
         verbose_name_plural = '3. Κατηγορίες Site'
         unique_together = (('slug', 'parent',))
+        ordering = ['-order', ]
 
     def __str__(self):
         full_path = [self.title]
@@ -99,7 +99,12 @@ class CategorySite(MPTTModel):
     def get_childrens(self):
         childrens = CategorySite.objects.filter(parent=self)
         return childrens
-
+    
+    @staticmethod
+    def filter_data(queryset, search_name, active_name):
+        queryset = queryset.filter(title__icontains=search_name) if search_name else queryset
+        queryset = queryset.filter(active=True) if active_name else queryset
+        return queryset
 
 class Brands(models.Model):
     active = models.BooleanField(default=True, verbose_name='Ενεργοποίηση')

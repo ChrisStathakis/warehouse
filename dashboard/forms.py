@@ -61,6 +61,7 @@ class CategorySiteForm(forms.ModelForm):
     class Meta:
         model = CategorySite
         fields = ['active', 'show_on_menu',
+                  'order',  
                   'title', 'image',
                   'meta_description', 'slug',
                   'parent', 'content',
