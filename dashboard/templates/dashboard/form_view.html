@@ -1,29 +1,32 @@
-{% extends 'dashboard/dashboard.html' %}
+{% extends 'dash_ware/index.html' %}
 
-{% block extra_css %}
-<style>
-    .form-control{
-        background-color: rgba(79, 112, 125, 0.12);
-    }
-</style>
-
-{% endblock %}
 
 {% block content %}
     <div class="content">
-        <div class="container">
-            <div class="card">
-                <div class="card-title">
-                    <h3 class="title text-center">{{ form_title }}</h3>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <h4 class="text-center">{{ page_title }}</h4>
+                        <div class="content">
+                            <form method='post'>{% csrf_token %}
+                                {{ form.errors }}
+                                {{ form }}
+                                <button type='sumbit' class="btn btn-success">Save</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <form class="form text-center" enctype="multipart/form-data" method="post">{% csrf_token %}
-                        {{ form }}
-                        <button type="submit" class="btn btn-success text-center">Submit</button>
-                    </form>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="content">
+                            <a href="{{ back_url }}" class="btn btn-warning">Back</a>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
-    </div>
 
+    </div>
 {% endblock %}

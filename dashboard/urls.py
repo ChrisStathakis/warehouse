@@ -24,6 +24,7 @@ urlpatterns = [
     path('products/<int:pk>/', view=product_detail, name='product_detail'),
     path('products/add-images/<int:dk>/', ProductAddMultipleImages.as_view(), name='product_add_images'),
     path('products/add-sizes/<int:dk>/', view=product_add_sizechart, name='product_add_sizes'),
+    path('products/add-sizes/create/<int:dk>/<int:pk>/', view=create_new_sizechart, name='create_product_sizechart'),
 
     # popup and ajax calls
     path('products/popup/create-brand/', view=createBrandPopup, name='brand_popup'),
@@ -50,12 +51,14 @@ urlpatterns = [
     #  delete urls
     path('category/delete/<int:pk>/', view=delete_category, name='delete_category'),
     path('brands/delete/<int:pk>/', view=delete_brand, name='delete_brand'),
+    path('color/delete/<int:pk>/', view=delete_color, name='delete_color'),
 
     # edit url
     path('category/detail/<int:pk>/', CategoryDetail.as_view(), name='category_detail'),
     path('category/site/<int:pk>/', CategorySiteEdit.as_view(), name='edit_category_site'),
     path('brands/edit/<int:pk>', view=brandEditPage, name='edit_brand'),
     path('size/edit/<int:pk>', SizeEditPage.as_view(), name='edit_size'),
+    path('color/edit/<int:pk>/', ColorEditPage.as_view(), name='edit_color'),
 
 
     # redirects

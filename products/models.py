@@ -106,6 +106,7 @@ class CategorySite(models.Model):
         queryset = queryset.filter(active=True) if active_name else queryset
         return queryset
 
+
 class Brands(models.Model):
     active = models.BooleanField(default=True, verbose_name='Ενεργοποίηση')
     title = models.CharField(max_length=120, verbose_name='Ονομασία Brand')
@@ -132,6 +133,12 @@ class Brands(models.Model):
 
     def get_absolute_url(self):
         return reverse('brand', kwargs={'slug': self.slug})
+
+    @staticmethod
+    def filters_data(queryset, search_name, active_name):
+        queryset = queryset.filter(title__icontains=search_name) if search_name else queryset
+        queryset = queryset.filter(active=True) if active_name else queryset
+        return queryset
 
 
 class Characteristics(models.Model):
@@ -232,33 +239,50 @@ class Supply(models.Model):
         return reverse('edit_vendor_id',kwargs={'dk':self.id})
 
 
-class Color(MPTTModel):
+class Color(models.Model):
     title = models.CharField(max_length=64, unique=True, verbose_name='Ονομασία Χρώματος')
     status = models.BooleanField(default=True, verbose_name='Κατάσταση')
     code_id = models.CharField(max_length=25, blank=True, verbose_name='Κωδικός Χρώματος')
-    parent = TreeForeignKey('self', blank=True, null=True, related_name='children', db_index=True, on_delete=models.CASCADE)
+    ordering = models.PositiveIntegerField(default=1)
 
     class Meta:
         verbose_name_plural = '5. Χρώματα'
+        ordering = ['-ordering', ]
 
     def __str__(self):
         return self.title
 
+    def tag_status(self):
+        return 'Active' if self.status else 'No Active'
 
-class Size(MPTTModel):
+    @staticmethod
+    def filters_data(queryset, search_name, active_name):
+        queryset = queryset.filter(title__icontains=search_name) if search_name else queryset
+        queryset = queryset.filter(status=True) if active_name else queryset
+        return queryset
+
+
+class Size(models.Model):
     active = models.BooleanField(default=True)
     title = models.CharField(max_length=64, unique=True, verbose_name='Ονομασία Μεγέθους')
     status = models.BooleanField(default=True, verbose_name='Κατάσταση')
-    parent = TreeForeignKey('self', blank=True, null=True, related_name='children', db_index=True, on_delete=models.CASCADE)
+    ordering = models.PositiveIntegerField(default=1, help_text='Bigger goes first')
 
     class Meta:
         verbose_name_plural = '6. Μεγέθη'
+        ordering = ['-ordering', ]
 
     def __str__(self):
         return self.title
 
     def get_edit_url(self):
         return reverse('dashboard:edit_size', kwargs={'pk': self.id})
+
+    @staticmethod
+    def filters_data(queryset, search_name, active_name):
+        queryset = queryset.filter(title__icontains=search_name) if search_name else queryset
+        queryset = queryset.filter(status=True) if active_name else queryset
+        return queryset
 
 
 class ProductManager(models.Manager):

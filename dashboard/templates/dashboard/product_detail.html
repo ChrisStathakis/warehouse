@@ -92,30 +92,27 @@
                             <h4 class="title">Size Chart</h4> <h4 class="title">Add Size <a href="{% url 'dashboard:product_add_sizes' instance.id %}" class="btn btn-info">Add or Edit multiple sizes</a> </h4>
                         </div>
                         <div class="content">
-                            <ul class="list-unstyled team-members">
-                                {% for size in sizes %}
-                                <li>
-                                    <div class="row">
-                                        <div class="col-xs-3">
-                                            <p>{{ size.title }}</p>
-                                        </div>
-                                        <div class="col-xs-3">
-                                            Qty: {{ size.qty }} {{ instance.get_measure_unit_display }}
-                                            <br />
-                                            <span class="text-muted"><small>Status</small></span>
-                                        </div>
-                                        <div class="col-xs-6 text-right">
-                                            <a href="" class="btn btn-sm btn-warning btn-icon"><i class="fa fa-close"></i></a>
-                                        </div>
-                                    </div>
-                                </li>
-                                {% empty %}
-                                <li>
-                                    <p>No images</p>
-                                </li>
-                                {% endfor %}
-                            </ul>
-
+                            <table class="table table-responsive">
+                                <thead>
+                                    <tr>
+                                        <th>Size</th>
+                                        <th>Qty</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for size in sizes %}
+                                        <tr>
+                                            <td>{{ size }}</td>
+                                            <td>{{ size.qty }}</td>
+                                            <td>
+                                                <a href="" class="btn btn-sm btn-primary btn-icon"><i class="fa fa-edit"></i> </a>
+                                                <a href="" class="btn btn-sm btn-warning btn-icon"><i class="fa fa-close"></i></a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 {% endif %}

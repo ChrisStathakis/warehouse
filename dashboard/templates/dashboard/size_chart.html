@@ -1,0 +1,93 @@
+{% extends 'dashboard/dashboard.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="header">
+                    <div class="title">Add Size</div>
+                </div>
+                <div class="content">
+                    <table class="table table-responsive table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Color</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for size in sizes %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ size }}</td>
+                                    <td><button data-url="{% url 'dashboard:create_product_sizechart' instance.id size.id %}" class="btn btn-primary add_size">Add</button></td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4">No size added!</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'dashboard:product_detail' instance.id %}" class="btn btn-warning btn-raised">Back</a>
+            <br> <br>
+            <div class="card">
+                <div class="header">
+                    <div class="title">Selected size</div>
+                </div>
+                <div class="content" id="container_table">
+                    <table class="table table-responsive table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Title</th>
+                                <th>Qty</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for size in sizes_attr %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ size }}</td>
+                                    <td>{{ size.qty }}</td>
+                                    <td>#</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4">No size added!</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $('.add_size').click(function () {
+        var btn = $(this);
+        console.log(btn.attr('data-context'));
+        $.ajax({
+            url: btn.attr('data-url'),
+            dataType: 'json',
+            success: function (data) {
+                if(data.new) {
+                    $("#container_table").html(data.html_data)
+                }
+                else {
+
+                }
+            }
+        })
+    })
+</script>
+{% endblock %}

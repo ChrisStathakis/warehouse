@@ -19,9 +19,9 @@
                <div class="col-md-8">
                    <div class="card">
                        <div class="header">
-                           <h4 class="title text-center">Brands</h4>
+                           <h4 class="title text-center">Colors</h4>
                            <p class="category">
-                               <a href="{% url 'dashboard:brands_create' %}" class="btn btn-success">Create Brand</a>
+                               <a href="{% url 'dashboard:color_create' %}" class="btn btn-success">Create Color</a>
                            </p>
                        </div>
                        <div class="content table-responsive table-full-width">
@@ -30,6 +30,8 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Name</th>
+                                        <th>Ordering</th>
+                                        <th>Hex Color</th>
                                         <th>Active</th>
                                         <th>Actions</th>
                                     </tr>
@@ -39,9 +41,11 @@
                                     <tr>
                                         <td>{{ object.id }}</td>
                                         <td><a href="{{ object.get_edit_url }}">{{ object }}</a></td>
-                                        <td>{{ object.active }}</td>
-                                        <td><a href="{% url 'dashboard:edit_brand' object.id %}" class="btn btn-info">Edit</a>
-                                            <a href="{% url 'dashboard:delete_brand' object.id %}" class="btn btn-warning">Delete</a>
+                                        <td>{{ object.ordering }}</td>
+                                        <td>{{ object.code_id }}</td>
+                                        <td>{{ object.tag_status }}</td>
+                                        <td><a href="{% url 'dashboard:edit_color' object.id %}" class="btn btn-info">Edit</a>
+                                            <a href="{% url 'dashboard:delete_color' object.id %}" class="btn btn-warning">Delete</a>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -54,7 +58,6 @@
                    <div class="card">
                        <div class="header">
                             <h4>Filters</h4>
-
                        </div>
                        <div class="content">
                            <form method="get">
@@ -108,13 +111,11 @@
                                </div>
 
                                <button type="submit" class="btn btn-primary">Submit</button>
-                               <a href="{% url 'dashboard:categories' %}" class="btn btn-danger">Reset Filters</a>
+                               <a href="{{ request.path }}" class="btn btn-danger">Reset Filters</a>
                            </form>
                        </div>
                    </div>
-                   {% if category_page %}
-                        {% include 'dashboard/include/actions/category_actions.html' %}
-                   {% endif %}
+
                </div>
            </div>
        </div>

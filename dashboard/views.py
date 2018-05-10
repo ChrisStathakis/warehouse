@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponseRedirect
 from django.views.generic import ListView, DetailView, TemplateView, CreateView, UpdateView, FormView, View
+from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.db.models import Q, Sum
 from django.utils.decorators import method_decorator
@@ -167,19 +168,29 @@ def product_add_multiple_images(request, dk):
 @staff_member_required
 def product_add_sizechart(request, dk):
     instance = get_object_or_404(Product, id=dk)
-    form_title = 'Add Size'
-    initial_data = []
-    for ele in range(10):
-        initial_data.append({'product_related': instance})
-    formset = SizeAttributeFormSet(initial=initial_data)
-    if request.POST:
-        formset = SizeAttributeFormSet(request.POST)
-        for form in formset:
-            if form.is_valid():
-                form.save()
-        messages.success(request, 'The sizes added!')
-        return HttpResponseRedirect(reverse('dashboard:product_detail', kwargs={'pk': dk}))
-    return render(request, 'dashboard/form_set.html', context=locals())
+    sizes_attr = instance.sizeattribute_set.all()
+    sizes = Size.objects.filter(status=True)
+    return render(request, 'dashboard/size_chart.html', context=locals())
+
+
+@staff_member_required
+def create_new_sizechart(request, dk, pk):
+    data = dict()
+    instance = get_object_or_404(Product, id=dk)
+    size = get_object_or_404(Size, id=pk)
+    size_exists = SizeAttribute.objects.filter(title=size, product_related=instance)
+    if size_exists:
+        data['new_'] = False
+        sizes_attr = SizeAttribute.objects.filter(product_related=instance)
+    else:
+        data['new'] = True
+        new_size = SizeAttribute.objects.create(title=size,
+                                                product_related=instance
+                                                )
+        sizes_attr = SizeAttribute.objects.filter(product_related=instance)
+    data['html_data'] = render_to_string(request=request, template_name='dashboard/ajax_calls/sizeattr.html', context=locals())
+
+    return JsonResponse(data)
 
 
 @staff_member_required
@@ -195,18 +206,21 @@ def create_copy_item(request, pk):
 class ProductCreate(CreateView):
     template_name = 'dashboard/product_create.html'
     form_class = CreateProductForm
+    new_object = Product.objects.first()
 
     def get_context_data(self, **kwargs):
         context = super(ProductCreate, self).get_context_data(**kwargs)
-
         return context
 
     def form_valid(self, form):
         object = form.save()
-        return redirect(object.get_edit_url())
+        object.refresh_from_db()
+        self.new_object = object
+        return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('dashboard:product_detail', kwarg={'dk': Product.objects.last()})
+        self.new_object.refresh_from_db()
+        return reverse('dashboard:product_detail', kwargs={'pk': self.new_object.id})
 
 
 @staff_member_required
@@ -241,14 +255,11 @@ class CategorySitePage(ListView):
 @method_decorator(staff_member_required, name='dispatch')
 class CategoryPage(ListView):
     template_name = 'dashboard/page_list.html'
-    model = CategorySite
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    model = Category
+    paginate_by = 50
 
     def get_queryset(self):
-        queryset = CategorySite.objects.all()
+        queryset = Category.objects.all()
         active_name, show_name, search_name = [self.request.GET.getlist('active_name'),
                                                self.request.GET.getlist('show_name'),
                                                self.request.GET.get('search_name')
@@ -274,31 +285,43 @@ class CategoryPage(ListView):
 class BrandPage(ListView):
     template_name = 'dashboard/brand_list.html'
     model = Brands
+    paginate_by = 50
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    def get_queryset(self):
+        queryset = Brands.objects.all()
+        search_name = self.request.GET.get('search_name', None)
+        active_name = self.request.GET.get('active_name', None)
+        queryset = Brands.filters_data(queryset, search_name, active_name)
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super(BrandPage, self).get_context_data(**kwargs)
         title, create_title, create_url = 'Brands', 'Create Brand', ''
+        search_name = self.request.GET.get('search_name', None)
+        active_name = self.request.GET.get('active_name', None)
         context.update(locals())
         return context
 
 
 @method_decorator(staff_member_required, name='dispatch')
 class ColorPage(ListView):
-    template_name = 'dashboard/page_list.html'
+    template_name = 'dashboard/color_list.html'
     model = Color
+    paginate_by = 50
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    def get_queryset(self):
+        queryset = Color.objects.all()
+        search_name = self.request.GET.get('search_name', None)
+        active_name = self.request.GET.get('active_name', None)
+        queryset = Color.filters_data(queryset, search_name, active_name)
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super(ColorPage, self).get_context_data(**kwargs)
         page_title, create_title, create_url = 'Colors', 'Create Color', reverse('dashboard:color_create')
         table_thead = ['id', 'Name', 'Active']
+        search_name = self.request.GET.get('search_name', None)
+        active_name = self.request.GET.get('active_name', None)
         context.update(locals())
         return context
 
@@ -307,13 +330,19 @@ class ColorPage(ListView):
 class SizePage(ListView):
     template_name = 'dashboard/size_list.html'
     model = Size
+    paginate_by = 50
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    def get_queryset(self):
+        queryset = Size.objects.all()
+        search_name = self.request.GET.get('search_name', None)
+        active_name = self.request.GET.get('active_name', None)
+        queryset = Size.filters_data(queryset, search_name, active_name)
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super(SizePage, self).get_context_data(**kwargs)
+        search_name = self.request.GET.get('search_name', None)
+        active_name = self.request.GET.get('active_name', None)
         page_title = 'Sizes'
         context.update(locals())
         return context
@@ -378,11 +407,7 @@ class CategorySiteCreate(CreateView):
 @method_decorator(staff_member_required, name='dispatch')
 class BrandsCreate(CreateView):
     form_class = BrandsForm
-    template_name = 'dashboard/page_create.html'
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    template_name = 'dashboard/form_view.html'
 
     def get_context_data(self, **kwargs):
         context = super(BrandsCreate, self).get_context_data(**kwargs)
@@ -391,7 +416,11 @@ class BrandsCreate(CreateView):
         return context
 
     def form_valid(self, form):
+        form.save()
         messages.success(self.request, 'The Brand Created!')
+        return super().form_valid(form)
+
+    def get_success_url(self):
         return reverse('dashboard:brands')
 
 
@@ -412,10 +441,31 @@ class ColorCreate(CreateView):
 
 
 @method_decorator(staff_member_required, name='dispatch')
+class ColorEditPage(UpdateView):
+    model = Color
+    form_class = ColorForm
+    template_name = 'dashboard/form_view.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ColorEditPage, self).get_context_data(**kwargs)
+        page_title, back_url = 'Edit Color', reverse('dashboard:colors')
+        context.update(locals())
+        return context
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Th color edited!')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('dashboard:colors')
+
+
+@method_decorator(staff_member_required, name='dispatch')
 class SizeCreate(CreateView):
     model = Size
     form_class = SizeForm
-    template_name = 'dashboard/form_view.html'
+    template_name = 'dash_ware/form.html'
 
     def get_context_data(self, **kwargs):
         context = super(SizeCreate, self).get_context_data(**kwargs)
@@ -478,6 +528,7 @@ class CategorySiteEdit(UpdateView):
     def get_success_url(self):
         return reverse('dashboard:categories_site')
 
+
 @staff_member_required
 def category_site_edit(request, dk):
     instance = get_object_or_404(CategorySite, id=dk)
@@ -488,6 +539,7 @@ def category_site_edit(request, dk):
         messages.success(request, 'The category %s edited successfully' % instance.title)
     context = locals()
     return render(request, 'dashboard/form_view.html', context)
+
 
 @staff_member_required
 def delete_category(request, pk):
@@ -503,3 +555,11 @@ def delete_brand(request, pk):
     instance.delete()
     messages.warning(request, 'The brand %s has deleted' % instance.title)
     return redirect(reverse('dashboard:brands'))
+
+
+@staff_member_required
+def delete_color(request, pk):
+    instance = get_object_or_404(Color, id=pk)
+    instance.delete()
+    messages.warning(request, 'The color %s deleted' % instance.title)
+    return redirect(reverse('dashboard:colors'))

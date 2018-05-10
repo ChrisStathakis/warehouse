@@ -43,6 +43,22 @@
                        </div>
                        <div class="content">
                            <form method="get">
+                               <div class="pagination">
+                                    <span class="step-links">
+                                        <input name="page" value="1" type="text" hidden>
+                                        {% if page_obj.has_previous %}
+                                            <button type="submit" name='page' value="1" class="btn btn-primary">First Page</button>
+                                            <button type="submit" name='page' value="{{ page_obj.previous_page_number }}" class="btn btn-primary">Previous</button>
+                                        {% endif %}
+                                            <span class="current">
+                                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                                            </span>
+                                        {% if page_obj.has_next %}
+                                            <button type="submit" name='page' value="{{ page_obj.next_page_number }}" class="btn btn-primary">Next</button>
+                                            <button type="submit" name='page' value="{{ page_obj.paginator.num_pages }}" class="btn btn-primary">Last Page</button>
+                                        {% endif %}
+                                    </span>
+                               </div>
                                <div class="form-group">
                                    <input type="text" {% if search_name %}value="{{ search_name }}"{% endif %}
                                           placeholder="Search" class="form-control" name="search_name"/>

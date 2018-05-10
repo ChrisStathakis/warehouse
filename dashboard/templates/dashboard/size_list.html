@@ -74,9 +74,8 @@
                                        Non Show on Navbar
                                    </label>
                                </div>
-
                                <button type="submit" class="btn btn-primary">Submit</button>
-                               <a href="{% url 'dashboard:categories' %}" class="btn btn-danger">Reset Filters</a>
+                               <a href="{{ request.path }}" class="btn btn-danger">Reset Filters</a>
                            </form>
                        </div>
                    </div>
