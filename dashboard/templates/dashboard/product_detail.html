@@ -137,7 +137,7 @@
                                         <span class="text-muted"><small>Status: </small>{{ image.tag_status }}</span>
                                     </div>
                                     <div class="col-xs-3 text-right">
-                                        <a href="" class="btn btn-sm btn-warning btn-icon"><i class="fa fa-close"></i></a>
+                                        <a href="{% url 'dashboard:delete_image' image.id %}" class="btn btn-sm btn-warning btn-icon"><i class="fa fa-close"></i></a>
                                     </div>
                                 </div>
                             </li>

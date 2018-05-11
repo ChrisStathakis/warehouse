@@ -6,12 +6,8 @@ $(function () {
 
    $('#fileupload').fileupload({
        dataType: 'json',
-       done: function (e, data) {
-           if (data.is_valid) {
-               $('#gallery tbody').prepend(
-                   "<tr><td><a href='" + data.result.url + "'>" + data.result.name + "</a></td></tr>"
-               )
-           }
+       success: function (data) {
+           $('#container_content').html(data.html_data) 
        }
    })
 });

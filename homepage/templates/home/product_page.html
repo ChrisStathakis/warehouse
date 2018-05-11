@@ -21,6 +21,259 @@
         </div>
     </div>
 
+
+
+    <div class="main">
+        <div class="section">
+            <div class="container">
+                <div class="row">
+                        <div class="col-md-7 col-sm-6">
+                            <div id="carousel">
+                                <div id="carousel-example-generic" class="carousel slide" data-interval="false">
+                                    <!-- Indicators -->
+                                    <ol class="carousel-indicators">
+                                        <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                                    </ol>
+    
+                                    <!-- Wrapper for slides -->
+                                    <div class="carousel-inner">
+                                        <div class="item active">
+                                            <img src="{{ object.image.url }}" alt="Awesome Image">
+                                        </div>
+                                    </div>
+    
+                                    <!-- Controls -->
+                                    <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+                                        <span class="fa fa-angle-left"></span>
+                                    </a>
+                                    <a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
+                                        <span class="fa fa-angle-right"></span>
+                                    </a>
+                                </div>
+                            </div> <!-- end carousel -->
+    
+                            </div>
+                                <div class="col-md-5 col-sm-6">
+                                    <h2>{{ object }}</h2>
+                                    <h4 class="price"><strong>{{ object.tag_price }}</strong></h4>
+                                    <hr />
+                                    <p>{{ object.site_text|default_if_none:"No description added" }}</p>
+                                    <span class="label label-default shipping">{{ object.brand|default_if_none:"No Brand added" }}, {{ object.tag_site_category }}</span>
+                                    <form method='post'> {% csrf_token %}{{ form }}</form>
+                                    <div class="row">
+                                        <div class="col-md-6 col-sm-6">
+                                            <label>Select Qty</label>
+                                            <div class="form-group">
+                                                <select name="huge" class="selectpicker" data-style="btn btn-block" data-menu-style="">
+                                                    <option value="1">1&ensp;&ensp;&ensp;&ensp;</option>
+                                                    <option value="2">2&ensp;&ensp;</option>
+                                                    <option value="3">3&ensp;&ensp;</option>
+                                                    <option value="4">4</option>
+                                                    <option value="5">5</option>
+                                                    <option value="6">6</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6">
+                                            <label>Select size</label>
+                                            <div class="form-group">
+                                                <select name="huge" class="selectpicker" data-style="btn btn-block" data-menu-style="">
+                                                    <option value="1">Small </option>
+                                                    <option value="2">Medium</option>
+                                                    <option value="3">Large</option>
+        
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="row">
+                                        <div class="col-md-7 col-md-offset-5 col-sm-8">
+                                            <button class="btn btn-danger btn-fill btn-lg btn-block">Add to Cart &nbsp;<i class="fa fa-chevron-right"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+        
+                <div class="section section-nude">
+                    <div class="container">
+                        <div class="row details-row">
+                            <div class="col-md-4 col-sm-4">
+                               <div class="info">
+                                    <div class="icon">
+                                        <i class="fa fa-truck"></i>
+                                    </div>
+                                    <div class="description">
+                                        <h4> 2 Days Delivery </h4>
+                                        <p>Spend your time generating new ideas. You don't have to think of implementing anymore.</p>
+                                    </div>
+                               </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                               <div class="info">
+                                    <div class="icon">
+                                        <i class="fa fa-history"></i>
+                                    </div>
+                                    <div class="description">
+                                        <h4> Refundable Policy </h4>
+                                        <p>Larger, yet dramatically thinner. More powerful, but remarkably power efficient.</p>
+                                    </div>
+                               </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                               <div class="info">
+                                    <div class="icon">
+                                        <i class="fa fa-heart"></i>
+                                    </div>
+                                    <div class="description">
+                                        <h4> Popular Item </h4>
+                                        <p>Choose from a veriety of colors resembling sugar paper pastels.</p>
+                                    </div>
+                               </div>
+                            </div>
+                        </div>
+                        <hr />
+                            <p>What to find out more about how we build our stuff? <a class="link-danger">Learn more.</a></p>
+                        <hr />
+                        <div class="faq">
+        
+                            <h4>Frequently Asked Questions</h4>
+                            <div id="acordeon">
+                            <div class="panel-group" id="accordion">
+                              <div class="panel panel-border panel-default">
+                                <a data-toggle="collapse" href="#collapseOne">
+                                    <div class="panel-heading">
+                                      <h4 class="panel-title">
+                                          How do I find out my size?
+                                          <i class="fa fa-chevron-down"></i>
+                                      </h4>
+        
+                                    </div>
+                                </a>
+                                <div id="collapseOne" class="panel-collapse collapse">
+                                  <div class="panel-body">
+                                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="panel panel-border panel-default">
+                                <a data-toggle="collapse" href="#collapseTwo">
+                                    <div class="panel-heading">
+                                      <h4 class="panel-title">
+                                          How can I use a coupon I have received?
+                                          <i class="fa fa-chevron-down"></i>
+                                      </h4>
+        
+                                    </div>
+                                </a>
+                                <div id="collapseTwo" class="panel-collapse collapse">
+                                  <div class="panel-body">
+                                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="panel panel-border panel-default">
+                                <a data-toggle="collapse" href="#collapseThree">
+                                    <div class="panel-heading">
+                                      <h4 class="panel-title">
+                                          What are the delivery prices outside of Europe?
+                                          <i class="fa fa-chevron-down"></i>
+                                      </h4>
+        
+                                    </div>
+                                </a>
+                                <div id="collapseThree" class="panel-collapse collapse">
+                                  <div class="panel-body">
+                                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                                  </div>
+                                </div>
+                              </div>
+        
+                            </div>
+        
+                        </div><!--  end acordeon -->
+        
+                        </div>
+                        <div class="row add-row">
+                            <div class="col-md-4 col-sm-4">
+                                <h4>Complete the Look</h4>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <h5>Ankle Boots</h5>
+                                <p class="price"><strong>&euro; 2,900.00</strong></p>
+        
+                                <p>Crafted in Italy from patent-leather, these boots are perfect with a wool blazer and cotton jeans.</p>
+                                <button class="btn btn-fill btn-danger"> Add to Cart</button>
+                            </div>
+                            <div class="col-md-3 col-md-offset-1 col-sm-4">
+                                <img src="../assets/img/boots.jpg" alt="Rounded Image" class="img-rounded img-responsive">
+                            </div>
+                        </div>
+        
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12"><h4>Similar Products</h4></div>
+                            <div class="col-md-4 col-sm-4">
+                                <div class="card-image card-product">
+                                    <a href="#">
+                                        <img src="../assets/img/balmain-1.jpg" alt="Rounded Image" class="img-rounded img-responsive">
+                                    </a>
+                                    <div class="details">
+                                        <div class="description">
+                                            <div class="name">Double Breasted Mini Dress</div>
+                                            <div class="meta">Dresses & Skirts</div>
+                                        </div>
+                                        <div class="actions">
+                                            <h5>1.300 &euro;</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <div class="card-image card-product">
+                                    <a href="#">
+                                        <img src="../assets/img/balmain-2.jpg" alt="Rounded Image" class="img-rounded img-responsive">
+                                    </a>
+                                    <div class="details">
+                                        <div class="description">
+                                            <div class="name">Chrystal Dress</div>
+                                            <div class="meta">Dresses & Skirts</div>
+                                        </div>
+        
+                                        <div class="actions">
+                                            <h5>1.500 &euro;</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <div class="card-image card-product">
+                                    <a href="#">
+                                        <img src="../assets/img/balmain-3.jpg" alt="Rounded Image" class="img-rounded img-responsive">
+                                    </a>
+                                    <div class="details">
+                                        <div class="description">
+                                            <div class="name">Chrystal Skirt</div>
+                                            <div class="meta">Only on demand</div>
+                                        </div>
+        
+                                        <div class="actions">
+                                            <h5>1.200 &euro;</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+   
+
     <div class="section section-nucleo-icons">
         <div class="container">
             <div class="row">

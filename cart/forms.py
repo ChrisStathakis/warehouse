@@ -13,6 +13,23 @@ class CartItemForm(forms.Form):
                                                              }),
                              )
 
+class CartItemNoAttrForm(forms.ModelForm):
+
+    class Meta:
+        model = CartItem
+        fields = ['order_related', 
+                  'product_related',
+                  'id_session',
+                  'qty',
+                  'price',
+                  'price_discount',
+                   ]
+
+    def __init__(self, *args, **kwargs):
+        super(CartItemNoAttrForm, self).__init__(*args, **kwargs)
+        # self.fields['order_related'] = pass
+
+
 
 class CouponForm(forms.ModelForm):
 

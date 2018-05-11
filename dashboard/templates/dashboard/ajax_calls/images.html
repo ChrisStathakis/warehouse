@@ -1,0 +1,15 @@
+<table id="gallery" class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Photo</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for photo in photos %}
+            <tr>
+                <th>
+                    <a href="{{ photo.image.url }}">{{ photo.title }} - Photo..{{ forloop.counter }}</a> </th>
+                </tr>
+        {% endfor %}
+    </tbody>
+</table>

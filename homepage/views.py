@@ -27,23 +27,21 @@ from .tools import (initial_filter_data,
                     europe_cookie
                     )
 # brand_name, category_name, color_name = grab_user_filter_data(request)
-from products.models import Product, CategorySite, Brands, Color
+from products.models import Product, CategorySite, Brands, Color, ProductPhotos
 from cart.views import check_if_cart_id, cart_data, check_or_create_cart
 from cart.models import CartItem, Coupons
 from account.models import CostumerAccount
 from account.forms import CostumerPageEditDetailsForm
 from .forms import PersonalInfoForm
-from cart.forms import CartItemForm
+from cart.forms import CartItemForm, CartItemNoAttrForm
 from point_of_sale.models import Order, OrderItem, PAYMENT_METHOD, Shipping, RetailOrder, RetailOrderItem
+from .mixins import custom_redirect, SearchMixin
 
 
 CURRENCY = '€'
 
 
-def custom_redirect(url_name, *args, **kwargs):
-    url = reverse(url_name, args=args)
-    params = urlencode(kwargs)
-    return HttpResponseRedirect(url + "?%s" % params)
+
 
 # return custom_redirect('url-name', x, q = 'something')
 # Should redirect to '/my_long_url/x/?q=something'
@@ -78,7 +76,7 @@ class Homepage(View):
         return render(self.request, self.template_name, context=context)
 
 
-class NewProductsPage(ListView):
+class NewProductsPage(SearchMixin, ListView):
     template_name = 'home/product_list.html'
     model = Product
     paginate_by = 16
@@ -100,14 +98,15 @@ class NewProductsPage(ListView):
         context.update(locals())
         return context
 
+    '''
     def get(self, *args, **kwargs):
         if 'search_name' in self.request.GET:
             search_name = self.request.GET.get('search_name')
             return custom_redirect('search_page', search_name=search_name)
         return super(NewProductsPage, self).get(*args, **kwargs)
+    '''
 
-
-class OffersPage(ListView):
+class OffersPage(SearchMixin, ListView):
     model = Product
     template_name = 'home/product_list.html'
     paginate_by = 16
@@ -131,12 +130,7 @@ class OffersPage(ListView):
         context.update(locals())
         return context
 
-    def get(self, *args, **kwargs):
-        if 'search_name' in self.request.GET:
-            search_name = self.request.GET.get('search_name')
-            return custom_redirect('search_page', search_name=search_name)
-        return super(OffersPage, self).get(*args, **kwargs)
-
+    
 
 class CategoryPageList(ListView):
     template_name = 'home/product_list.html'
@@ -166,7 +160,7 @@ class CategoryPageList(ListView):
         return super(CategoryPageList, self).get(*args, **kwargs)
 
 
-class BrandsPage(ListView):
+class BrandsPage(SearchMixin, ListView):
     template_name = 'home/brands.html'
     model = Brands
 
@@ -184,20 +178,17 @@ class BrandsPage(ListView):
         context.update(locals())
         return context
 
-    def get(self, *args, **kwargs):
-        if 'search_name' in self.request.GET:
-            search_name = self.request.GET.get('search_name')
-            return custom_redirect('search_page', search_name=search_name)
-        return super(BrandsPage, self).get(*args, **kwargs)
 
-
-class BrandPage(ListView):
+class BrandPage(SearchMixin, ListView):
     template_name = 'home/product_list.html'
     model = Product
     brand = None
+    slug_field = 'slug'
+    
 
     def get_queryset(self, *args, **kwargs):
-        queryset = Product.my_query.active_for_site().filter(brand=self.brand)
+        instance = get_object_or_404(Brands, slug=self.kwargs['slug'])
+        queryset = Product.my_query.active_for_site().filter(brand=instance)
         brand_name, cate_name, color_name = grab_user_filter_data(self.request)
         queryset = filter_queryset(queryset, brand_name, cate_name, color_name)
         queryset = queryset_ordering(self.request, queryset)
@@ -205,31 +196,35 @@ class BrandPage(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(BrandPage, self).get_context_data(**kwargs)
+        instance = get_object_or_404(Brands, slug=self.kwargs['slug'])
         menu_categories, cart, cart_items = initial_data(self.request)
         brands, categories, colors = initial_filter_data(self.object_list)
         brand_name, cate_name, color_name = grab_user_filter_data(self.request)
-        seo_title = '%s' % self.brand.title
+        seo_title = '%s' % instance.title
         context.update(locals())
         return context
 
-    def get(self, *args, **kwargs):
-        self.brand = get_object_or_404(Brands, slug=self.kwargs['slug'])
-        if 'search_name' in self.request.GET:
-            search_name = self.request.GET.get('search_name')
-            return custom_redirect('search_page', search_name=search_name)
-        return super(BrandPage, self).get(*args, **kwargs)
-
+    
 
 class ProductPage(DetailView, FormView):
     model = Product
     template_name = 'home/product_page.html'
     slug_url_kwarg = 'slug'
     slug_field = 'slug'
-    form_class = CartItemForm
+    form_class = CartItemNoAttrForm
+
+    def get_initial(self):
+         initial = super(ProductPage, self).get_initial()
+         initial['product_related'] = self.object
+         # initial['id_session'] = ''
+         initial['price'] = self.object.price
+         initial['price_discount'] = self.object.price_discount
+         return initial
 
     def get_context_data(self, **kwargs):
         context = super(ProductPage, self).get_context_data(**kwargs)
         menu_categories, cart, cart_items = initial_data(self.request)
+        images = ProductPhotos.objects.filter(product=self.object)
         seo_title = '%s' % self.object
         context.update(locals())
         return context
@@ -260,12 +255,6 @@ class ProductPage(DetailView, FormView):
                                                 )
             messages.success(self.request, 'The product added on your cart!')
         return super().form_valid(form)
-
-    def get(self, *args, **kwargs):
-        if 'search_name' in self.request.GET:
-            search_name = self.request.GET.get('search_name')
-            return custom_redirect('search_page', search_name=search_name)
-        return super(ProductPage, self).get(*args, **kwargs)
 
     def get_success_url(self):
         return self.request.META.get('HTTP_REFERER')

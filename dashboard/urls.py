@@ -23,6 +23,7 @@ urlpatterns = [
     path('products/create/', ProductCreate.as_view(), name='product_create'),
     path('products/<int:pk>/', view=product_detail, name='product_detail'),
     path('products/add-images/<int:dk>/', ProductAddMultipleImages.as_view(), name='product_add_images'),
+    path('products/delete-images/<int:pk>/', view=delete_product_image, name='delete_image'),
     path('products/add-sizes/<int:dk>/', view=product_add_sizechart, name='product_add_sizes'),
     path('products/add-sizes/create/<int:dk>/<int:pk>/', view=create_new_sizechart, name='create_product_sizechart'),
 

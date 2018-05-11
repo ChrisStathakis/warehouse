@@ -118,12 +118,14 @@ class ProductAddMultipleImages(View):
     template_name = 'dashboard/form_set.html'
 
     def get(self, request, dk):
-        object = get_object_or_404(Product, id=dk)
-        photos = ProductPhotos.objects.filter(product=object)
+        instance = get_object_or_404(Product, id=dk)
+        photos = ProductPhotos.objects.filter(product=instance)
         form = ProductPhotoForm()
+        print('whythefuck')
         return render(request, self.template_name, context=locals())
 
     def post(self, request, dk):
+        data = {}
         instance = get_object_or_404(Product, id=dk)
         form = ProductPhotoUploadForm()
         if request.POST:
@@ -136,14 +138,18 @@ class ProductAddMultipleImages(View):
                         'name': photo.product.title,
                         'url': photo.image.url
                         }
-            else:
-                print('form', form.errors)
-                data = {'is_valid': False}
-        else:
-            print('no request post', form.errors)
-            data = {'is_valid': False}
+        data['html_data'] = render_to_string(request=request,
+                                             template_name='dashboard/ajax_calls/images.html',
+                                             context={'photos': ProductPhotos.objects.filter(product=instance) }   
+                                            )
+        print(data)
         return JsonResponse(data)
 
+
+@staff_member_required
+def ajax_add_image(request):
+    data = dict()
+    
 
 @staff_member_required
 def product_add_multiple_images(request, dk):
@@ -163,6 +169,14 @@ def product_add_multiple_images(request, dk):
         messages.success(request, 'The images added!')
         return HttpResponseRedirect(reverse('dashboard:product_detail', kwargs={'pk': dk}))
     return render(request, 'dashboard/form_set.html', context=locals())
+
+
+@staff_member_required
+def delete_product_image(request, pk):
+    instance = get_object_or_404(ProductPhotos, id=pk)
+    instance.delete()
+    messages.success(request, 'The image has deleted')
+    return HttpResponseRedirect(reverse('dashboard:product_detail', kwargs={'pk': instance.product.id}))
 
 
 @staff_member_required
