@@ -92,6 +92,27 @@
                             <h4 class="title">Size Chart</h4> <h4 class="title">Add Size <a href="{% url 'dashboard:product_add_sizes' instance.id %}" class="btn btn-info">Add or Edit multiple sizes</a> </h4>
                         </div>
                         <div class="content">
+                            <form method="post"> {% csrf_token %}
+                                {{ formset_size.management_form }}
+                                <table class="table table responsive">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Qty</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for form_size in formset_size %}
+                                            <tr>
+                                                <td>{{ form_size.title }}</td>
+                                                <td>{{ form_size.qty }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                <button type='submit' class="btn btn-success" name='size'>Save</button>
+                            </form>
+                            
                             <table class="table table-responsive">
                                 <thead>
                                     <tr>

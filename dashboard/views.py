@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
+from django.forms import formset_factory
 
 from .tools import dashboard_product_get_filter_data ,dashboard_product_filter_queryset
 from products.models import *
@@ -103,6 +104,17 @@ def product_detail(request, pk):
     related_products = RelatedProducts.objects.filter(title=instance)
     diff_color = SameColorProducts.objects.filter(title=instance)
     form = UpdateProductForm(request.POST or None, instance=instance)
+    formset_size = formset_factory(SizeAttributeForm, extra=len(sizes))
+    formset_size = formset_size(initial=[
+                                        {'qty': ele.qty, 'title': ele.title, 'product_related': ele.product_related} for ele in sizes
+                                        ])
+    if 'size' in request.POST:
+        formset_size = formset_size(request.POST)
+        for form in formset_size:
+            if form.is_valid():
+                print('form_valid')
+                form.save()
+        return redirect(reverse('dashboard:product_detail', kwargs={'pk': instance.id}))
     if form.is_valid():
         form.save()
         messages.success(request, 'The products %s is saves!')

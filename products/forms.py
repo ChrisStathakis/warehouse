@@ -139,3 +139,14 @@ class VendorForm(forms.ModelForm):
         super(VendorForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
+
+
+class SiteAttributeForm(forms.ModelForm):
+    
+    class Meta:
+        model = SizeAttribute
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(SiteAttributeForm, self).__init__(*args, **kwargs)
+        self.fields['title'].widget =  forms.HiddenInput()
