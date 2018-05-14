@@ -53,7 +53,7 @@ class CategorySiteManager(models.Manager):
 
 class CategorySite(models.Model):
     active = models.BooleanField(default=True)
-    title = models.CharField(max_length=120,unique=True)
+    title = models.CharField(max_length=120)
     image = models.ImageField(blank=True, null=True, upload_to=category_site_directory_path, help_text='610*410')
     content = models.TextField(blank=True, null=True)
     date_added = models.DateField(auto_now=True)

@@ -241,7 +241,7 @@ def create_copy_item(request, pk):
 class ProductCreate(CreateView):
     template_name = 'dashboard/product_create.html'
     form_class = CreateProductForm
-    new_object = Product.objects.first()
+    new_object = None
 
     def get_context_data(self, **kwargs):
         context = super(ProductCreate, self).get_context_data(**kwargs)

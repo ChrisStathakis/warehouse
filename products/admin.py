@@ -68,8 +68,8 @@ class CategoryAdmin(ImportExportModelAdmin):
 
 
 @admin.register(CategorySite)
-class CategorySiteAdmin(DraggableMPTTAdmin):
-    list_display = ['tree_actions', 'indented_title', 'parent', 'active', 'show_on_menu']
+class CategorySiteAdmin(ImportExportModelAdmin):
+    list_display = ['title', 'parent', 'active', 'show_on_menu']
     list_filter = ['active', 'show_on_menu', 'parent']
     readonly_fields = ['image_tag', 'image_tag_tiny']
     actions = [set_active, set_not_active, set_first_page, set_not_first_page]
