@@ -26,7 +26,7 @@
                             <br>
                             <div class="text-center">
                                 <button name="update" type="submit" class="btn btn-info btn-fill btn-wd">Update</button>
-                                <button type="submit" class="btn btn-warning btn-fill btn-wd">Save</button>
+                                <button name="save_" type="submit" class="btn btn-warning btn-fill btn-wd">Save</button>
                             </div>
                             <div class="clearfix"></div>
                         </form>
@@ -104,13 +104,16 @@
                                     <tbody>
                                         {% for form_size in formset_size %}
                                             <tr>
-                                                <td>{{ form_size.title }}</td>
-                                                <td>{{ form_size.qty }}</td>
+
+                                                {% for field in form_size %}
+                                                    <td>{{ field }}</td>
+                                                {% endfor %}
+
                                             </tr>
                                         {% endfor %}
                                     </tbody>
                                 </table>
-                                <button type='submit' class="btn btn-success" name='size'>Save</button>
+                                <button type='submit' class="btn btn-success" name='size_'>Save</button>
                             </form>
                             
                             <table class="table table-responsive">

@@ -560,6 +560,7 @@ class SizeAttribute(models.Model):
 
     class Meta:
         verbose_name_plural = '2. Μεγεθολόγιο'
+        unique_together = ['title', 'product_related']
 
     def save(self, *args, **kwargs):
         get_sizes = SizeAttribute.objects.filter(product_related=self.product_related)

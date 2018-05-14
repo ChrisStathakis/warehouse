@@ -107,27 +107,6 @@ class SizeForm(forms.ModelForm):
             field.widget.attrs['class'] = 'form-control'
 
 
-class SizeAttributeForm(forms.ModelForm):
-
-    class Meta:
-        model = SizeAttribute
-        fields = '__all__'
-
-    def __init__(self, *args, **kwargs):
-        super(SizeAttributeForm, self).__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            field.widget.attrs['class'] = 'form-control'
-
-
-SizeAttributeFormSet = modelformset_factory(SizeAttribute,
-                                            fields='__all__',
-                                            max_num=10,
-                                            extra=10,
-                                            form=SizeAttributeForm,
-                                            )
-
-
-
 class VendorForm(forms.ModelForm):
 
     class Meta:
@@ -141,12 +120,23 @@ class VendorForm(forms.ModelForm):
             field.widget.attrs['class'] = 'form-control'
 
 
-class SiteAttributeForm(forms.ModelForm):
-    
+class SizeAttributeForm(forms.ModelForm):
+    product_related = forms.ModelChoiceField(queryset=Product.objects.all(), widget=forms.HiddenInput(), required=True)
+    price_buy = forms.DecimalField(widget=forms.HiddenInput(), required=True)
+
     class Meta:
         model = SizeAttribute
-        fields = '__all__'
+        fields = ['title', 'product_related', 'qty', 'price_buy']
 
     def __init__(self, *args, **kwargs):
-        super(SiteAttributeForm, self).__init__(*args, **kwargs)
-        self.fields['title'].widget =  forms.HiddenInput()
+        super(SizeAttributeForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+
+
+SizeAttributeFormSet = modelformset_factory(SizeAttribute,
+                                            fields='__all__',
+                                            max_num=10,
+                                            extra=10,
+                                            form=SizeAttributeForm,
+                                            )
