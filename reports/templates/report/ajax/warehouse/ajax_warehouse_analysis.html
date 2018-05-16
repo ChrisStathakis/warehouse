@@ -60,3 +60,27 @@
     </table>
 {% endif %}
 
+{% if switcher == 'sells_analysis' %}
+    <h3>Ανάλυση Πωλησεων</h3>
+    <table class="ui table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Προϊόν</th>
+                <th>Κομμάτια</th>
+                <th>Έσοδα</th>
+            </tr>
+
+        </thead>
+        <tbody>
+            {% for ele in sells_analysis %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ ele.title__title }}</td>
+                    <td>{{ ele.total_sells }}  </td>
+                    <td class="positive">{{ ele.incomes }} {{ currency }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

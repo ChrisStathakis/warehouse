@@ -32,6 +32,23 @@
         {% endfor %}
     </div>
     <div class="field">
+            <label>Brands</label>
+            {% for vendor in brands %}
+                {% if vendor.id|stringformat:"s" in brand_name %}
+                    <div class="ui slider checkbox">
+                        <input type="checkbox" checked name="brand_name" value="{{ vendor.id }}">
+                        <label>{{ vendor }}</label>
+                    </div>
+                {% else %}
+                    <div class="ui slider checkbox">
+                        <input type="checkbox" name="brand_name" value="{{ vendor.id }}">
+                        <label>{{ vendor }}</label>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+</div>
+<div class="field">
         <label>Κατηγορίες Site</label>
          {% for cate in categories_site %}
             {% if cate.id|stringformat:"s" in category_name %}
@@ -47,7 +64,6 @@
             {% endif %}
         {% endfor %}
     </div>
-</div>
 <div class="two fields">
     <div class="field">
         <label>Χρώμα</label>

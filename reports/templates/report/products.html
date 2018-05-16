@@ -11,23 +11,12 @@
     <div class="twelve wide column">
         <div class="ui styled fluid accordion">
             <div class="title">
-                <i class="dropdown icon"></i> Filters
+                <i class="dropdown icon"></i> Filters Total Products.. {{ object_list.count }}
             </div>
             <div class="content">
                 <form class="ui form" method="get" id="filter_form">
-                    <div class="field">
-                        <div class="pagination">
-                            <span class="step-links">
-                                  {% if page_obj.has_previous %}
-                                      <button onclick="this.form.submit()" class="ui tiny blue button" type="input" name="page" value="{{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</button>
-                                  {% endif %}
-                                <span class="current">
-                                    <label>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}. </label>
-                                </span> {% if products.has_next %}
-                            <button onclick="this.form.submit()" class="ui tiny blue button" type="input" name="page" value="{{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</button> {% endif %}
-                            </span>
-                        </div>
-                    </div>
+                        <button style="width: 100%" type="submit" class="ui green button" placeholder="">Save</button>
+                        <a href="{% url 'reports:products' %}" style="margin-left: 50%" class="ui red button">Καθαρισμός Φίλτρων</a>
                     {% include "snippets/search_date_filter.html" %}
                     <div class="three fields">
                         <div class="field">
@@ -47,10 +36,10 @@
                         </div>
                     </div>
                      {% include 'snippets/vendor_cate_filter.html' %}
-                     {% include 'snippets/search_date_filter.html' %}
-                    <input style="width: 100%" type="submit" class="ui green button" placeholder="">
+                    <button style="width: 100%" type="submit" class="ui green button" placeholder="">Save</button>
+                    <a href="{% url 'reports:products' %}" style="margin-left: 50%" class="ui red button">Καθαρισμός Φίλτρων</a>
                 </form>
-                <a href="{% url 'reports:products' %}" style="margin-left: 50%" class="ui red button">Καθαρισμός Φίτρων</a>
+                
             </div>
         </div>
     </div>
@@ -65,6 +54,12 @@
             </button>
             <button class="ui blue button warehouse_analysis" data-url="{% url 'reports:ajax_products_analysis' %}"
                     data-slug="vendor_analysis" id="button-analysis">Ανάλυση Ανά Προμηθευτή
+            </button>
+            <button class="ui green button warehouse_analysis" data-url="{% url 'reports:ajax_products_analysis' %}"
+                    data-slug="sells_analysis" id="button-analysis">Πωλήσεις Περιόδου
+            </button>
+            <button class="ui red button warehouse_analysis" data-url="{% url 'reports:ajax_products_analysis' %}"
+                    data-slug="vendor_analysis" id="button-analysis">Αγορές Περιόδου
             </button>
         </div>
     </div>
@@ -82,6 +77,7 @@
         <table class="ui small single line selectable table">
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>Id</th>
                     <th><a href="">Κωδικός Προϊόντος</a></th>
                     <th colspan="2"><a href="">Προιόν</a></th>
@@ -96,6 +92,7 @@
             <tbody>
                 {% for ele in object_list %}
                 <tr>
+                    <td>{{ forloop.counter }}</td>
                     <td>{{ ele.id }}</td>
                     <td>{{ ele.sku|default_if_none:"No Code" }}</td>
                     <td colspan="2"><a href="{% url 'reports:products_detail' ele.id %}">{{ ele }}</a> {{ ele.color|default_if_none:"" }}</td>

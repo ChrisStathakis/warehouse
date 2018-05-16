@@ -1,6 +1,25 @@
+<div class="field">
+    <div class="pagination">
+        <span class="step-links">
+            <input type='text' name='page' value='1' hidden>
+            {% if page_obj.has_previous %}
+                <button onclick="this.form.submit()" class="ui tiny blue button" type="input" name="page" value="{{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</button>
+            {% endif %}
+                <span class="current">
+                    <label>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}. </label>
+                </span> 
+            {% if page_obj.has_next %}
+                <button onclick="this.form.submit()" class="ui tiny blue button" type="input" name="page" value="{{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</button> 
+            {% endif %}
+            <input type='submit' name='page' value='1' hidden>
+        </span>
+    </div>
+</div>
+
 <div class="two fields">
     <div class="field">
-        {% if search_pro %} <input type="text" id='search_pro' class="ui text" name="search_pro" value="{{ search_pro }}" placeholder="{{ search_pro }}"> {% else %} <input type="text"  class="ui text" id='search_pro' name="search_pro" placeholder="Αναζήτηση"> {% endif %}
+        <input type="text" id='search_name' class="ui text" name="search_name" {% if search_name %} 
+        value="{{ search_name }}" placeholder="{{ search_name }}" {% else %} placeholder="Αναζήτηση" {% endif %}>
     </div>
     <div class="field">
         {% if date_pick %} <input  name="date_pick" value="{{ date_pick }}" placeholder="{{ date_pick }}" >

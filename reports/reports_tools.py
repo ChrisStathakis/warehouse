@@ -10,9 +10,9 @@ from point_of_sale.models import *
 
 
 def initial_data_from_database():
-    vendors, categories, categories_site, colors, sizes = [Supply.objects.all(), Category.objects.all(),CategorySite.objects.all(),
-                                                           Color.objects.all(), Size.objects.all()]
-    return vendors, categories, categories_site, colors, sizes
+    vendors, categories, categories_site, colors, sizes, brands = [Supply.objects.all(), Category.objects.all(),CategorySite.objects.all(),
+                                                           Color.objects.all(), Size.objects.all(), Brands.objects.all()]
+    return vendors, categories, categories_site, colors, sizes, brands
 
 
 def initial_date(request, months=3):

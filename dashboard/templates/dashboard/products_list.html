@@ -119,20 +119,15 @@
                        <div class="content">
                            <form method="get">
                                 <div class="pagination">
+                                    <input type='text' name='page' value='1' hidden>
                                     <span class="step-links">
-                                        <input type='hidden' name='page' value='1'>
                                         {% if page_obj.has_previous %}
-                                            <button type='submit' name='page' value='1'class='btn'>First</button>
-                                            <button type='submit' name='page' value='{{ page_obj.previous_page_number }}' class='btn'>Previous</button>
+                                            <button class="btn btn-primary" type="submit" name='page' value="1">First Page</button>
+                                            <button class="btn btn-primary" type="submit" name="page" value="{{ page_obj.previous_page_number }}">Previous</button>
                                         {% endif %}
-                                    
-                                        <span class="current">
-                                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                                        </span>
-                                    
-                                        {% if page_obj.has_next %}
-                                            <button type='submit' name='page' value='{{ page_obj.next_page_number }}'class='btn'>Next</button>
-                                            <button type='submit' name='page' value='{{ page_obj.paginator.num_pages }}' class='btn'>Last</button>      
+                                        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                                        {%  if page_obj.has_next %}
+                                            <button class="btn btn-primary" type='submit' name="page" value="{{ page_obj.next_page_number }}">Next</button> 
                                         {% endif %}
                                     </span>
                                 </div>

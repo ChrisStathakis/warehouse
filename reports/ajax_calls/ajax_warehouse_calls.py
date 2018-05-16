@@ -8,7 +8,7 @@ def ajax_products_analysis(request):
     data = dict()
     switcher = request.GET.get('analysis')
     queryset = Product.my_query.active_warehouse()
-    queryset, category_name, vendor_name, color_name, discount_name, qty_name = warehouse_filters(request, queryset)
+    queryset = Product.filters_data(request, queryset)
     queryset_analysis = [0, 0, 0] # total_qty, #total_warehouse_value, #total_sell_value
     if switcher == 'warehouse_analysis':
         queryset_analysis[0] = queryset.aggregate(Sum('qty'))['qty__sum'] if queryset else 0
@@ -32,6 +32,22 @@ def ajax_products_analysis(request):
                                                     'switcher': switcher,
                                                     }
                                            )
+    if switcher == "sells_analysis":
+        sells_items = RetailOrderItem.objects.filter(title__in=queryset) if queryset else None
+        sells_analysis = sells_items.values('title__title').annotate(total_sells=Sum(F('qty')),
+                                                                     incomes=Sum(F('qty')*F('final_price'))
+                                                                     ).order_by('-incomes')[:30]
+        data['results'] = render_to_string(request=request,
+                                          template_name='report/ajax/warehouse/ajax_warehouse_analysis.html',
+                                          context={ 'sells_analysis': sells_analysis,
+                                                    'currency': CURRENCY,
+                                                    'switcher': switcher
+                                                  }
+                                          )
+    if switcher == 'buy_analysis':
+        buy_items - OrderItem.objects.filter(product__in=queryset) if queryset else None
+        buy_analysis = buy_items
+    
     return JsonResponse(data)
 
 

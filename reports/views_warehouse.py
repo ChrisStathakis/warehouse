@@ -79,7 +79,7 @@ class ReportProducts(ListView):
 
     def get_queryset(self):
         queryset = Product.my_query.active_warehouse()
-        queryset, category_name, vendor_name, color_name, discount_name, qty_name = warehouse_filters(self.request, queryset)
+        queryset = Product.filters_data(self.request, queryset)
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -87,11 +87,14 @@ class ReportProducts(ListView):
         currency = CURRENCY
         # filters
         products, category_name, vendor_name, color_name, discount_name, qty_name = warehouse_filters(self.request, self.object_list)
-        vendors, categories, categories_site, colors, sizes = initial_data_from_database()
-        search_pro = self.request.GET.get('search_pro', None)
+        vendors, categories, categories_site, colors, sizes, brands = initial_data_from_database()
+        search_name = self.request.GET.get('search_name', None)
+        print(search_name)
         products_count = self.object_list.aggregate(Sum('qty'))['qty__sum'] if self.object_list else 0
         context.update(locals())
         return context
+
+    
 
 
 @method_decorator(staff_member_required, name='dispatch')
