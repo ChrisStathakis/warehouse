@@ -1,5 +1,6 @@
 from django.db.models import Q
 
+
 def dashboard_product_get_filter_data(request):
     search_name = request.GET.get('search_name', None)
     category_name = request.GET.getlist('cate_name', None)
@@ -8,7 +9,8 @@ def dashboard_product_get_filter_data(request):
     color_name = request.GET.getlist('color_name', None)
     vendor_name = request.GET.getlist('vendor_name', None)
     order_name = request.GET.get('order_name', None)
-    return [search_name, category_name, brand_name, active_name, color_name, vendor_name, order_name]
+    site_cate_name = request.GET. getlist('site_cate_name')
+    return [search_name, category_name, brand_name, active_name, color_name, vendor_name, site_cate_name, order_name]
 
 
 def dashboard_product_filter_queryset(request, queryset):

@@ -36,12 +36,9 @@ from .forms import PersonalInfoForm
 from cart.forms import CartItemForm, CartItemNoAttrForm, CartItemCreate, CartItemCreateWithAttrForm
 from point_of_sale.models import Order, OrderItem, PAYMENT_METHOD, Shipping, RetailOrder, RetailOrderItem
 from .mixins import custom_redirect, SearchMixin
+from django.conf import settings
 
-
-CURRENCY = '€'
-
-
-
+CURRENCY = settings.CURRENCY
 
 # return custom_redirect('url-name', x, q = 'something')
 # Should redirect to '/my_long_url/x/?q=something'
@@ -60,20 +57,18 @@ def initial_data(request):
     return menu_categories, cart, cart_items
 
 
-class Homepage(View):
+class Homepage(SearchMixin, TemplateView):
     template_name = 'home/index.html'
 
-    def get(self, request):
-        europe_cookie(request)
+    def get_context_data(self, **kwargs):
+        context = super(Homepage, self).get_context_data(**kwargs)
+        europe_cookie(self.request)
         first_page = FirstPage.objects.filter(active=True).first() if FirstPage.objects.filter(active=True) else None
         featured_products, new_products, offer_products = first_page_initial_data()
         banners = Banner.objects.filter(active=True)
         menu_categories, cart, cart_items = initial_data(self.request)
-        if 'search_name' in request.GET:
-            search_name = request.GET.get('search_name')
-            return custom_redirect('search_page', search_name=search_name)
-        context=locals()
-        return render(self.request, self.template_name, context=context)
+        context.update(locals())
+        return context
 
 
 class NewProductsPage(SearchMixin, ListView):
@@ -98,13 +93,6 @@ class NewProductsPage(SearchMixin, ListView):
         context.update(locals())
         return context
 
-    '''
-    def get(self, *args, **kwargs):
-        if 'search_name' in self.request.GET:
-            search_name = self.request.GET.get('search_name')
-            return custom_redirect('search_page', search_name=search_name)
-        return super(NewProductsPage, self).get(*args, **kwargs)
-    '''
 
 class OffersPage(SearchMixin, ListView):
     model = Product
@@ -131,13 +119,15 @@ class OffersPage(SearchMixin, ListView):
         return context
 
     
-class CategoryPageList(ListView):
+class CategoryPageList(SearchMixin, ListView):
     template_name = 'home/product_list.html'
     model = Product
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
 
     def get_queryset(self):
+        self.category = get_object_or_404(CategorySite, slug=self.kwargs['slug'])
+        self.categories = self.category.get_childrens()
         queryset = Product.my_query.active_category_site(categories=self.categories)
         return queryset
 
@@ -149,14 +139,6 @@ class CategoryPageList(ListView):
         brand_name, cate_name, color_name = grab_user_filter_data(self.request)
         context.update(locals())
         return context
-
-    def get(self, *args, **kwargs):
-        self.category = get_object_or_404(CategorySite, slug=self.kwargs['slug'])
-        self.categories = self.category.get_childrens()
-        if 'search_name' in self.request.GET:
-            search_name = self.request.GET.get('search_name')
-            return custom_redirect('search_page', search_name=search_name)
-        return super(CategoryPageList, self).get(*args, **kwargs)
 
 
 class BrandsPage(SearchMixin, ListView):
@@ -183,7 +165,6 @@ class BrandPage(SearchMixin, ListView):
     model = Product
     brand = None
     slug_field = 'slug'
-    
 
     def get_queryset(self, *args, **kwargs):
         instance = get_object_or_404(Brands, slug=self.kwargs['slug'])
@@ -203,79 +184,43 @@ class BrandPage(SearchMixin, ListView):
         context.update(locals())
         return context
 
-    
 
-def product_page(request, slug):
+def product_detail(request, slug):
     instance = get_object_or_404(Product, slug=slug)
-    menu_categories, cart, cart_items = initial_data(self.request)
+    menu_categories, cart, cart_items = initial_data(request)
     images = ProductPhotos.objects.filter(product=instance)
-    seo_title = '%s' % self.object
-    form = CartItemCreate()
+    seo_title = '%s' % instance.title
     if instance.size:
         form = CartItemCreateWithAttrForm(instance=instance)
+    else:
+        form = CartItemCreate()
 
     if request.POST:
-        if not instance.size:
-            form = CartItemCreate(request.POST)
-            if form.is_valid():
-                qty = form.cleaned_data.get('qty', 1)
-                order = check_or_create_cart(self.request)
-                CartItem.create_cart_item(order, product, qty)
-        else:
+        if instance.size:
             form = CartItemCreateWithAttrForm(request.POST, instance=instance)
             if form.is_valid():
                 qty = form.cleaned_data.get('qty', 1)
-                size = form.cleaned_data.get('attribute')
-                order = check_or_create_cart(self.request)
-                CartItem.create_cart_item(order, product, qty, size)
-
-
-class ProductPage(DetailView, FormView):
-    model = Product
-    template_name = 'home/product_page.html'
-    slug_url_kwarg = 'slug'
-    slug_field = 'slug'
-    # form_class = CartItemCreate
-
-    
-
-    def get_form(self):
-        form_class = CartItemCreate()
-        instance = get_object_or_404(Product, slug=self.kwargs['slug'])
-        if instance.size:
-            form_class = CartItemCreateWithAttrForm(instance=instance)
-        return form_class
-
-    def get_context_data(self, **kwargs):
-        context = super(ProductPage, self).get_context_data(**kwargs)
-        menu_categories, cart, cart_items = initial_data(self.request)
-        images = ProductPhotos.objects.filter(product=self.object)
-        seo_title = '%s' % self.object
-        context.update(locals())
-        return context
-
-    def form_valid(self, form):
-        print(self.object)
-        qty = form.cleaned_data.get('qty')
-        order = check_or_create_cart(self.request)
-        try:
-            qty = int(qty)
-        except:
-            qty = 1
-        product = get_object_or_404(Product, slug=self.kwargs['slug'])
-        if product.size:
-            size = self.cleaned_data.get('attribute')
-            CartItem.create_cart_item(order, product, qty, size)
+                attribute = form.cleaned_data.get('attribute')
+                order = check_or_create_cart(request)
+                CartItem.create_cart_item(order=order, product=instance, qty=qty, size=attribute)
+                messages.success(request, 'The product %s with the size %s added in your cart' % (instance.title,
+                                                                                                 attribute)
+                                 )
+                return HttpResponseRedirect(reverse('product_page', kwargs={'slug': instance.slug}))
         else:
-            CartItem.create_cart_item(order, product, qty)
-        messages.success(self.request, 'The product added on your cart!')
-        return super().form_valid(form)
+            form = CartItemCreate(request.POST)
+            if form.is_valid():
+                qty = form.cleaned_data.get('qty', 1)
+                order = check_or_create_cart(request)
+                CartItem.create_cart_item(order=order, product=instance, qty=qty)
+                messages.success(request, 'The product %s added in your cart' % instance.title)
+                return HttpResponseRedirect(reverse('product_page', kwargs={'slug': instance.slug}))
 
-    def get_success_url(self):
-        return reverse('')
+    context = locals()
+    return render(request, 'home/product_page.html', context)
 
 
-class SearchPage(ListView):
+class SearchPage(SearchMixin, ListView):
     model = Product
     template_name = 'home/product_list.html'
     paginate_by = 20
@@ -303,14 +248,14 @@ class SearchPage(ListView):
         return super(SearchPage, self).get(*args, **kwargs)
 
 
-class CartPage(View):
+class CartPage(SearchMixin, TemplateView):
     template_name = 'home/cart_page.html'
 
-    def get(self, *args, **kwargs):
+    def get_context_data(self, **kwargs):
+        context = super(CartPage, self).get_context_data(**kwargs)
         menu_categories, cart, cart_items = initial_data(self.request)
-
-        context = locals()
-        return render(self.request, self.template_name, context=context)
+        context.update(locals())
+        return context
 
     def post(self, *args, **kwargs):
         menu_categories, cart, cart_items = initial_data(self.request)

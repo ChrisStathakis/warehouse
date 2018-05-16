@@ -1,6 +1,7 @@
 from products.models import Brands, CategorySite, Color, Size, Product
 from django.shortcuts import HttpResponse, HttpResponseRedirect
 
+
 def initial_filter_data(queryset):
     brands_id = queryset.values_list('brand', flat=False)
     brands = Brands.objects.filter(id__in=brands_id)
@@ -37,10 +38,8 @@ def queryset_ordering(request, queryset,):
     return queryset
 
 
-
 def europe_cookie(request):
     get_cookie = request.COOKIES.get('europe_cookie', None)
-    print(get_cookie)
 
 
 def cookie_set(request):

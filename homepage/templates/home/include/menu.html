@@ -31,11 +31,7 @@
             </div>
             <div class="collapse navbar-collapse justify-content-end" id="navigation" data-nav-image="../assets/img/blurred-image-1.jpg">
                 <ul class="navbar-nav">
-                    <li>
-                        <form method="get">
-                            <input class="nav-link form-control" name="search_name" type="text" placeholder="Search...">
-                        </form>
-                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'new_products_page' %}">New Products</a>
                     </li>
@@ -49,6 +45,11 @@
                     {% endfor %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'brands' %}">Brands</a>
+                    </li>
+                    <li>
+                        <form method="get">
+                            <input class="nav-link form-control" name="search_name" type="text" placeholder="Search...">
+                        </form>
                     </li>
                     <li class="nav-item">
                         {% if request.user.is_authenticated %}

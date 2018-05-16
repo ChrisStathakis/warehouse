@@ -45,8 +45,7 @@ def ajax_products_analysis(request):
                                                   }
                                           )
     if switcher == 'buy_analysis':
-        buy_items - OrderItem.objects.filter(product__in=queryset) if queryset else None
-        buy_analysis = buy_items
+        pass
     
     return JsonResponse(data)
 
@@ -84,6 +83,7 @@ def ajax_product_detail(request, pk):
 
 
 def ajax_vendors_page_analysis(request):
+
     data = dict()
     queryset = Supply.objects.all()
     vendor_name, balance_name, search_pro, queryset = vendors_filter(request, queryset)
@@ -96,6 +96,8 @@ def ajax_vendors_page_analysis(request):
                       total_paid=Sum('paid_value'))
         data['content'] = render_to_string(request=request,
                                            template_name='report/ajax/warehouse/vendors_analysis.html',
-                                           context={'month_data':month_data}
+                                           context={'month_data': month_data,
+                                                    'currency': CURRENCY
+                                                    }
                                            )
     return JsonResponse(data)

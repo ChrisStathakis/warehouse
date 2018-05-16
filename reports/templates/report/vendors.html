@@ -25,30 +25,13 @@
                 <div class="content">
                     <div style="margin-top: 5%" class="ui segment">
                         <form id="filter_data" class="ui form" method="get">
-                            <div class="two fields">
-                                <div class="field">
-                                    <div class="pagination">
-                                        <span class="step-links">
-                                            {% if page_obj.has_previous %}
-                                                <button onclick="this.form.submit()" class="ui tiny blue button" type="input" name="page" value="{{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</button>
-                                            {% endif %}
-                                            <span class="current">
-                                                <label>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}. </label>
-                                            </span>
-                                            {% if page_obj.has_next %}
-                                                <button onclick="this.form.submit()" class="ui tiny blue button" type="input" name="page" value="{{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</button>
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="field">
-                                    <div class="ui silder checkbox">
-                                        <input name="balance_name" type="checkbox" {% if balance_name %} checked {% endif %}>
-                                        <label>Προμηθευτές με υπόλοιπο</label>
-                                    </div>
-
+                            <div class="field">
+                                <div class="ui silder checkbox">
+                                    <input name="balance_name" type="checkbox" {% if balance_name %} checked {% endif %}>
+                                    <label>Προμηθευτές με υπόλοιπο</label>
                                 </div>
                             </div>
+
                             {% include 'snippets/search_date_filter.html' %}
                             {% include 'snippets/vendor_cate_filter.html' %}
                             <input style="width: 100%;margin-top: 3%;" class="ui green inverted button" type="submit">
@@ -165,105 +148,7 @@
         <div class="two wide column"></div>
     </div>
 
-    <div style="margin-top: 5%" class="three column row">
-        <div class="column">
-            <form class="ui form" method="get">{% csrf_token %}
-                <div class="ui header">
-                    Επέλεξε Ημερομηνία για σύγκριση
-                </div>
-                <input  name="date_pick">
-                <input class="ui button" type="submit">
-            </form>
 
-        </div>
-        <div class="column">
-            <h2 class="ui icon header">
-                <i class="user icon"></i>
-                <div class="content">
-                    Προμηθευτές
-                    <div class="sub header">Αγορές Ανά Προμηθευτή</div>
-                </div>
-            </h2>
-        </div>
-        <div class="column"></div>
-    </div>
-    <div class="three column row">
-        <div class="column">
-            <h3 class="ui header">Προηγούμενη Χρονιά {{ date_start_last_year }} - {{ date_end_last_year }}</h3>
-            <table class="ui selectable inverted table">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Προμηθευτής</th>
-                    <th>Αξια Παραστατικών</th>
-                    <th>Πληρωμένη Αξία</th>
-                    <th>Υπόλοιπο</th>
-                </tr>
-                </thead>
-                <tbody>
-                    {% for item in analysis_last_year %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ item.vendor__title }}</td>
-                        <td>{{ item.total_value|floatformat:2 }} {{ currency }}</td>
-                        <td >{{ item.total_paid_|floatformat:2 }} {{ currency }}</td>
-                        <td>{{ value.2|floatformat:2 }} €</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class=" column">
-            <h3 class="ui header">Τρέχων Διάστημα {{ date_range }}</h3>
-            <table class="ui selectable inverted table">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Προμηθευτής</th>
-                    <th>Αξια Παραστατικών</th>
-                    <th>Πληρωμένη Αξία</th>
-                    <th>Υπόλοιπο</th>
-                </tr>
-                </thead>
-                <tbody>
-                    {% for item in analysis.0 %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ item.vendor__title }}</td>
-                        <td>{{ item.total_value|floatformat:2 }} {{ currency }}</td>
-                        <td >{{ item.total_paid_|floatformat:2 }} {{ currency }}</td>
-                        <td>{{ value.2|floatformat:2 }} €</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-
-            </table>
-        </div>
-        <div class="column">
-            <h3 class="ui header">Προηγούμενη χρονιά</h3>
-            <table class="ui selectable inverted table">
-                <thead>
-                <tr>
-                   <th>Κατάστημα ή είδος</th>
-                    <th>'Εσοδα</th>
-                    <th>Κοστος Πωληθ./</th>
-                    <th>Διαφορά</th>
-                </tr>
-                </thead>
-                <tbody>
-                    {% for key,value in last_data_per_user.items %}
-                    <tr>
-                        <td>{{ key }}</td>
-                        <td class="positive">{{ value.0|floatformat:2 }} €</td>
-                        <td >{{ value.1|floatformat:2 }} €</td>
-                        <td>{{ value.2|floatformat:2 }} €</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-
-            </table>
-        </div>
-    </div>
     <div style="margin-bottom: 5%" class="row"></div>
 
     <script type="text/javascript">

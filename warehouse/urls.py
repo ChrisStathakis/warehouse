@@ -32,12 +32,12 @@ urlpatterns = [
     path('new_products/', NewProductsPage.as_view(), name='new_products_page'),
 
     path('search/', SearchPage.as_view(), name='search_page'),
-    path('category/<slug:slug>/', CategoryPageList.as_view(), name='category_page'),
+    url(r'^category/(?P<slug>[-\w]+)/$', CategoryPageList.as_view(), name='category_page'),
 
     path('brands/', BrandsPage.as_view(), name='brands'),
     url(r'^brands/(?P<slug>[-\w]+)/$', BrandPage.as_view(), name='brand'),
 
-    url(r'^product/(?P<slug>[-\w]+)/$', ProductPage.as_view(), name='product_page'),
+    url(r'^product/(?P<slug>[-\w]+)/$', view=product_detail, name='product_page'),
     path('cart-page/', CartPage.as_view(), name='cart_page'),
     path('checkout/',  view=checkout_page, name='checkout_page'),
 

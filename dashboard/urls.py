@@ -45,7 +45,7 @@ urlpatterns = [
     #  create urls
     path('category/create/', CategoryCreate.as_view(), name='category_create'),
     path('brands/create/', BrandsCreate.as_view(), name='brands_create'),
-    path('colors/create/', ColorCreate, name='color_create'),
+    path('colors/create/', ColorCreate.as_view(), name='color_create'),
     path('sizes/create/', SizeCreate.as_view(), name='size_create'),
     path('category/site/create/', CategorySiteCreate.as_view(), name='category_site_create'),
 

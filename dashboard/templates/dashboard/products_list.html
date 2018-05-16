@@ -203,7 +203,7 @@
                                                {% for vendor in vendors %}
                                                    {% if vendor.title|stringformat:"s" in vendor_name %}
                                                    <div class="checkbox">
-                                                       <input name="vendor_name" value="{{ vendor.title }}"
+                                                       <input name="vendor_name" value="{{ vendor.id }}"
                                                               id="checkbox1" type="checkbox" checked>
                                                        <label for="checkbox1">
                                                            {{ vendor }}
@@ -211,7 +211,7 @@
                                                    </div>
                                                    {% else %}
                                                    <div class="checkbox">
-                                                       <input name="vendor_name" value="{{ vendor.title }}"
+                                                       <input name="vendor_name" value="{{ vendor.id }}"
                                                               id="checkbox1" type="checkbox">
                                                        <label for="checkbox1">
                                                            {{ vendor }}
@@ -236,7 +236,7 @@
                                                {% for brand in brands %}
                                                   {% if brand.title|stringformat:"s" in brand_name %}
                                                    <div class="checkbox">
-                                                       <input name="brand_name" value="{{ brand.title }}"
+                                                       <input name="brand_name" value="{{ brand.id }}"
                                                               id="checkbox1" type="checkbox" checked>
                                                        <label for="checkbox1">
                                                            {{ brand }}
@@ -244,7 +244,7 @@
                                                    </div>
                                                    {% else %}
                                                    <div class="checkbox">
-                                                       <input name="brand_name" value="{{ brand.title }}"
+                                                       <input name="brand_name" value="{{ brand.id }}"
                                                               id="checkbox1" type="checkbox">
                                                        <label for="checkbox1">
                                                            {{ brand }}
@@ -264,12 +264,12 @@
                                                </a>
                                            </h6>
                                        </div>
-                                       <div id="collapsFour" class="collapse" role="tabpanel" aria-labelledby="headingFour">
+                                       <div id="collapseFour" class="collapse" role="tabpanel" aria-labelledby="headingFour">
                                            <div class="card-block">
                                                {% for color in colors %}
-                                                   {% if color.title|stringformat:"s" in color_name %}
+                                                   {% if color.id|stringformat:"s" in color_name %}
                                                    <div class="checkbox">
-                                                       <input name="vendor_name" value="{{ color.title }}"
+                                                       <input name="color_name" value="{{ color.id }}"
                                                               id="checkbox1" type="checkbox" checked>
                                                        <label for="checkbox1">
                                                            {{ color }}
@@ -277,10 +277,43 @@
                                                    </div>
                                                    {% else %}
                                                    <div class="checkbox">
-                                                       <input name="color_name" value="{{ color.title }}"
+                                                       <input name="color_name" value="{{ color.id }}"
                                                               id="checkbox1" type="checkbox">
                                                        <label for="checkbox1">
                                                            {{ color }}
+                                                       </label>
+                                                   </div>
+                                                   {% endif %}
+                                               {% endfor %}
+                                           </div>
+                                       </div>
+                                   </div>
+                                   <div class="card">
+                                       <div class="card-header" role="tab" id="headingFour">
+                                           <h6 class="mb-0">
+                                               <a class="collapsed" data-toggle="collapse" data-parent="#accordion"
+                                                  href="#collapseFive" aria-expanded="false" aria-controls="collapseFour">
+                                                   Site Categories
+                                               </a>
+                                           </h6>
+                                       </div>
+                                       <div id="collapseFive" class="collapse" role="tabpanel" aria-labelledby="headingFour">
+                                           <div class="card-block">
+                                               {% for cate in site_categories %}
+                                                   {% if cate.id|stringformat:"s" in site_cate_name %}
+                                                   <div class="checkbox">
+                                                       <input name="site_cate_name" value="{{ cate.id }}"
+                                                              id="checkbox1" type="checkbox" checked>
+                                                       <label for="checkbox1">
+                                                           {{ cate }}
+                                                       </label>
+                                                   </div>
+                                                   {% else %}
+                                                   <div class="checkbox">
+                                                       <input name="site_cate_name" value="{{ cate.id }}"
+                                                              id="checkbox1" type="checkbox">
+                                                       <label for="checkbox1">
+                                                           {{ cate }}
                                                        </label>
                                                    </div>
                                                    {% endif %}

@@ -1,25 +1,24 @@
 
-<h2 class="ui header">Ανάλυση ανά Προμηθευτή</h2>
-    {{ month_data }}
-<div class="row">
-    {{ vendors_per_month }}
-</div>
-<table class="ui table">
+<h3 class="ui header">Ανάλυση Ανά Μήνα {{ date_range }}</h3>
+
+<table class="ui selectable inverted table">
     <thead>
-        <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>#</th>
+        <th>Μήνας</th>
+        <th>Συνολική Αξία</th>
+        <th>Πληρωμένη Αξία</th>
+    </tr>
     </thead>
     <tbody>
-        {% for month in vendors_per_month %}
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-        {% endfor %}
+    {% for item in month_data %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.month }}</td>
+            <td>{{ item.total_cost }} {{ currency }}</td>
+            <td>{{ item.total_price|floatformat:2 }} {{ currency }}</td>
+
+        </tr>
+    {% endfor %}
     </tbody>
 </table>
-

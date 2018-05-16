@@ -494,23 +494,36 @@ class Product(models.Model):
         instance = self
         return ProductCharacteristics.my_query.filter_by_instance(instance)
 
+    def tag_related_products(self):
+        related_products = self.related_products.all()
+        if related_products.count()>0:
+            return related_products[:3]
+        related_products = Product.objects.filter(category_site__in=self.category_site.all())
+        if related_products.count() > 0:
+            return related_products[:3]
+        return Product.objects.all()[:3]
+
     @staticmethod
     def filters_data(request, queryset):
         search_name = request.GET.get('search_name', None)
         cate_name = request.GET.getlist('cate_name', None)
+        site_cate_name = request.GET.getlist('site_cate_name', None)
         brand_name = request.GET.getlist('brand_name', None)
-        vendor_name =request.GET.getlist('vendor_name', None)
+        vendor_name = request.GET.getlist('vendor_name', None)
+        color_name = request.GET.getlist('color_name', None)
 
         queryset = queryset.filter(category__id__in=cate_name) if cate_name else queryset
         queryset = queryset.filter(brand__id__in=brand_name) if brand_name else queryset
         queryset = queryset.filter(supply__id__in=vendor_name) if vendor_name else queryset
+        queryset = queryset.filter(category_site__id__in=site_cate_name) if site_cate_name else queryset
+        queryset = queryset.filter(color__id__in=color_name) if color_name else queryset
         queryset = queryset.filter(title__icontains=search_name) if search_name else queryset
         return queryset
 
 
 class CharacteristicsValue(models.Model):
     title = models.CharField(max_length=100)
-    #related_to = models.CharField(blank=True,)
+    # related_to = models.CharField(blank=True,)
 
     def __str__(self):
         return self.title
@@ -570,6 +583,7 @@ class SizeAttributeManager(models.Manager):
 
     def instance_queryset(self, instance):
         return self.active_for_site().filter(product_related=instance)
+
 
 class SizeAttribute(models.Model):
     title = models.ForeignKey(Size, on_delete=models.CASCADE, verbose_name='Νούμερο')

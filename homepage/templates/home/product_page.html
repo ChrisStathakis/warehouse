@@ -21,8 +21,6 @@
         </div>
     </div>
 
-
-
     <div class="main">
         <div class="section">
             <div class="container">
@@ -30,8 +28,8 @@
                             <div class="col-12">
                                 <ol class="breadcrumb">
                                   <li class="breadcrumb-item"><a href="{% url 'homepage' %}">Home</a></li>
-                                  {% if object.category_site.first %}<li class="breadcrumb-item"><a href="#">{{ object.category_site.first }}</a></li>{% endif %}
-                                  <li class="breadcrumb-item active">{{ object }}</li>
+                                  {% if instance.category_site.first %}<li class="breadcrumb-item"><a href="#">{{ instance.category_site.first }}</a></li>{% endif %}
+                                  <li class="breadcrumb-item active">{{ instance }}</li>
                                 </ol>
                             </div>
                             {% if messages %}
@@ -65,8 +63,8 @@
                                     <!-- Wrapper for slides -->
                                     <div class="carousel-inner">
                                         <div class="item active">
-                                            <img {% if object.image %}
-                                            src="{{ object.image.url }}"
+                                            <img {% if instance.image %}
+                                            src="{{ instance.image.url }}"
                                             {% else %} src="{% static 'assets/images/no-photo.jpg' %}" {% endif %}
                                             alt="Awesome Image">
                                         </div>
@@ -84,11 +82,11 @@
     
                             </div>
                                 <div class="col-md-5 col-sm-6">
-                                    <h2>{{ object }}</h2>
-                                    <h4 class="price"><strong>{{ object.tag_price }}</strong></h4>
+                                    <h2>{{ instance }}</h2>
+                                    <h4 class="price"><strong>{{ instance.tag_price }}</strong></h4>
                                     <hr />
-                                    <p>{{ object.site_text|default_if_none:"No description added" }}</p>
-                                    <span class="label label-default shipping">{{ object.brand|default_if_none:"No Brand added" }}, {{ object.tag_site_category }}</span>
+                                    <p>{{ instance.site_text|default_if_none:"No description added" }}</p>
+                                    <span class="label label-default shipping">{{ instance.brand|default_if_none:"No Brand added" }}, {{ instance.tag_site_category }}</span>
                                     <form method='post'> {% csrf_token %}
                                         {{ form }}
                                         <hr />
@@ -142,7 +140,6 @@
                             <p>What to find out more about how we build our stuff? <a class="link-danger">Learn more.</a></p>
                         <hr />
                         <div class="faq">
-        
                             <h4>Frequently Asked Questions</h4>
                             <div id="acordeon">
                             <div class="panel-group" id="accordion">
@@ -200,207 +197,48 @@
                         </div><!--  end acordeon -->
         
                         </div>
-                        <div class="row add-row">
-                            <div class="col-md-4 col-sm-4">
-                                <h4>Complete the Look</h4>
-                            </div>
-                            <div class="col-md-4 col-sm-4">
-                                <h5>Ankle Boots</h5>
-                                <p class="price"><strong>&euro; 2,900.00</strong></p>
-        
-                                <p>Crafted in Italy from patent-leather, these boots are perfect with a wool blazer and cotton jeans.</p>
-                                <button class="btn btn-fill btn-danger"> Add to Cart</button>
-                            </div>
-                            <div class="col-md-3 col-md-offset-1 col-sm-4">
-                                <img src="../assets/img/boots.jpg" alt="Rounded Image" class="img-rounded img-responsive">
-                            </div>
-                        </div>
-        
+
                     </div>
                 </div>
-
                 <div class="section">
                     <div class="container">
                         <div class="row">
                             <div class="col-md-12"><h4>Similar Products</h4></div>
-                            <div class="col-md-4 col-sm-4">
+                            {% for product in instance.tag_related_products %}
+                                <div class="col-md-4 col-sm-4">
                                 <div class="card-image card-product">
-                                    <a href="#">
-                                        <img src="../assets/img/balmain-1.jpg" alt="Rounded Image" class="img-rounded img-responsive">
+                                    <a href="{% url 'product_page' product.slug %}">
+                                        <img {% if product.image %}
+                                                src="{{ product.image.url }}"
+                                             {% else %}
+                                                src="{% static 'assets/images/no-photo.jpg' %}"
+                                             {% endif %}
+                                                alt="Rounded Image"
+                                             class="img-rounded img-responsive"
+                                        >
                                     </a>
                                     <div class="details">
                                         <div class="description">
-                                            <div class="name">Double Breasted Mini Dress</div>
-                                            <div class="meta">Dresses & Skirts</div>
+                                            <div class="name">{{ product }}</div>
+                                            <div class="meta">{{ product.brand|default_if_none:"No Brand" }}</div>
                                         </div>
                                         <div class="actions">
-                                            <h5>1.300 &euro;</h5>
+                                            <h5>{{ product.tag_final_price }}</h5>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 col-sm-4">
-                                <div class="card-image card-product">
-                                    <a href="#">
-                                        <img src="../assets/img/balmain-2.jpg" alt="Rounded Image" class="img-rounded img-responsive">
-                                    </a>
-                                    <div class="details">
-                                        <div class="description">
-                                            <div class="name">Chrystal Dress</div>
-                                            <div class="meta">Dresses & Skirts</div>
-                                        </div>
-        
-                                        <div class="actions">
-                                            <h5>1.500 &euro;</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-sm-4">
-                                <div class="card-image card-product">
-                                    <a href="#">
-                                        <img src="../assets/img/balmain-3.jpg" alt="Rounded Image" class="img-rounded img-responsive">
-                                    </a>
-                                    <div class="details">
-                                        <div class="description">
-                                            <div class="name">Chrystal Skirt</div>
-                                            <div class="meta">Only on demand</div>
-                                        </div>
-        
-                                        <div class="actions">
-                                            <h5>1.200 &euro;</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            {% endfor %}
+
                         </div>
                     </div>
                 </div>
             </div>
-   
 
-    <div class="section section-nucleo-icons">
-        <div class="container">
-            
-            <div class="row">
-                <div class="col-lg-6 col-md-12">
-                    {% if object.image %}
-                    <img class="rounded " src="{{ object.image.url }}">
-                    {% else %}
-                        <img class="rounded" src="{% static 'home/no_image.png' %}">
-                    {% endif %}
-                </div>
-                <div class="col-lg-6 col-md-12">
-                    <h2 class="title">{{ object }}</h2>
-                    <p class="text-info">{{ object.brand|default_if_none:"No Brand added" }},
-                        {{ object.category_site.first|default_if_none:"No Category added" }}
-                    </p>
-                    <h5 class="price">
-                        {% if object.price_discount > 0 %}
-                            <del style="color: red;">{{ object.tag_price }}</del>   {{ object.tag_final_price }}
-                        {% else %}
-                        {{ object.tag_final_price }}
-                        {% endif %}
-                    </h5>
-                    <h4>DESCRIPTION</h4>
-                    <p>{{ object.site_text|default_if_none:"No description added" }}</p>
-                    <form style="width: 50%" method="post">{% csrf_token %}
-                        <div class="input-group form-control">
-                            <span class="input-group-btn">
-                                <button type="button" class="btn btn-danger btn-number"  data-type="minus" data-field="qty">
-                                    <span class="fa fa-minus"></span>
-                                </button>
-                            </span>
-                            <input type="text" name="qty" class="form-control input-number" value="1" min="1" max="100">
-                            <span class="input-group-btn">
-                                <button type="button" class="btn btn-success btn-number" data-type="plus" data-field="qty">
-                                    <span class="fa fa-plus"></span>
-                                </button>
-                            </span>
-                        </div>
-                        <button type="submit" class="btn btn-success btn-round btn-lg" target="_blank">Add to Cart</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
 {% endblock %}
 {% block extra_js %}
 
-<script type="text/javascript">
-    //http://jsfiddle.net/laelitenetwork/puJ6G/
-$('.btn-number').click(function(e){
-    e.preventDefault();
 
-    fieldName = $(this).attr('data-field');
-    type      = $(this).attr('data-type');
-    var input = $("input[name='"+fieldName+"']");
-    var currentVal = parseInt(input.val());
-    if (!isNaN(currentVal)) {
-        if(type == 'minus') {
-
-            if(currentVal > input.attr('min')) {
-                input.val(currentVal - 1).change();
-            }
-            if(parseInt(input.val()) == input.attr('min')) {
-                $(this).attr('disabled', true);
-            }
-
-        } else if(type == 'plus') {
-
-            if(currentVal < input.attr('max')) {
-                input.val(currentVal + 1).change();
-            }
-            if(parseInt(input.val()) == input.attr('max')) {
-                $(this).attr('disabled', true);
-            }
-
-        }
-    } else {
-        input.val(0);
-    }
-});
-$('.input-number').focusin(function(){
-   $(this).data('oldValue', $(this).val());
-});
-$('.input-number').change(function() {
-
-    minValue =  parseInt($(this).attr('min'));
-    maxValue =  parseInt($(this).attr('max'));
-    valueCurrent = parseInt($(this).val());
-
-    name = $(this).attr('name');
-    if(valueCurrent >= minValue) {
-        $(".btn-number[data-type='minus'][data-field='"+name+"']").removeAttr('disabled')
-    } else {
-        alert('Sorry, the minimum value was reached');
-        $(this).val($(this).data('oldValue'));
-    }
-    if(valueCurrent <= maxValue) {
-        $(".btn-number[data-type='plus'][data-field='"+name+"']").removeAttr('disabled')
-    } else {
-        alert('Sorry, the maximum value was reached');
-        $(this).val($(this).data('oldValue'));
-    }
-
-
-});
-$(".input-number").keydown(function (e) {
-        // Allow: backspace, delete, tab, escape, enter and .
-        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 190]) !== -1 ||
-             // Allow: Ctrl+A
-            (e.keyCode == 65 && e.ctrlKey === true) ||
-             // Allow: home, end, left, right
-            (e.keyCode >= 35 && e.keyCode <= 39)) {
-                 // let it happen, don't do anything
-                 return;
-        }
-        // Ensure that it is a number and stop the keypress
-        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-            e.preventDefault();
-        }
-    });
-</script>
 
 {% endblock %}

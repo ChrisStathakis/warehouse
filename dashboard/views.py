@@ -53,7 +53,8 @@ class ProductsList(ListView):
                                                                Color.objects.all(), Brands.objects.all(), \
                                                                CategorySite.objects.all()
         # get filters data
-        search_name, category_name, brand_name, active_name, color_name, vendor_name, order_name = dashboard_product_get_filter_data(self.request)
+        search_name, category_name, brand_name, active_name, color_name, vendor_name, \
+        site_cate_name, order_name = dashboard_product_get_filter_data(self.request)
         products, currency = True, CURRENCY
         page_title = 'Product list'
         context.update(locals())
@@ -136,8 +137,6 @@ def product_detail(request, pk):
         form.save()
         messages.success(request, 'The products %s is edited!')
         return HttpResponseRedirect(reverse('dashboard:product_detail', kwargs={'pk': pk}))
-            
-        
     context = locals()
     return render(request, 'dashboard/product_detail.html', context)
 
@@ -150,7 +149,6 @@ class ProductAddMultipleImages(View):
         instance = get_object_or_404(Product, id=dk)
         photos = ProductPhotos.objects.filter(product=instance)
         form = ProductPhotoForm()
-        print('whythefuck')
         return render(request, self.template_name, context=locals())
 
     def post(self, request, dk):
@@ -464,6 +462,7 @@ class BrandsCreate(CreateView):
 
 @method_decorator(staff_member_required, name='dispatch')
 class ColorCreate(CreateView):
+    model = Color
     form_class = ColorForm
     template_name = 'dashboard/page_create.html'
 
@@ -474,8 +473,12 @@ class ColorCreate(CreateView):
         return context
 
     def form_valid(self, form):
+        form.save()
         messages.success(self.request, 'The color Created!')
-        return reverse('dashboard:brands')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('dashboard:colors')
 
 
 @method_decorator(staff_member_required, name='dispatch')

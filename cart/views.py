@@ -48,25 +48,10 @@ def cart_data(request):
 
 
 def add_to_cart(request, dk, qty=1):
-    cart = check_or_create_cart(request)
-    get_item = get_object_or_404(Product, id=dk)
-    cart_item_exists = CartItem.objects.filter(order_related=cart,
-                                               product_related=get_item
-                                               )
-    if cart_item_exists:
-        cart_item = cart_item_exists.first()
-        cart_item.qty += qty
-        cart_item.save()
-    else:
-        cart_item = CartItem.objects.create(order_related=cart,
-                                            product_related=get_item,
-                                            qty=qty,
-                                            id_session=cart.id_session,
-                                            price=get_item.price,
-                                            price_discount=get_item.price_discount,
-                                            )
-
-    messages.success(request, ' The product %s added to cart' % cart_item)
+    instance = get_object_or_404(Product, id=dk)
+    order = check_or_create_cart(request)
+    CartItem.create_cart_item(order=order, product=instance, qty=qty)
+    messages.success(request, ' The product %s added to cart' % instance.title)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 

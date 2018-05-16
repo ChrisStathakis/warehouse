@@ -94,8 +94,6 @@ class ReportProducts(ListView):
         context.update(locals())
         return context
 
-    
-
 
 @method_decorator(staff_member_required, name='dispatch')
 class ProductDetail(LoginRequiredMixin, DetailView):
