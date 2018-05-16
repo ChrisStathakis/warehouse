@@ -118,9 +118,32 @@
                        </div>
                        <div class="content">
                            <form method="get">
+                                <div class="pagination">
+                                    <span class="step-links">
+                                        <input type='hidden' name='page' value='1'>
+                                        {% if page_obj.has_previous %}
+                                            <button type='submit' name='page' value='1'class='btn'>First</button>
+                                            <button type='submit' name='page' value='{{ page_obj.previous_page_number }}' class='btn'>Previous</button>
+                                        {% endif %}
+                                    
+                                        <span class="current">
+                                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                                        </span>
+                                    
+                                        {% if page_obj.has_next %}
+                                            <button type='submit' name='page' value='{{ page_obj.next_page_number }}'class='btn'>Next</button>
+                                            <button type='submit' name='page' value='{{ page_obj.paginator.num_pages }}' class='btn'>Last</button>      
+                                        {% endif %}
+                                    </span>
+                                </div>
+                              
                                <div class="form-group">
-                                   <input type="text" {% if search_name %}value=""{% endif %}
-                                          placeholder="Search" class="form-control" name="search_name"
+                                   <input type="text" 
+                                   {% if search_name %} 
+                                         value="{{ search_name }}" placeholder="{{ search_name }}"
+                                    {% else %} 
+                                    placeholder="Search" {% endif %} 
+                                    class="form-control" name="search_name"
                                    />
                                </div>
                                <div class="checkbox">

@@ -1,6 +1,6 @@
 from django import forms
-from .models import CartItem
-
+from .models import CartItem, Cart
+from products.models import Product, SizeAttribute
 from .models import Coupons
 
 
@@ -13,7 +13,18 @@ class CartItemForm(forms.Form):
                                                              }),
                              )
 
+
+
 class CartItemNoAttrForm(forms.ModelForm):
+    order_related = forms.ModelChoiceField(queryset=Cart.objects.all(),
+                                   widget=forms.HiddenInput(),
+                                   )
+    product_related = forms.ModelChoiceField(queryset=Product.my_query.active_for_site(),
+                                             widget=forms.HiddenInput(),
+                                             )
+    id_session = forms.CharField(widget=forms.HiddenInput())
+    price = forms.DecimalField(widget=forms.HiddenInput())
+    # price_discount
 
     class Meta:
         model = CartItem
@@ -27,7 +38,8 @@ class CartItemNoAttrForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CartItemNoAttrForm, self).__init__(*args, **kwargs)
-        # self.fields['order_related'] = pass
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
 
 
 
@@ -38,8 +50,33 @@ class CouponForm(forms.ModelForm):
         fields = '__all__'
         exclude = ['products', ]
 
+    '''
     def __init__(self, *args, **kwargs):
         super(CouponForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
+    '''
 
+class CartItemCreate(forms.Form):
+    qty = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'class': 'form-control',
+                                                                            'placeholder': '1',
+                                                                            'value': '1',
+                                                                            })
+                                                                            )
+    # size = forms.ModelChoiceField(re)
+
+class CartItemCreateWithAttrForm(forms.Form):
+    qty = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'class': 'form-control',
+                                                                            'placeholder': "1",
+                                                                            'value': '1',
+                                                                            })
+                                                                    )
+    attribute = forms.ModelChoiceField(required=True,
+                                       queryset=SizeAttribute.objects.all(),
+                                       widget=forms.Select(attrs={'class': 'form-control',
+                                                           })
+                                       )
+
+    def __init__(self,instance, *args, **kwargs):
+        super(CartItemCreateWithAttrForm, self).__init__(*args, **kwargs)
+        self.fields['attribute'].queryset = SizeAttribute.my_query.instance_queryset(instance=instance)

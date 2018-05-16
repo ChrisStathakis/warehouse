@@ -551,12 +551,21 @@ class SameColorProducts(models.Model):
         return self.title.title
 
 
+class SizeAttributeManager(models.Manager):
+    def active_for_site(self):
+        return super(SizeAttributeManager, self).filter(qty__gte=0)
+
+    def instance_queryset(self, instance):
+        return self.active_for_site().filter(product_related=instance)
+
 class SizeAttribute(models.Model):
     title = models.ForeignKey(Size, on_delete=models.CASCADE, verbose_name='Νούμερο')
     product_related = models.ForeignKey(Product, null=True, on_delete=models.CASCADE, verbose_name='Προϊόν')
     qty = models.DecimalField(default=0, decimal_places=2, max_digits=6, verbose_name='Ποσότητα')
     order_discount = models.IntegerField(null=True, blank=True, default=0,verbose_name="'Εκπτωση Τιμολογίου σε %")
     price_buy = models.DecimalField(decimal_places=2,max_digits=6,default=0,verbose_name="Τιμή Αγοράς") # the price which you buy the product
+    my_query = SizeAttributeManager()
+    objects = models.Manager()
 
     class Meta:
         verbose_name_plural = '2. Μεγεθολόγιο'

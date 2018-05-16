@@ -110,7 +110,6 @@ def product_detail(request, pk):
                                             {'qty': ele.qty, 'title': ele.title, 'product_related': ele.product_related} for ele in sizes
                                             ])
     if 'size_' in request.POST:
-        print('size')
         if sizes:
             formset_size = SizeAttrFormSet(request.POST, initial=[
                                             {'qty': ele.qty, 'title': ele.title, 'product_related': ele.product_related} for ele in sizes
@@ -132,9 +131,13 @@ def product_detail(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, 'The products %s is saves!')
-            if 'update' in request.POST:
-                return HttpResponseRedirect(reverse('dashboard:product_detail', kwargs={'pk': pk}))
             return HttpResponseRedirect(reverse('dashboard:products'))
+    if 'update_' in request.POST:
+        form.save()
+        messages.success(request, 'The products %s is edited!')
+        return HttpResponseRedirect(reverse('dashboard:product_detail', kwargs={'pk': pk}))
+            
+        
     context = locals()
     return render(request, 'dashboard/product_detail.html', context)
 

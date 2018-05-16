@@ -26,6 +26,33 @@
     <div class="main">
         <div class="section">
             <div class="container">
+                    <div class="row">
+                            <div class="col-12">
+                                <ol class="breadcrumb">
+                                  <li class="breadcrumb-item"><a href="{% url 'homepage' %}">Home</a></li>
+                                  {% if object.category_site.first %}<li class="breadcrumb-item"><a href="#">{{ object.category_site.first }}</a></li>{% endif %}
+                                  <li class="breadcrumb-item active">{{ object }}</li>
+                                </ol>
+                            </div>
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-success" role="alert">
+                                        <div class="container">
+                                            <div class="alert-icon">
+                                                <i class="now-ui-icons ui-2_like"></i>
+                                            </div>
+                                            {{ message}}
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">
+                                                <i class="now-ui-icons ui-1_simple-remove"></i>
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <br><br>
                 <div class="row">
                         <div class="col-md-7 col-sm-6">
                             <div id="carousel">
@@ -38,7 +65,10 @@
                                     <!-- Wrapper for slides -->
                                     <div class="carousel-inner">
                                         <div class="item active">
-                                            <img src="{{ object.image.url }}" alt="Awesome Image">
+                                            <img {% if object.image %}
+                                            src="{{ object.image.url }}"
+                                            {% else %} src="{% static 'assets/images/no-photo.jpg' %}" {% endif %}
+                                            alt="Awesome Image">
                                         </div>
                                     </div>
     
@@ -59,39 +89,13 @@
                                     <hr />
                                     <p>{{ object.site_text|default_if_none:"No description added" }}</p>
                                     <span class="label label-default shipping">{{ object.brand|default_if_none:"No Brand added" }}, {{ object.tag_site_category }}</span>
-                                    <form method='post'> {% csrf_token %}{{ form }}</form>
-                                    <div class="row">
-                                        <div class="col-md-6 col-sm-6">
-                                            <label>Select Qty</label>
-                                            <div class="form-group">
-                                                <select name="huge" class="selectpicker" data-style="btn btn-block" data-menu-style="">
-                                                    <option value="1">1&ensp;&ensp;&ensp;&ensp;</option>
-                                                    <option value="2">2&ensp;&ensp;</option>
-                                                    <option value="3">3&ensp;&ensp;</option>
-                                                    <option value="4">4</option>
-                                                    <option value="5">5</option>
-                                                    <option value="6">6</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 col-sm-6">
-                                            <label>Select size</label>
-                                            <div class="form-group">
-                                                <select name="huge" class="selectpicker" data-style="btn btn-block" data-menu-style="">
-                                                    <option value="1">Small </option>
-                                                    <option value="2">Medium</option>
-                                                    <option value="3">Large</option>
-        
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <form method='post'> {% csrf_token %}
+                                        {{ form }}
+                                        <hr />
+                                        <button type='submit' class="btn btn-danger btn-fill btn-lg btn-block">Add to Cart &nbsp;<i class="fa fa-chevron-right"></i></button>
+                                    </form>
                                     <hr />
-                                    <div class="row">
-                                        <div class="col-md-7 col-md-offset-5 col-sm-8">
-                                            <button class="btn btn-danger btn-fill btn-lg btn-block">Add to Cart &nbsp;<i class="fa fa-chevron-right"></i></button>
-                                        </div>
-                                    </div>
+                                    
                                 </div>
                             </div>
                     </div>
@@ -214,6 +218,7 @@
         
                     </div>
                 </div>
+
                 <div class="section">
                     <div class="container">
                         <div class="row">
@@ -276,33 +281,7 @@
 
     <div class="section section-nucleo-icons">
         <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <ol class="breadcrumb">
-                      <li class="breadcrumb-item"><a href="{% url 'homepage' %}">Home</a></li>
-                      {% if object.category_site.first %}<li class="breadcrumb-item"><a href="#">{{ object.category_site.first }}</a></li>{% endif %}
-                      <li class="breadcrumb-item active">{{ object }}</li>
-                    </ol>
-                </div>
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-success" role="alert">
-                            <div class="container">
-                                <div class="alert-icon">
-                                    <i class="now-ui-icons ui-2_like"></i>
-                                </div>
-                                {{ message}}
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">
-                                    <i class="now-ui-icons ui-1_simple-remove"></i>
-                                    </span>
-                                </button>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            </div>
-            <br><br>
+            
             <div class="row">
                 <div class="col-lg-6 col-md-12">
                     {% if object.image %}

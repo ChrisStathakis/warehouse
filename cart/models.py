@@ -259,6 +259,24 @@ class CartItem(models.Model):
         else:
             self.delete()
 
+    @staticmethod
+    def create_cart_item(order, product, qty, size=None):
+        qs_exists = CartItem.objects.filter(order_related=order, product_related=product)
+        if qs_exists:
+            cart_item = qs_exists.last()
+            cart_item.qty += qty
+            cart_item.save()
+        else:
+            new_cart_item = CartItem.objects.create(order_related=order,
+                                                    product_related=product,
+                                                    qty=qty,
+                                                    price=product.price,
+                                                    price_discount=product.price_discount,
+                                                    id_session=order.id_session,
+                                                    )
+            if size:
+                new_cart_item.characteristic = size
+                new_cart_item.save()
 
 @receiver(post_delete, sender=CartItem)
 def update_order_on_delete(sender, instance, *args, **kwargs):

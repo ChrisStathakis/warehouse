@@ -33,7 +33,7 @@ from cart.models import CartItem, Coupons
 from account.models import CostumerAccount
 from account.forms import CostumerPageEditDetailsForm
 from .forms import PersonalInfoForm
-from cart.forms import CartItemForm, CartItemNoAttrForm
+from cart.forms import CartItemForm, CartItemNoAttrForm, CartItemCreate, CartItemCreateWithAttrForm
 from point_of_sale.models import Order, OrderItem, PAYMENT_METHOD, Shipping, RetailOrder, RetailOrderItem
 from .mixins import custom_redirect, SearchMixin
 
@@ -131,7 +131,6 @@ class OffersPage(SearchMixin, ListView):
         return context
 
     
-
 class CategoryPageList(ListView):
     template_name = 'home/product_list.html'
     model = Product
@@ -206,20 +205,46 @@ class BrandPage(SearchMixin, ListView):
 
     
 
+def product_page(request, slug):
+    instance = get_object_or_404(Product, slug=slug)
+    menu_categories, cart, cart_items = initial_data(self.request)
+    images = ProductPhotos.objects.filter(product=instance)
+    seo_title = '%s' % self.object
+    form = CartItemCreate()
+    if instance.size:
+        form = CartItemCreateWithAttrForm(instance=instance)
+
+    if request.POST:
+        if not instance.size:
+            form = CartItemCreate(request.POST)
+            if form.is_valid():
+                qty = form.cleaned_data.get('qty', 1)
+                order = check_or_create_cart(self.request)
+                CartItem.create_cart_item(order, product, qty)
+        else:
+            form = CartItemCreateWithAttrForm(request.POST, instance=instance)
+            if form.is_valid():
+                qty = form.cleaned_data.get('qty', 1)
+                size = form.cleaned_data.get('attribute')
+                order = check_or_create_cart(self.request)
+                CartItem.create_cart_item(order, product, qty, size)
+
+
 class ProductPage(DetailView, FormView):
     model = Product
     template_name = 'home/product_page.html'
     slug_url_kwarg = 'slug'
     slug_field = 'slug'
-    form_class = CartItemNoAttrForm
+    # form_class = CartItemCreate
 
-    def get_initial(self):
-         initial = super(ProductPage, self).get_initial()
-         initial['product_related'] = self.object
-         # initial['id_session'] = ''
-         initial['price'] = self.object.price
-         initial['price_discount'] = self.object.price_discount
-         return initial
+    
+
+    def get_form(self):
+        form_class = CartItemCreate()
+        instance = get_object_or_404(Product, slug=self.kwargs['slug'])
+        if instance.size:
+            form_class = CartItemCreateWithAttrForm(instance=instance)
+        return form_class
 
     def get_context_data(self, **kwargs):
         context = super(ProductPage, self).get_context_data(**kwargs)
@@ -230,34 +255,24 @@ class ProductPage(DetailView, FormView):
         return context
 
     def form_valid(self, form):
-        cart = check_or_create_cart(self.request)
-        qty = self.request.POST.get('qty')
+        print(self.object)
+        qty = form.cleaned_data.get('qty')
+        order = check_or_create_cart(self.request)
         try:
             qty = int(qty)
         except:
             qty = 1
         product = get_object_or_404(Product, slug=self.kwargs['slug'])
-        check_if_exists = CartItem.objects.filter(order_related=cart,
-                                                  product_related=product
-                                                  )
-        if check_if_exists:
-            cart_item = check_if_exists.last()
-            cart_item.qty += qty
-            cart_item.save()
-            messages.success(self.request, 'The qty added on your cart!')
+        if product.size:
+            size = self.cleaned_data.get('attribute')
+            CartItem.create_cart_item(order, product, qty, size)
         else:
-            cart_item = CartItem.objects.create(order_related=cart,
-                                                product_related=product,
-                                                qty=qty,
-                                                price=product.price,
-                                                price_discount = product.price_discount,
-                                                id_session=cart.id_session
-                                                )
-            messages.success(self.request, 'The product added on your cart!')
+            CartItem.create_cart_item(order, product, qty)
+        messages.success(self.request, 'The product added on your cart!')
         return super().form_valid(form)
 
     def get_success_url(self):
-        return self.request.META.get('HTTP_REFERER')
+        return reverse('')
 
 
 class SearchPage(ListView):
