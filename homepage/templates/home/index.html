@@ -14,7 +14,7 @@
     {% include 'home/include/menu.html' %}
     <div class="wrapper">
         {% block content %}
-            <div class="page-header page-header-small">
+            <div class="page-header">
                 <div class="page-header-image" data-parallax="true"
                      {% if first_page.image %}
                         style="background-image: url('{{ first_page.image.url }}');">
@@ -40,59 +40,44 @@
                 </div>
             </div>
 
-            <div class="section section-team text-center">
-                <div class="container">
-                    <h2 class="title">New Products</h2>
-                </div>
-            </div>
-
             <div class="section">
-                <div class="row">
                 <div class="container">
-                     <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
-                        <div class="carousel-inner" role="listbox">
-                            <div class="carousel-item active">
-                                <div class="row">
-                                    {% for product in new_products %}
-                                    {% if forloop.counter < 5 %}
-                                        {% include 'home/include/product_card.html' %}
-                                    {% endif %}
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12 col-xl-12 ml-auto mr-auto">
+                            <h2 style="color:#888;" class="title text-center">Τα Προϊόντα μας</h2>
+                            <!-- Nav tabs -->
+                            <div class="card">
+                                <ul class="nav nav-tabs justify-content-center" role="tablist">
+                                    {% for category in menu_categories %}
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-toggle="tab" href="#{{ category.id }}" role="tab" aria-expanded="false">
+                                                 {{ category }}
+                                            </a>
+                                        </li>
                                     {% endfor %}
+                                </ul>
+                                <div class="card-body">
+                                    <!-- Tab panes -->
+                                    <div class="tab-content text-center">
+                                        {% for category in menu_category %}
+                                        <div class="tab-pane" id="{{ category.id }}" role="tabpanel" aria-expanded="false">
+                                            {% for product in new_products %}
+                                                {% if product.category_site.first == category %}
+                                                    <div class="team">
+                                                        {% include 'home/include/product_card.html' %}
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
                                 </div>
                             </div>
-                            {% if new_products.count > 4 %}
-                            <div class="carousel-item">
-                                <div class="row">
-                                    {% for product in new_products %}
-                                    {% if forloop.counter > 4 and forloop.counter < 9 %}
-                                       {% include 'home/include/product_card.html' %}
-                                    {% endif %}
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            {% endif %}
-                            {% if new_products.count > 8 %}
-                            <div class="carousel-item">
-                                <div class="row">
-                                    {% for product in new_products %}
-                                    {% if forloop.counter > 8 and forloop.counter < 12 %}
-                                        {% include 'home/include/product_card.html' %}
-                                    {% endif %}
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            {% endif %}
                         </div>
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Previous</span>
-
-                        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span><span class="sr-only">Next</span>
-                        </a>
                     </div>
                 </div>
             </div>
-            </div>
+
 
             <div class="section" id="carousel">
                 <div class="container-fluid">
