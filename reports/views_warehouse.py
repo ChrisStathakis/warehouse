@@ -132,8 +132,7 @@ class Vendors(ListView):
 
     def get_queryset(self):
         queryset = Supply.objects.all()
-        vendor_name, balance_name, search_pro, queryset = vendors_filter(self.request, queryset)
-        queryset = queryset.filter(balance__gt=0) if balance_name else queryset
+        queryset = Supply.filter_data(self.request, queryset)
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -142,7 +141,10 @@ class Vendors(ListView):
         date_start, date_end, date_range, months_list = estimate_date_start_end_and_months(self.request)
         date_start_last_year, date_end_last_year = date_start- relativedelta(year=1), date_end-relativedelta(year=1)
         date_pick, currency = self.request.GET.get('date_pick'), CURRENCY
-        vendor_name, balance_name, search_pro, queryset = vendors_filter(self.request, self.object_list)
+        vendor_name, balance_name, search_name =[self.request.GET.getlist('vendor_name'),
+                                                 self.request.GET.get('balance_name'),
+                                                 self.request.GET.get('search_name'),
+                                                ]
 
         orders = Order.objects.filter(date_created__range=[date_start, date_end])
         chart_data = [Supply.objects.all().aggregate(Sum('balance'))['balance__sum'] if Supply.objects.all() else 0,
@@ -179,7 +181,7 @@ def vendor_detail(request, pk):
     instance = get_object_or_404(Supply, id=pk)
     # filters_data
     date_start, date_end, date_range, months_list = estimate_date_start_end_and_months(request)
-    vendors, categories, categories_site, colors, sizes = initial_data_from_database()
+    vendors, categories, categories_site, colors, sizes, brands = initial_data_from_database()
     date_pick = request.GET.get('date_pick', None)
     category_name, vendor_name, color_name, discount_name, qty_name = warehouse_get_filters_data(request)
 
@@ -239,6 +241,15 @@ class WarehouseCategoryReport(DetailView):
     model = Category
     template_name = ''
 
+class WarehouseOrdersList(ListView):
+    template_name = ''
+    model = Order
+    paginate_by = 50
+
+    def get_queryset(self):
+        queryset = Order.objects.all()
+        queryset = Order.filter_data(self.request, queryset)
+        return queryset
 
 @staff_member_required
 def warehouse_orders(request):

@@ -113,14 +113,20 @@ class Order(models.Model):
         self.vendor.save()
 
     @staticmethod
-    def filter_data(queryset, search_name, vendor_name, date_start, date_end, paid_name=None):
+    def filter_data(request, queryset):
+        search_name = request.GET.get('search_name', None)
+        vendor_name = request.GET.getlist('vendor_name', None)
+        balance_name = request.GET.get('balance_name', None)
+        paid_name = request.GET.get('paid_name', None)
+        date_start, date_end = None, None
         try:
             queryset = queryset.filter(vendor__id__in=vendor_name) if vendor_name else queryset
             queryset = queryset.filter(Q(title__icontains=search_name) |
-                                    Q(vendor__title__icontains=search_name) 
-                                    ).dinstict() if search_name else queryset
+                                       Q(vendor__title__icontains=search_name) 
+                                     ).dinstict() if search_name else queryset
             queryset = queryset.filter(date_created__range=[date_start, date_end]) if date_start else queryset
-            queryset = queryset.filter(is_paid=False) if paid_name else queryset
+            queryset = queryset.filter(is_paid=True) if paid_name =='paid' else queryset.filter(is_paid=False) \
+                    if paid_name=='not_paid' else queryset
         except:
             queryset = queryset
         return queryset

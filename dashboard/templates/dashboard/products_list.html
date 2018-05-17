@@ -105,6 +105,15 @@
                                         {% endfor %}
                                     </select>
                                 </div>
+                                <div class="form-group">
+                                    <label for="category_action">Choose Vendor</label>
+                                    <select name='change_vendor' class="form-control" id="category_action">
+                                        <option></option>
+                                        {% for cate in vendors %}
+                                        <option value="{{ cate.id }}">{{ cate }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
                         </div>
@@ -154,7 +163,7 @@
                                    <label for="check_feat">Featured</label>
                                </div>
                                <div class="checkbox">
-                                   <input id="de_check_feat" name=feat_name" type="checkbox" value="2">
+                                   <input id="de_check_feat" name="feat_name" type="checkbox" value="2">
                                    <label for="de_check_feat">Non Featured</label>
                                </div>
                                <div id="accordion" role="tablist" aria-multiselectable="true">

@@ -196,7 +196,7 @@ class Supply(models.Model):
 
     class Meta:
         verbose_name_plural = '9. Προμηθευτές'
-        ordering = ['id']
+        ordering = ['title', ]
         
     def save(self, *args, **kwargs):
         orders = self.order_set.all()
@@ -209,10 +209,16 @@ class Supply(models.Model):
         super(Supply, self).save(*args, **kwargs)
 
     @staticmethod
-    def filter_data(queryset, search_name, balance_name):
+    def filter_data(request, queryset):
+        search_name = request.GET.get('search_name', None)
+        vendor_name = request.GET.getlist('vendor_name', None)
+        balance_name = request.GET.get('balance_name', None)
+
+
         try:
             queryset = queryset.filter(title__icontains=search_name) if search_name else queryset
             queryset = queryset.filter(balance__gte=1) if balance_name else queryset
+            queryset = queryset.filter(id__in=vendor_name) if vendor_name else queryset
         except:
             queryset = queryset
         return queryset

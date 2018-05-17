@@ -248,7 +248,7 @@ def warehouse_vendors_analysis(request, date_start, date_end):
     current_vendor_analysis = orders.values('vendor__title').annotate(total_value=Sum('total_price'),
                                                                       total_paid_=Sum('paid_value'),
                                                                       )
-    print(current_vendor_analysis)
+    # print(current_vendor_analysis)
     return [current_vendor_analysis]
 #  ------------------
 

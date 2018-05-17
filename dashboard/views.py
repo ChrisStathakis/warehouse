@@ -68,6 +68,8 @@ class ProductsList(ListView):
             if self.request.POST.get('change_cate') else None
         new_cate_site = get_object_or_404(CategorySite, id=self.request.POST.get('change_cate_site')) \
             if self.request.POST.get('change_cate_site') else None
+        new_vendor = get_object_or_404(Supply, id=self.request.POST.get('change_vendor')) \
+            if self.request.POST.get('change_vendor') else None
         print(new_cate_site)
         if new_brand and get_products:
             for product_id in get_products:
@@ -92,6 +94,13 @@ class ProductsList(ListView):
                 product.category_site.add(new_cate_site)
                 product.save()
             messages.success(self.request, 'The category %s added in the products' % new_cate_site.title)
+       
+        
+        if new_vendor:
+            queryset = Product.objects.all()
+            queryset = dashboard_product_filter_queryset(self.request, queryset)
+            queryset.update(supply=new_vendor)
+            messages.success(self.request, 'The Vendor Updated!')
         return render(self.request, self.template_name)
 
 
