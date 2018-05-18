@@ -1,10 +1,9 @@
-
 from django.shortcuts import render, render_to_response, HttpResponseRedirect, redirect, get_object_or_404, get_list_or_404
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
-from django.db.models import Avg, Max, Min, Sum, Count, F
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.contrib import messages
 from django.db.models import Q, F
 from django.utils.decorators import method_decorator
@@ -175,7 +174,6 @@ class CheckOrderPage(ListView):
         return context
 
 
-
 @staff_member_required
 def vendor_detail(request, pk):
     instance = get_object_or_404(Supply, id=pk)
@@ -183,50 +181,20 @@ def vendor_detail(request, pk):
     date_start, date_end, date_range, months_list = estimate_date_start_end_and_months(request)
     vendors, categories, categories_site, colors, sizes, brands = initial_data_from_database()
     date_pick = request.GET.get('date_pick', None)
-    category_name, vendor_name, color_name, discount_name, qty_name = warehouse_get_filters_data(request)
 
     # data
-    products = Product.my_query.active_warehouse().filter(supply=instance)[:100]
-    warehouse_orders = Order.objects.filter(vendor=instance, date_created__range=[date_start, date_end])
+    products = Product.my_query.active_warehouse().filter(supply=instance)[:20]
+    warehouse_orders = Order.objects.filter(vendor=instance, date_created__range=[date_start, date_end])[:20]
     
     paychecks = list(chain(instance.payment_orders.all().filter(date_expired__range=[date_start, date_end]),
                            PaymentOrders.objects.filter(content_type=ContentType.objects.get_for_model(Order),
                                                         object_id__in=warehouse_orders.values('id'),
                                                         ) 
                           )
-                    )
-    order_item_sells = RetailOrderItem.objects.filter(title__in=products, order__date_created__range=[date_start, date_end])
+                    )[:20]
+    order_item_sells = RetailOrderItem.objects.filter(title__in=products, order__date_created__range=[date_start, date_end])[:20]
     context = locals()
     return render(request, 'report/details/vendors_id.html', context)
-
-
-@method_decorator(staff_member_required, name='dispatch')
-class VendorDetail(DetailView):
-    template_name = 'report/details/vendors_id.html'
-    model = Supply
-
-    def get_context_data(self, **kwargs):
-        context = super(VendorDetail, self).get_context_data(**kwargs)
-        # populate filtes
-        date_start, date_end, date_range, months_list = estimate_date_start_end_and_months(self.request)
-        vendors, categories, categories_site, colors, sizes = initial_data_from_database()
-        date_pick = self.request.GET.get('date_pick', None)
-        category_name, vendor_name, color_name, discount_name, qty_name = warehouse_get_filters_data(self.request)
-        products = warehouse_filters_data(self.request,
-                                          [category_name, vendor_name, color_name, discount_name, qty_name],
-                                          self.object.product_set.all()
-                                          )
-        # products section
-        products = products.filter(category__id__in=category_name) if category_name else products
-        warehouse_orders = Order.objects.filter(day_created__range=[date_start, date_end], vendor=self.object)
-        paychecks_vendors = self.object.payment_orders.all()
-        paychecks_orders = PaymentOrders.objects.filter(content_type=ContentType.objects.get_for_model(Order),
-                                                        object_id__in=warehouse_orders.values_list('id')
-                                                        )
-        paychecks = list(chain(paychecks_vendors, paychecks_orders))
-        print(paychecks)
-        context.update(locals())
-        return context
 
 
 @staff_member_required
@@ -241,32 +209,21 @@ class WarehouseCategoryReport(DetailView):
     model = Category
     template_name = ''
 
-class WarehouseOrdersList(ListView):
-    template_name = ''
-    model = Order
-    paginate_by = 50
-
-    def get_queryset(self):
-        queryset = Order.objects.all()
-        queryset = Order.filter_data(self.request, queryset)
-        return queryset
 
 
 @staff_member_required
 def warehouse_orders(request):
+    vendors, payment_method, currency = Supply.objects.all(), PaymentMethod.objects.all(), CURRENCY
+    orders = Order.objects.all()
+    orders = Order.filter_data(request, queryset=orders)
+
     date_start, date_end, date_range, months_list = estimate_date_start_end_and_months(request)
-    vendors, payment_method, currency = Supply.objects.all(), PAYMENT_TYPE, CURRENCY
-    search_name, payment_name, is_paid_name, vendor_name, category_name, status_name, date_pick = filters_name(
-        request)
-    orders = Order.objects.filter(day_created__range=[date_start, date_end])
-    orders = orders.filter(vendor__id__in=vendor_name) if vendor_name else orders
-    orders = orders.filter(payment_method__in=payment_name) if payment_name else orders
-    orders = orders.filter(is_paid=True) if is_paid_name == 'a' else orders
-    orders = orders.filter(is_paid=False) if is_paid_name == 'b' else  orders
-    orders = orders.filter(Q(code__icontains=search_name) |
-                               Q(vendor__title__icontains=search_name)
-                               ).distinct() if search_name else orders
-    search_name, payment_name, is_paid_name, vendor_name, category_name, status_name, date_pick = filters_name(request)
+    search_name, vendor_name, balance_name, paid_name = [request.GET.get('search_name'),
+                                                         request.GET.getlist('vendor_name'),
+                                                         request.GET.get('balance_name'),
+                                                         request.GET.get('paid_name')
+                                                         ]
+
     order_count, total_value, paid_value = orders.count(), orders.aggregate(Sum('total_price'))[
         'total_price__sum'] \
         if orders else 0, orders.aggregate(Sum('paid_value'))[
@@ -276,6 +233,9 @@ def warehouse_orders(request):
     warehouse_vendors = orders.values('vendor__title').annotate(value_total=Sum('total_price'),
                                                                           paid_val=Sum('paid_value')).order_by(
         '-value_total')
+    paginator = Paginator(orders, 100)
+    page = request.GET.get('page', 1)
+    orders = paginator.get_page(page)
     context = locals()
     return render(request, 'report/orders.html', context)
 

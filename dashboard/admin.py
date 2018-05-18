@@ -6,9 +6,11 @@ from .models import *
 
 @admin.register(PaymentOrders)
 class PaymentOrdersAdmin(ImportExportModelAdmin):
-	list_display = ['title', 'date_expired', 'content_object', 'value', 'is_paid']
-	
-		
+    list_display = ['title', 'date_expired', 'content_object', 'value', 'is_paid']
+
+
 @admin.register(Store)
 class StoreAdmin(admin.ModelAdmin):
-	pass
+    pass
+
+admin.site.register(PaymentMethod)
