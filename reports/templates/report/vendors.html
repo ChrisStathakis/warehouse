@@ -31,9 +31,42 @@
                                     <label>Προμηθευτές με υπόλοιπο</label>
                                 </div>
                             </div>
-
                             {% include 'snippets/search_date_filter.html' %}
-                            {% include 'snippets/vendor_cate_filter.html' %}
+                            <div class="two field">
+                                <div class="field">
+                                    <label>Προμηθευτές</label>
+                                    {% for vendor in vendors %}
+                                        {% if vendor.id|stringformat:"s" in vendor_name %}
+                                            <div class="ui slider checkbox">
+                                                <input type="checkbox" checked name="vendor_name" value="{{ vendor.id }}">
+                                                <label>{{ vendor }}</label>
+                                            </div>
+                                        {% else %}
+                                            <div class="ui slider checkbox">
+                                                <input type="checkbox" name="vendor_name" value="{{ vendor.id }}">
+                                                <label>{{ vendor }}</label>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="field">
+                                    <label>Τρόπος Πληρωμής</label>
+                                    {% for payment in payments %}
+                                        {% if payment.id|stringformat:"s" in payment_name %}
+                                            <div class="ui slider checkbox">
+                                                <input type="checkbox" checked name="payment_name" value="{{ payment.id }}">
+                                                <label>{{ payment.title }}</label>
+                                            </div>
+                                        {% else %}
+                                            <div class="ui slider checkbox">
+                                                <input type="checkbox" name="payment_name" value="{{ payment.id }}">
+                                                <label>{{ payment.title }}</label>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+
                             <input style="width: 100%;margin-top: 3%;" class="ui green inverted button" type="submit">
                         </form>
                         <a href="{% url 'reports:vendors' %}" style="margin-top: 3%;margin-right: auto;margin-left: 0%;" class="ui red button">

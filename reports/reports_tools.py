@@ -34,7 +34,7 @@ def initial_date(request, months=3):
     return [date_start, date_end, date_range]
 
 
-def clean_date_filter(request, date_pick, date_start=None, date_end=None, date_range= None):
+def clean_date_filter(request, date_pick, date_start=None, date_end=None, date_range=None):
     try:
         date_range = date_pick.split('-')
         date_range[0] = date_range[0].replace(' ', '')
@@ -189,11 +189,10 @@ def balance_sheet_chart_analysis(start_year, day_now, orders, value):
         new_date = day_now - relativedelta(months=month)
         string_month, month, year = new_date.strftime('%B'), new_date.month, new_date.year
         try:
-            get_orders = orders.filter(day_created__month=month, day_created__year=year).aggregate(Sum(string))[
-                string_sum] if orders.filter(day_created__month=month, day_created__year=year) else 0
+            get_orders = orders.filter(date_created__month=month, date_created__year=year).aggregate(Sum(string))[
+                string_sum] if orders.filter(date_created__month=month, date_created__year=year) else 0
         except:
             get_orders_ = orders.filter(date_created__month=month, date_created__year=year)
-            
             get_orders = orders.filter(date_created__month=month, date_created__year=year).aggregate(Sum(string))[
                 string_sum] if orders.filter(date_created__month=month, date_created__year=year) else 0
         get_orders = get_orders if get_orders else 0

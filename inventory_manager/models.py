@@ -11,6 +11,7 @@ from decimal import Decimal
 import os
 
 from model_utils import FieldTracker
+from .tools import estimate_date_start_end_and_months
 
 
 def upload_image(instance, filename):
@@ -118,7 +119,8 @@ class Order(models.Model):
         vendor_name = request.GET.getlist('vendor_name', None)
         balance_name = request.GET.get('balance_name', None)
         paid_name = request.GET.get('paid_name', None)
-        date_start, date_end = None, None
+        date_start, date_end, date_range, months_list = estimate_date_start_end_and_months(request)
+        payment_name = request.GET.getlist('payment_name', None)
         try:
             queryset = queryset.filter(vendor__id__in=vendor_name) if vendor_name else queryset
             queryset = queryset.filter(Q(title__icontains=search_name) |
@@ -126,7 +128,9 @@ class Order(models.Model):
                                      ).dinstict() if search_name else queryset
             queryset = queryset.filter(date_created__range=[date_start, date_end]) if date_start else queryset
             queryset = queryset.filter(is_paid=True) if paid_name =='paid' else queryset.filter(is_paid=False) \
-                    if paid_name=='not_paid' else queryset
+                    if paid_name =='not_paid' else queryset
+            queryset = queryset.filter(total_price__gte=balance_name) if balance_name else queryset
+            queryset = queryset.filter(payment_name__id__in=payment_name) if payment_name else queryset
         except:
             queryset = queryset
         return queryset

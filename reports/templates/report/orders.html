@@ -228,7 +228,7 @@
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ order.day_created }}</td>
                                 <td><a href="{% url 'reports:warehouse_order_detail' order.id %}" >{{ order }}</a> </td>
-                                <td><a href="">{{ order.vendor }}</a></td>
+                                <td><a href="{% url 'reports:vendor_detail' order.vendor.id %}">{{ order.vendor }}</a></td>
                                 <td>{{ order.get_status_display }}</td>
                                 <td class="warning">{{ order.tag_remaining_value }}</td>
                                 <td>{{ order.items_count }} </td>
