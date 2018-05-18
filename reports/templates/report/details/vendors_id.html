@@ -64,7 +64,7 @@
         <br>
         <div class="one wide column"></div>
         <div class="fourteen wide column">
-            <button class="ui green button">Υπολογισμός Υπολοίπου Προϊόντων</button>
+            <button data-url='{% url "reports:vendor_detail_product_analysis" instance.id %}' class="ui green button button_analysis">Υπολογισμός Υπολοίπου Προϊόντων</button>
             <button class="ui green button">Ανάλυση Πωλήσεων</button>
             <button class="ui red button">Ανάλυση Πληρωμών</button>
             <button class="ui blue button">Ανάλυση Παραγγελίας</button>
@@ -277,10 +277,12 @@
                 dataType: 'json',
                 data: my_form,
                 success: function(data){
-                    $('ajax_container').html('')
+                    $('.ajax_container').html(data.html_data)
                 }
             })
         })
     </script>
 
 {% endblock %}
+
+

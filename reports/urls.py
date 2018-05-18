@@ -26,6 +26,9 @@ urlpatterns = [
     path('orders/<int:dk>', view=order_id, name='warehouse_order_detail'),
     url(r'warehouse-products-flow/$', view=warehouse_order_items_movements, name='warehouse_order_items_flow'),
 
+    # warehouse_ajax_calls
+    path('vendors/ajax/detail/analysis/<int:pk>/', view=ajax_vendor_detail_remaining_value, name='vendor_detail_product_analysis'),
+
     # incomes
     url(r'incomes/$', ReportsIncome.as_view(), name='reports_income'),
     url(r'incomes/(?P<dk>\d+)/$', view=reports_specific_order, name='retail_order_detail'),

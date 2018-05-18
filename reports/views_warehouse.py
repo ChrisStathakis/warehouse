@@ -251,6 +251,7 @@ class WarehouseOrdersList(ListView):
         queryset = Order.filter_data(self.request, queryset)
         return queryset
 
+
 @staff_member_required
 def warehouse_orders(request):
     date_start, date_end, date_range, months_list = estimate_date_start_end_and_months(request)

@@ -1,8 +1,16 @@
 from ..views import *
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.db.models.functions import TruncMonth
+from django.db.models import Sum, Q, F
+from django.conf import settings
 from ..tools.warehouse_functions import warehouse_filters
+
+from inventory_manager.models import Order, OrderItem
+from products.models import Product, Supply, Category, CategorySite
+
+CURRENCY = settings.CURRENCY
 
 def ajax_products_analysis(request):
     data = dict()
@@ -20,7 +28,7 @@ def ajax_products_analysis(request):
                                                     'currency': CURRENCY,
                                                     'switcher': switcher
                                                     }
-                                                    )
+                                            )
     if switcher == 'vendor_analysis':
         vendor_analysis = queryset.values('supply__title').annotate(total_ware_price=Sum(F('qty')*F('final_price')),
                                                                     total_sell_price=Sum(F('qty')*F('price_buy'))
@@ -101,3 +109,29 @@ def ajax_vendors_page_analysis(request):
                                                     }
                                            )
     return JsonResponse(data)
+
+
+
+    
+def ajax_vendor_detail_remaining_value(request, pk):
+    instance = get_object_or_404(Supply, id=pk)
+    data = dict()
+    queryset = Product.objects.filter(supply=instance)
+    queryset = queryset.filter(brand__is_null=False)
+    total_buy_value = queryset.aggregate(total=Sum(F('price_buy')*F('qty')))['total'] if queryset else 0
+    total_sell_value = queryset.aggregate(total=Sum(F('final_price')*F('qty')))['total'] if queryset else 0
+    brand_analysis = queryset.values('brand__title').annotate(total_buy_sum=(F('qty')*F('price_buy')),
+                                                              total_sell_sum=(F('qty')*F('final_price'))               
+                                                             )
+    data['html_data'] = render_to_string(request=request,
+                                         template_name = 'report/ajax/warehouse/vendor_analysis_detail.html',
+                                         context={
+                                                'toal_buy_value': total_buy_value,
+                                                'total_sell_value': total_sell_value,
+                                                'brand_analysis': brand_analysis,
+                                                'currency': CURRENCY,
+                                                'instance': instance,
+                                                }      
+                                         )
+    return JsonResponse(data)
+
