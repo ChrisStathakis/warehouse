@@ -1,0 +1,116 @@
+{% extends 'dashboard/site_templates/homepage.html' %} {% load static %}
+
+{% block content %}
+    <div class="content">
+       <div class="container-fluid">
+           <div class="row">
+               <div class="col-md-8">
+                   <div class="card">
+                       <div class="header">
+                           <h4 class="title text-center">Create Banner</h4>
+                           <p class="category"><a href="{% url 'dashboard:banner_create' %}" class="btn btn-success">Create</a></p>
+                       </div>
+                       <div class="content table-responsive table-full-width">
+                           <table class="table table-striped">
+                               <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Title</th>
+                                        <th>Image</th>
+                                        <th>Active</th>
+                                        <th>Big Banner</th>
+                                        <th>Actions</th>
+                                    </tr>
+                               </thead>
+                               <tbody>
+                                {% for object in object_list %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ object.title }}</td>
+                                        <td>{{ object.image.url }}</td>
+                                        <td>{{ object.tag_active }}</td>
+                                        <td>{{ object.tag_big_image }}</td>
+                                        <td><a href="" class="btn btn-primaty">Edit</a> <br>
+                                            <a href="" class="btn btn-warning">Delete</a>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="6">No Banners</td>
+                                    </tr>
+                                {% endfor %}
+                               </tbody>
+                           </table>
+                       </div>
+                   </div>
+               </div>
+               <div class="col-md-4">
+                   <div class="card">
+                       <div class="header">
+                            <h4>Filters</h4>
+
+                       </div>
+                       <div class="content">
+                           <form method="get">
+                               <div class="pagination">
+                                    <span class="step-links">
+                                        <input name="page" value="1" type="text" hidden>
+                                        {% if page_obj.has_previous %}
+                                            <button type="submit" name='page' value="1" class="btn btn-primary">First Page</button>
+                                            <button type="submit" name='page' value="{{ page_obj.previous_page_number }}" class="btn btn-primary">Previous</button>
+                                        {% endif %}
+                                            <span class="current">
+                                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                                            </span>
+                                        {% if page_obj.has_next %}
+                                            <button type="submit" name='page' value="{{ page_obj.next_page_number }}" class="btn btn-primary">Next</button>
+                                            <button type="submit" name='page' value="{{ page_obj.paginator.num_pages }}" class="btn btn-primary">Last Page</button>
+                                        {% endif %}
+                                    </span>
+                               </div>
+                               <div class="form-group">
+                                   <input type="text" {% if search_name %}value="{{ search_name }}"{% endif %}
+                                          placeholder="Search" class="form-control" name="search_name"/>
+                               </div>
+                               <div class="checkbox">
+                                   <input name="active_name" value="1" id="checkbox1" type="checkbox"
+                                   {% if 1|stringformat:'s' in active_name %} checked {% endif %}>
+                                   <label for="checkbox1">
+                                       Active
+                                   </label>
+                               </div>
+                               <div class="checkbox">
+                                   <input name="active_name" value="2" id="checkbox1" type="checkbox"
+                                   {% if 2|stringformat:'s' in active_name %} checked {% endif %}>
+                                   <label for="checkbox1">
+                                       No Active
+                                   </label>
+                               </div>
+                               <div class="checkbox">
+                                   <input name="show_name" value="1" id="checkbox1" type="checkbox"
+                                   {% if 1|stringformat:'s' in show_name %} checked {% endif %}>
+                                   <label for="checkbox1">
+                                       Show on NavBar
+                                   </label>
+                               </div>
+                               <div class="checkbox">
+                                   <input name="show_name" value="2" id="checkbox1" type="checkbox"
+                                           {% if 2|stringformat:'s' in show_name %} checked {% endif %}>
+                                   <label for="checkbox1">
+                                       Non Show on Navbar
+                                   </label>
+                               </div>
+
+                               <button type="submit" class="btn btn-primary">Submit</button>
+                               <a href="{% url 'dashboard:categories' %}" class="btn btn-danger">Reset Filters</a>
+                           </form>
+                       </div>
+                   </div>
+                   {% if category_page %}
+                        {% include 'dashboard/include/actions/category_actions.html' %}
+                   {% endif %}
+               </div>
+           </div>
+       </div>
+   </div>
+{% endblock %}

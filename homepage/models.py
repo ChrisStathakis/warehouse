@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 
 
 def validate_size(value):
-    if value.file.size > 0.7*1024*1024:
+    if value.file.size > 0.4*1024*1024:
         raise ValidationError('This file is bigger than 0.7mb!')
 
 
@@ -30,9 +30,10 @@ class FirstPage(models.Model):
 class Banner(models.Model):
     active = models.BooleanField(default=True)
     title = models.CharField(max_length=100, unique=True)
-    image = models.ImageField(upload_to=upload_banner, validators=[validate_size, ] )
+    image = models.ImageField(upload_to=upload_banner, validators=[validate_size, ])
     href = models.URLField(blank=True, null=True)
     new_window = models.BooleanField(default=False)
+    big_banner = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title

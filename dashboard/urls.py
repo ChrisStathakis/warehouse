@@ -12,7 +12,7 @@ from .views_pages import *
 from .user_views import *
 from .tools_views import *
 from cart.views import create_coupon
-
+from .views_site import *
 from .warehouse_views import *
 
 app_name = 'dashboard'
@@ -94,6 +94,14 @@ urlpatterns = [
     path('warehouse/order/payment-method/detail/<int:pk>/', PaymentMethodEditPage.as_view(), name='payment_edit_view'),
     path('warehouse/order/payment-method/delete/<int:pk>/', view=delete_payment_method, name='payment_delete_view'),
     path('warehouse/order/payment-method/create/', PaymentMethodCreatePage.as_view(), name='payment_create_view'),
+
+
+    # site pages
+    path('site-settings', SiteView.as_view(), name='site_view'),
+    path('site-settings/banners/', BannerView.as_view(), name='banner_view'),
+    path('site-settings/banners/create', BannerCreateView.as_view(), name='banner_create'),
+    path('site-settings/banners/edit/<int:pk>/', BannerEditView.as_view(), name='banner_edit'),
+    path('site-settings/banners/delete/<int:pk>/', BannerDeleteView.as_view(), name='banner_edit'),
 
     # user urls
     path('users-list/', UsersPage.as_view(), name='users_list'),

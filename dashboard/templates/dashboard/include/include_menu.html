@@ -15,6 +15,12 @@
                     <p>Dashboard</p>
                 </a>
             </li>
+            <li>
+                <a href="{% url 'dashboard:site_view' %}">
+                    <i class="ti-panel"></i>
+                    <p>Site Settings</p>
+                </a>
+            </li>
             <li {% if dashboard %}class="active" {% endif %}>
                 <a href="{% url 'dashboard:warehouse_home' %}">
                     <i class="ti-panel"></i>

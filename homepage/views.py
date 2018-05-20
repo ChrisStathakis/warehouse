@@ -35,6 +35,7 @@ from account.forms import CostumerPageEditDetailsForm
 from .forms import PersonalInfoForm
 from cart.forms import CartItemForm, CartItemNoAttrForm, CartItemCreate, CartItemCreateWithAttrForm
 from point_of_sale.models import Order, OrderItem, PAYMENT_METHOD, Shipping, RetailOrder, RetailOrderItem
+from dashboard.models import PaymentMethod
 from .mixins import custom_redirect, SearchMixin
 from django.conf import settings
 
@@ -42,13 +43,6 @@ CURRENCY = settings.CURRENCY
 
 # return custom_redirect('url-name', x, q = 'something')
 # Should redirect to '/my_long_url/x/?q=something'
-
-
-def first_page_initial_data():
-    featured_products = Product.my_query.first_page_featured_products()
-    new_products = Product.my_query.first_page_new_products()
-    offer_products = Product.my_query.first_page_offers()
-    return [featured_products, new_products, offer_products]
 
 
 def initial_data(request):
@@ -64,7 +58,7 @@ class Homepage(SearchMixin, TemplateView):
         context = super(Homepage, self).get_context_data(**kwargs)
         europe_cookie(self.request)
         first_page = FirstPage.objects.filter(active=True).first() if FirstPage.objects.filter(active=True) else None
-        featured_products, new_products, offer_products = first_page_initial_data()
+        featured_products = Product.my_query.active_for_site().filter(is_featured=True)
         banners = Banner.objects.filter(active=True)
         menu_categories, cart, cart_items = initial_data(self.request)
         context.update(locals())
@@ -118,7 +112,7 @@ class OffersPage(SearchMixin, ListView):
         context.update(locals())
         return context
 
-    
+
 class CategoryPageList(SearchMixin, ListView):
     template_name = 'home/product_list.html'
     model = Product
@@ -128,7 +122,8 @@ class CategoryPageList(SearchMixin, ListView):
     def get_queryset(self):
         self.category = get_object_or_404(CategorySite, slug=self.kwargs['slug'])
         self.categories = self.category.get_childrens()
-        queryset = Product.my_query.active_category_site(categories=self.categories)
+        result_list = self.categories | CategorySite.objects.filter(id=self.category.id)
+        queryset = Product.my_query.active_category_site(categories=result_list)
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -320,11 +315,15 @@ def checkout_page(request):
             cart_items = CartItem.objects.filter(order_related=cart)
             payment_method = request.POST.get('payment_method')
             shipping_method = request.POST.get('shipping_method')
+            shipping_cost, payment_cost = RetailOrder.estimate_shipping_and_payment_cost(cart.final_value,
+                                                                                         Shipping.objects.get(id=shipping_method),
+                                                                                         PaymentMethod.objects.get(id=1),
+                                                                                         )
             new_order = RetailOrder.objects.create(order_type='e',
                                                    payment_method=form.cleaned_data.get('payment_method'),
                                                    shipping=form.cleaned_data.get('shipping_method'),
-                                                   shipping_cost=5,
-                                                   payment_cost=0,
+                                                   shipping_cost=shipping_cost,
+                                                   payment_cost=payment_cost,
                                                    email=form.cleaned_data.get('email'),
                                                    first_name=form.cleaned_data.get('first_name'),
                                                    last_name=form.cleaned_data.get('last_name'),

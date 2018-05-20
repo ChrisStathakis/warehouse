@@ -44,35 +44,12 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-md-12 col-lg-12 col-xl-12 ml-auto mr-auto">
-                            <h2 style="color:#888;" class="title text-center">Τα Προϊόντα μας</h2>
-                            <!-- Nav tabs -->
-                            <div class="card">
-                                <ul class="nav nav-tabs justify-content-center" role="tablist">
-                                    {% for category in menu_categories %}
-                                        <li class="nav-item">
-                                            <a class="nav-link" data-toggle="tab" href="#{{ category.id }}" role="tab" aria-expanded="false">
-                                                 {{ category }}
-                                            </a>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                                <div class="card-body">
-                                    <!-- Tab panes -->
-                                    <div class="tab-content text-center">
-                                        {% for category in menu_category %}
-                                        <div class="tab-pane" id="{{ category.id }}" role="tabpanel" aria-expanded="false">
-                                            {% for product in new_products %}
-                                                {% if product.category_site.first == category %}
-                                                    <div class="team">
-                                                        {% include 'home/include/product_card.html' %}
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
+                            <h2 style="color:#888;" class="title text-center">Προτεινόμενα</h2>
+                        </div>
+                        <div class="row">
+                            {% for product in featured_products %}
+                                {%include 'home/include/product_card.html' %}
+                            {% endfor %}
                         </div>
                     </div>
                 </div>

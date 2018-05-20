@@ -1,105 +1,71 @@
-<!doctype html> {% load static %}
-<html lang="en">
-<head>
-    <title>Paper Dashboard by Creative Tim</title>
-    {% include 'dashboard/include/include_css.html' %}
-    {% block extra_css %} {% endblock %}
-</head>
-<body>
+{% extends 'dashboard/dashboard.html' %}
 
-<div class="wrapper">
-    {% include 'dashboard/include/include_menu.html' %}
 
-    <div class="main-panel">
-        {% block submenu %}
-            <nav class="navbar navbar-default">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar bar1"></span>
+{% block submenu %}
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar bar1"></span>
                         <span class="icon-bar bar2"></span>
-                        <span class="icon-bar bar3"></span>
-                    </button>
-                    <a class="navbar-brand" href="#">{{ page_title }}</a>
-                </div>
-                <div class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="{% url 'dashboard:products' %}">
-                                <i class="ti-panel"></i>
-								<p>Products</p>
-                            </a>
-                        </li>
-                        <li class="dropdown">
-                              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                    <i class="ti-bell"></i>
-									<p>Products Settings</p>
-									<b class="caret"></b>
-                              </a>
-                              <ul class="dropdown-menu">
-                                  <li><a href="{% url 'dashboard:categories' %}">Categories</a></li>
-                                  <li><a href="{% url 'dashboard:categories_site' %}">Site Categories</a></li>
-                                  <li><a href="{% url 'dashboard:brands' %}">Brands</a></li>
-                                  <li><a href="{% url 'dashboard:colors' %}">Color</a></li>
-                                  <li><a href="{% url 'dashboard:sizes' %}">Size</a></li>
-                              </ul>
-                        </li>
-						<li>
-                            <a href="{% url 'dashboard:eshop_orders_page' %}">
-								<i class="ti-settings"></i>
-								<p>Orders</p>
-                            </a>
-                        </li>
-                        <li class="dropdown">
-                              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                    <i class="ti-bell"></i>
-                                    
-									<p>Order Settings</p>
-									<b class="caret"></b>
-                              </a>
-                              <ul class="dropdown-menu">
-                                <li><a href="{% url 'dashboard:shipping_view' %}">Shipping Method</a></li>
-                                <li><a href="{% url 'dashboard:payment_view' %}">Payment Method</a></li>
-                                <li><a href="#">Color</a></li>
-                                <li><a href="#">Size</a></li>
-                                <li><a href="#">Characteristics</a></li>
-                              </ul>
-                        </li>
-                    </ul>
-
-                </div>
+                    <span class="icon-bar bar3"></span>
+                </button>
+                <a class="navbar-brand" href="#">{{ page_title }}</a>
             </div>
-        </nav>
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="{% url 'dashboard:products' %}">
+                            <i class="ti-panel"></i>
+                            <p>Banners</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'dashboard:products' %}">
+                            <i class="ti-user"></i>
+                            <p>Users</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'dashboard:products' %}">
+                            <i class="ti-panel"></i>
+                            <p>Configuration</p>
+                        </a>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </nav>
     {% endblock %}
 
-        {% block content %}
-        <div class="content">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-lg-3 col-sm-6">
-                        <div class="card">
-                            <div class="content">
-                                <div class="row">
-                                    <div class="col-xs-5">
-                                        <div class="icon-big icon-danger text-center">
-                                            <i class="ti-bell"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-7">
-                                        <div class="numbers">
-                                            <p>New Orders</p>
-                                            {{ new_orders.count }}
-                                        </div>
+{% block content %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card">
+                        <div class="content">
+                            <div class="row">
+                                <div class="col-xs-5">
+                                    <div class="icon-big icon-danger text-center">
+                                        <i class="ti-bell"></i>
                                     </div>
                                 </div>
-                                <div class="footer">
-                                    <hr />
-                                    <div class="stats">
-                                        <a href='{% url 'dashboard:eshop_orders_page' %}'><i class="ti-link"></i>Go to Orders</a>
+                                <div class="col-xs-7">
+                                    <div class="numbers">
+                                        <p>Banners</p>
                                     </div>
                                 </div>
                             </div>
+                            <div class="footer">
+                                <hr />
+                                <div class="stats">
+                                    <a href='{% url 'dashboard:banner_view' %}'><i class="ti-link"></i>Go to Banners</a>
+                                </div>
+                            </div>
+                        </div>
                         </div>
                     </div>
                     <div class="col-lg-3 col-sm-6">
@@ -268,43 +234,4 @@
                 </div>
             </div>
         </div>
-        {% endblock %}
-
-        <footer class="footer">
-            <div class="container-fluid">
-                <nav class="pull-left">
-                    <ul>
-
-                        <li>
-                            <a href="http://www.creative-tim.com">
-                                Creative Tim
-                            </a>
-                        </li>
-                        <li>
-                            <a href="http://blog.creative-tim.com">
-                               Blog
-                            </a>
-                        </li>
-                        <li>
-                            <a href="http://www.creative-tim.com/license">
-                                Licenses
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-                <div class="copyright pull-right">
-                    &copy; <script>document.write(new Date().getFullYear())</script>, made with <i class="fa fa-heart heart"></i> by <a href="http://www.creative-tim.com">Creative Tim</a>
-                </div>
-            </div>
-        </footer>
-
-    </div>
-
-
-</div>
-
-
-</body>
-{% include 'dashboard/include/include_js.html' %}
-{% block extra_js %} {% endblock %}
-</html>
+{% endblock %}

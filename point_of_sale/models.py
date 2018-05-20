@@ -315,6 +315,12 @@ class RetailOrder(models.Model):
         
         return queryset
 
+    @staticmethod
+    def estimate_shipping_and_payment_cost(order_value, shipping, payment):
+        shipping_cost = shipping.value if shipping.value_limit < order_value else 0
+        payment_cost = payment.additional_cost if payment.limit_value < order_value else 0
+        return [shipping_cost, payment_cost]
+
 
 @receiver(post_delete, sender=RetailOrder)
 def update_on_delete_retail_order(sender, instance, *args, **kwargs):

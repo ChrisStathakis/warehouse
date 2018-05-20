@@ -212,6 +212,8 @@ class CartItem(models.Model):
     objects = models.Manager()
 
     def __str__(self):
+        if self.characteristic:
+            return f'{self.product_related.title} - {self.characteristic.title}'
         return self.product_related.title
 
     def save(self, *args, **kwargs):

@@ -10,16 +10,16 @@ class UpdateProductForm(forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = [
-                  'active', 'size',
-                  'title', 'color',
+        fields = ['title', 'is_featured',
+                  'site_active', 'size',
+                  'color',
                   'category', 'category_site',
                   'supply', 'brand',
                   'price', 'price_discount',
                   'order_code', 'measure_unit',
                   'qty', 'price_buy',
                   'barcode', 'safe_stock',
-                  'site_active', 'is_service',
+                  'active', 'is_service',
                   'sku', 'site_text',
                   'slug', 'notes',
                   
