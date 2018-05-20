@@ -28,8 +28,7 @@
     
             <div class="content">
                 <form method="post" class="ui form">{% csrf_token %}
-                    <label class="ui blue label">Επιλογή Ημερομηνίας</label>
-                    <input  name="date_pick" placeholder="{{ date_pick }}" >
+                    {% include 'snippets/search_date_filter.html' %}
                     <input style="width: 100%;margin-top: 3%;" class="ui green inverted button" type="submit">
                 </form>
             </div>
@@ -37,63 +36,46 @@
         </div>
         <div class="two wide column"></div>
     </div>
-    <div  class="eight wide column">
+    <div class="four wide column">
         <div style="text-align: center" class="ui  medium header">Κατηγορίες ΑποΘήκης</div>
         <table style="margin-left: 1%" class="ui selectable striped table">
             <thead>
                 <tr>
-                    <th></th>
+                    <th>#</th>
                     <th>Κατηγορία</th>
-                    <th>Αγορές<br>Κόστος Περιόδου</th>
-                    <th>Πωλήσεις/'Εσοδα<br>Κόστος Πωληθ.</th>
-                    <th>Επιστροφές<br>Ελλατωμ.</th>
+                    <th>Ενέργεια</th>
                 </tr>
             </thead>
             <tbody>
                 {% for category in categories %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
-                        <td><a href="">{{ category }}</a> </td>
-                        <td>{{ value.0 }} Τεμ  <br><span style="color: red">{{ value.1|floatformat:2 }} {{ currency }}</span></td>
-                        <td>{{ value.2 }} Τεμ.<br><section style="color: green">{{ value.3|floatformat:2 }} {{ currency }}</section><section style="color: red">{{ value.7|floatformat:2 }} €</section></td>
-                        <td>{{ value.4 }}Τεμ.<br>{{ value.5 }} </td>
+                        <td>{{ category }}</td>
+                        <td><a href='' class='ui green button'>Go</a> </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
 
     </div>
-    <div  class="eight wide column">
-        <div style="text-align: center" class="ui medium header">Κατηγορίες Site</div>
-        <table class="ui striped table">
-            <thead>
-                <tr>
-                    <th>Κατηγορία</th>
-                    <th>Αγορές<br>Κόστος Περιόδου</th>
-                    <th>Πωλήσεις/'Εσοδα<br>Κόστος Πωληθ.</th>
-                    <th>Επιστροφές<br>Ελλατωμ.</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for key, value in category_site_info.items %}
-                    <tr>
-                        <td>{{ key.title }}</td>
-                        <td>{{ value.0|floatformat:2 }}<br><span style="color: red">{{ value.1|floatformat:2 }} €</span></td>
-                        <td>{{ value.2|floatformat:2 }} Τεμ.
-                            <br><span style="color: green">{{ value.3|floatformat:2 }} €</span>
-                            <br><span style="color:red">{{ value.7|floatformat:2 }} €</span>
-                        </td>
-                        <td>{{ value.4|floatformat:2 }} Τεμ.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div  class="ten wide column">
+        <div style="text-align: center" class="ui medium header">Ενέργειες</div>
+        <div class="row">
+            <a href='' class='ui button ajax_button'>Υπολογισμός υπολοίπου</a>
+            <a href='' class='ui button'>Υπολογισμός υπολοίπου</a>
+            <a href='' class='ui button'>Υπολογισμός υπολοίπου</a>
+            <a href='' class='ui button'>Υπολογισμός υπολοίπου</a>
+        </div>
+        <div class='row' id='ajax_container'>
 
+        </div>
     </div>
 
+    <script>
+        $('.ajax_button').click(function() {
+            console.log('works!')
+        })
+    </script>
+
 {% endblock %}
 
-{% block right_side %}
-
-
-{% endblock %}

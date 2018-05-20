@@ -314,6 +314,13 @@ def products_movements(request):
     return render(request, 'reports/products_flow.html', context)
 
 
+@method_decorator(staff_member_required, name='dispatch')
+class WarehouseCategoryView(ListView):
+    model = Category
+    template_name = 'report/category_report.html'
+    paginate_by = 50
+
+
 
 @staff_member_required
 def category_report(request):

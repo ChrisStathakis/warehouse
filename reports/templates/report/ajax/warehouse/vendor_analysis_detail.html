@@ -1,45 +1,49 @@
 <br><br>
-<div class="ui card">
-    <div class="content">
-      <div class="center aligned header">{{ instance }}</div>
-      <div class="center aligned description">
-        <p>Συνολική Αξία Αποθήκης... {{ toal_buy_value }} {{ currency }} σε τιμή Αγοράς <br> 
-        Συνολική Αξία Αποθήκης... {{ total_sell_value }} {{ currency }} σε τιμή Πώλησης 
-        </p>
+<div class='row'>
+  <div class='eight wide column'>
+      <div class="ui card">
+          <div class="content">
+            <div class="center aligned header">{{ instance }}</div>
+            <div class="center aligned description">
+              <p>Συνολική Αξία Αποθήκης... {{ toal_buy_value }} {{ currency }} σε τιμή Αγοράς <br> 
+              Συνολική Αξία Αποθήκης... {{ total_sell_value }} {{ currency }} σε τιμή Πώλησης 
+              </p>
+            </div>
+          </div>
+          <div class="extra content">
+            <div class="center aligned author">
+              <br>
+              
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="extra content">
-      <div class="center aligned author">
-        <table class="ui selectable inverted table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Brand</th>
-                <th class="right aligned">Buy Total</th>
-                <th class="right aligned">Sell Total</th>
-              </tr>
-            </thead>
-            <tbody>
-                {% for brand in brand_analysis %}
-                <tr>
-                    <td>{{ forloop.counter}}</td>
-                    <td>{{ brand.brand__title }}</td>
-                    <td>{{ brand.total_buy_sum }} {{ currency }}</td>
-                    <td>{{ brand.total_sell_sum }} {{ currency }}</td>
-                </tr>
-                {% endfor %}
-              <tr>
-                <td>Jamie</td>
-                <td>Approved</td>
-                <td class="right aligned">Requires call</td>
-              </tr>
-              <tr>
-                <td>Jill</td>
-                <td>Denied</td>
-                <td class="right aligned">None</td>
-              </tr>
-            </tbody>
-          </table>
-      </div>
-    </div>
   </div>
+
+  <div class="eight wide column">
+      <table class="ui selectable inverted table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Brand</th>
+              <th>Ποσότητα</th>
+              <th>Αξία Αποθήκης σε τιμή Αγοράς</th>
+              <th>Αξία Αποθήκης σε τιμή Πώλησης</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for brand in brand_analysis %}
+              <tr>
+                  <td>{{ forloop.counter}}</td>
+                  <td>{{ brand.brand__title }} {{ brand.qty }}</td>
+                  <td>{{ brand.sum_q }} {{ instance.measure_unit }}</td>
+                  <td>{{ brand.sum_buys }} {{ currency }}</td>
+                  <td>{{ brand.sum_sells }} {{ currency }}</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  </div>
+</div>
+
+
+    

@@ -8,6 +8,7 @@ from django.conf import settings
 from ..tools.warehouse_functions import warehouse_filters
 
 from inventory_manager.models import Order, OrderItem
+from point_of_sale.models import RetailOrderItem
 from products.models import Product, Supply, Category, CategorySite
 
 CURRENCY = settings.CURRENCY
@@ -117,12 +118,17 @@ def ajax_vendor_detail_remaining_value(request, pk):
     instance = get_object_or_404(Supply, id=pk)
     data = dict()
     queryset = Product.objects.filter(supply=instance)
-    queryset = queryset.filter(brand__is_null=False)
+    queryset = queryset.exclude(brand__title=False)
+    
     total_buy_value = queryset.aggregate(total=Sum(F('price_buy')*F('qty')))['total'] if queryset else 0
     total_sell_value = queryset.aggregate(total=Sum(F('final_price')*F('qty')))['total'] if queryset else 0
-    brand_analysis = queryset.values('brand__title').annotate(total_buy_sum=(F('qty')*F('price_buy')),
-                                                              total_sell_sum=(F('qty')*F('final_price'))               
-                                                             )
+    brand_analysis = queryset.values('brand__title').annotate(Sum('qty')).order_by('qty__sum')
+   
+    brand_analysis = queryset.values('brand__title').annotate(sum_q=Sum('qty'),
+                                                              sum_sells=Sum(F('qty')*F('final_price')),
+                                                              sum_buys=Sum(F('qty')*F('price_buy')),
+                                                            ).order_by('-sum_q')
+                                                             
     data['html_data'] = render_to_string(request=request,
                                          template_name = 'report/ajax/warehouse/vendor_analysis_detail.html',
                                          context={
@@ -135,3 +141,18 @@ def ajax_vendor_detail_remaining_value(request, pk):
                                          )
     return JsonResponse(data)
 
+
+def ajax_vendor_sells_analysis(request, pk):
+    instance = get_object_or_404(Supply, id=pk)
+    date_start, date_end, date_range, months_list = estimate_date_start_end_and_months(request)
+    get_products = Product.objects.filter(supply=instance)
+    get_sells = RetailOrderItem.objects.filter(title__in=get_products,
+                                               order__date_started__range=[date_start, date_end] 
+                                               )
+    pass
+    
+    
+def ajax_ware_cate_analysis(request):
+    data = {}
+    products = Product.my_query.active_warehouse()
+    
