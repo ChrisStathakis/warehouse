@@ -5,6 +5,7 @@ from django.conf import settings
 from django.db.models import Sum, F
 from django.dispatch import receiver
 from django.db.models.signals import post_delete
+from django.contrib import messages
 from dashboard.constants import PAYMENT_TYPE
 from products.models import Product, SizeAttribute, CategorySite
 
@@ -102,9 +103,10 @@ class CartManager(models.Manager):
 
 class Cart(models.Model):
     active = models.BooleanField(default=True)
-    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     id_session = models.CharField(max_length=50)
-    date_created = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     value = models.DecimalField(default=0, max_digits=10, decimal_places=2, validators=[validate_positive_decimal, ])
     is_complete = models.BooleanField(default=False)
     my_query = CartManager()
@@ -126,7 +128,7 @@ class Cart(models.Model):
             for coupon in all_coupons:
                 # priority
                 limit_price = coupon.cart_total_value if coupon.cart_total_value else 0
-                if price>limit_price and limit_price>0:
+                if price > limit_price and limit_price > 0:
                     self.coupon_discount = coupon.discount_value if coupon.discount_value else \
                         (coupon.discount_percent/100)*price if coupon.discount_percent else 0
                 if coupon.products or coupon.categories:
@@ -240,8 +242,6 @@ class CartItem(models.Model):
 
     def update_order(self):
         items_query = CartItem.objects.filter(order_related=self.order_related)
-        print(items_query)
-        print(items_query.aggregate(total=Sum(F('qty')*F('final_price')))['total'] if items_query.exists() else 0)
         self.order_related.value += items_query.aggregate(total=Sum(F('qty')*F('final_price')))['total'] if items_query.exists() else 0
         self.order_related.save()
 
@@ -260,23 +260,51 @@ class CartItem(models.Model):
             self.delete()
 
     @staticmethod
-    def create_cart_item(order, product, qty, size=None):
-        qs_exists = CartItem.objects.filter(order_related=order, product_related=product)
+    def create_cart_item(request, order, product, qty, size=None):
+        product_qty = product.qty
+        if size:
+            qs_exists = CartItem.objects.filter(order_related=order, product_related=product, characteristic=size)
+        else:
+            qs_exists = CartItem.objects.filter(order_related=order, product_related=product)
         if qs_exists:
             cart_item = qs_exists.last()
-            cart_item.qty += qty
-            cart_item.save()
+            if settings.RETAIL_ORDER_TRANSCATIONS:
+                cart_qty = cart_item.qty + qty
+                if product_qty >= cart_qty:
+                    cart_item.qty += qty
+                    cart_item.save()
+                else:
+                    messages.warning(request, 'WE dont have enough qty.')
+            else:
+                cart_item.qty += qty
+                cart_item.save()
         else:
-            new_cart_item = CartItem.objects.create(order_related=order,
-                                                    product_related=product,
-                                                    qty=qty,
-                                                    price=product.price,
-                                                    price_discount=product.price_discount,
-                                                    id_session=order.id_session,
-                                                    )
-            if size:
-                new_cart_item.characteristic = size
-                new_cart_item.save()
+            if settings.RETAIL_ORDER_TRANSCATIONS:
+                if qty > product_qty:
+                    messages.warning(request, 'WE dont have enough qty.')
+                else:
+                    new_cart_item = CartItem.objects.create(order_related=order,
+                                                            product_related=product,
+                                                            qty=qty,
+                                                            price=product.price,
+                                                            price_discount=product.price_discount,
+                                                            id_session=order.id_session,
+                                                            )
+                    if size and new_cart_item:
+                        new_cart_item.characteristic = size
+                        new_cart_item.save()
+            else:
+                new_cart_item = CartItem.objects.create(order_related=order,
+                                                        product_related=product,
+                                                        qty=qty,
+                                                        price=product.price,
+                                                        price_discount=product.price_discount,
+                                                        id_session=order.id_session,
+                                                        )
+                if size and new_cart_item:
+                    new_cart_item.characteristic = size
+                    new_cart_item.save()
+
 
 @receiver(post_delete, sender=CartItem)
 def update_order_on_delete(sender, instance, *args, **kwargs):

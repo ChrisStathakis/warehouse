@@ -20,7 +20,11 @@
             </div>
             <div class="product-option">
                 <div class="product-size">
-                    <a href="{% url 'cart:add' product.id  1 %}" class="btn btn-success">Add to Cart</a>
+                    {% if product.size %}
+                        <a href="{{ product.get_absolute_url }}" class="btn btn-primary">Continue</a>
+                    {% else %}
+                        <a href="{% url 'cart:add' product.id  1 %}" class="btn btn-success">Add to Cart</a>
+                    {% endif %}
                     <p>{% if product.price_discount > 0%}{{ product.tag_final_price }}<del>{{ product.tag_price }}</del> {% endif %}</p>
                 </div>
             </div>

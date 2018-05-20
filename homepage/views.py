@@ -191,20 +191,21 @@ def product_detail(request, slug):
     images = ProductPhotos.objects.filter(product=instance)
     seo_title = '%s' % instance.title
     if instance.size:
-        form = CartItemCreateWithAttrForm(instance=instance)
+        form = CartItemCreateWithAttrForm(instance_related=instance)
     else:
         form = CartItemCreate()
 
     if request.POST:
         if instance.size:
-            form = CartItemCreateWithAttrForm(request.POST, instance=instance)
+            form = CartItemCreateWithAttrForm(instance, request.POST)
             if form.is_valid():
                 qty = form.cleaned_data.get('qty', 1)
                 attribute = form.cleaned_data.get('attribute')
                 order = check_or_create_cart(request)
-                CartItem.create_cart_item(order=order, product=instance, qty=qty, size=attribute)
+                CartItem.create_cart_item(request, order=order, product=instance, qty=qty, size=attribute)
                 messages.success(request, 'The product %s with the size %s added in your cart' % (instance.title,
-                                                                                                 attribute)
+                                                                                                  attribute
+                                                                                                  )
                                  )
                 return HttpResponseRedirect(reverse('product_page', kwargs={'slug': instance.slug}))
         else:
@@ -212,7 +213,7 @@ def product_detail(request, slug):
             if form.is_valid():
                 qty = form.cleaned_data.get('qty', 1)
                 order = check_or_create_cart(request)
-                CartItem.create_cart_item(order=order, product=instance, qty=qty)
+                CartItem.create_cart_item(request, order=order, product=instance, qty=qty)
                 messages.success(request, 'The product %s added in your cart' % instance.title)
                 return HttpResponseRedirect(reverse('product_page', kwargs={'slug': instance.slug}))
 

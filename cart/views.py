@@ -26,7 +26,9 @@ def check_if_cart_id(request):
 def check_or_create_cart(request):
     user = request.user
     card_id = check_if_cart_id(request)
-    cart_order_exists = Cart.my_query.active_carts().filter(id_session=card_id)
+    cart_order_exists = Cart.my_query.active_carts().filter(id_session=card_id,
+                                                            active=True,
+                                                            )
     if not cart_order_exists:
         cart = Cart.objects.create(id_session=card_id)
         if user.is_authenticated:
@@ -50,7 +52,7 @@ def cart_data(request):
 def add_to_cart(request, dk, qty=1):
     instance = get_object_or_404(Product, id=dk)
     order = check_or_create_cart(request)
-    CartItem.create_cart_item(order=order, product=instance, qty=qty)
+    CartItem.create_cart_item(request, order=order, product=instance, qty=qty)
     messages.success(request, ' The product %s added to cart' % instance.title)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 

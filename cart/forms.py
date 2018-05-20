@@ -14,7 +14,6 @@ class CartItemForm(forms.Form):
                              )
 
 
-
 class CartItemNoAttrForm(forms.ModelForm):
     order_related = forms.ModelChoiceField(queryset=Cart.objects.all(),
                                    widget=forms.HiddenInput(),
@@ -42,7 +41,6 @@ class CartItemNoAttrForm(forms.ModelForm):
             field.widget.attrs['class'] = 'form-control'
 
 
-
 class CouponForm(forms.ModelForm):
 
     class Meta:
@@ -57,6 +55,7 @@ class CouponForm(forms.ModelForm):
             field.widget.attrs['class'] = 'form-control'
     '''
 
+
 class CartItemCreate(forms.Form):
     qty = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'class': 'form-control',
                                                                             'placeholder': '1',
@@ -64,6 +63,7 @@ class CartItemCreate(forms.Form):
                                                                             })
                                                                             )
     # size = forms.ModelChoiceField(re)
+
 
 class CartItemCreateWithAttrForm(forms.Form):
     qty = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'class': 'form-control',
@@ -77,6 +77,8 @@ class CartItemCreateWithAttrForm(forms.Form):
                                                            })
                                        )
 
-    def __init__(self,instance, *args, **kwargs):
+    def __init__(self, instance_related=None, *args, **kwargs):
         super(CartItemCreateWithAttrForm, self).__init__(*args, **kwargs)
-        self.fields['attribute'].queryset = SizeAttribute.my_query.instance_queryset(instance=instance)
+        print(instance_related)
+        if instance_related:
+            self.fields['attribute'].queryset = SizeAttribute.objects.filter(product_related=instance_related)

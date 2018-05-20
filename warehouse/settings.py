@@ -107,7 +107,7 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'lagrace_data.sqlite3'),
+            'NAME': os.path.join(BASE_DIR, 'coffee_data.sqlite3'),
         }
     }
 
@@ -163,3 +163,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',
                                    ),
 }
+
+WAREHOUSE_TRANSCATIONS = False
+RETAIL_ORDER_TRANSCATIONS = False
+ATTRIBUTE_TRANSCATIONS = False
