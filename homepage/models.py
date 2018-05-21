@@ -37,3 +37,6 @@ class Banner(models.Model):
 
     def __str__(self):
         return self.title
+
+    def tag_active(self):
+        return 'Active' if self.active else 'No Active'

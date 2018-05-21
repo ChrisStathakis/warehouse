@@ -94,8 +94,7 @@ class ProductsList(ListView):
                 product.category_site.add(new_cate_site)
                 product.save()
             messages.success(self.request, 'The category %s added in the products' % new_cate_site.title)
-       
-        
+
         if new_vendor:
             queryset = Product.objects.all()
             queryset = dashboard_product_filter_queryset(self.request, queryset)
@@ -183,26 +182,6 @@ class ProductAddMultipleImages(View):
 
 
 @staff_member_required
-def product_add_multiple_images(request, dk):
-    instance = get_object_or_404(Product, id=dk)
-    form_title = 'Add Image'
-    initial_data = []
-    for ele in range(4):
-        initial_data.append({'product': instance})
-    formset = ProductPhotoFormSet(initial=initial_data,
-                                  queryset=ProductPhotos.objects.filter(product=instance)
-                                  )
-    if request.POST:
-        formset = ProductPhotoFormSet(request.POST, request.FILES)
-        for form in formset:
-            if form.is_valid():
-                form.save()
-        messages.success(request, 'The images added!')
-        return HttpResponseRedirect(reverse('dashboard:product_detail', kwargs={'pk': dk}))
-    return render(request, 'dashboard/form_set.html', context=locals())
-
-
-@staff_member_required
 def delete_product_image(request, pk):
     instance = get_object_or_404(ProductPhotos, id=pk)
     instance.delete()
@@ -216,6 +195,23 @@ def product_add_sizechart(request, dk):
     sizes_attr = instance.sizeattribute_set.all()
     sizes = Size.objects.filter(status=True)
     return render(request, 'dashboard/size_chart.html', context=locals())
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class RelatedProductsView(ListView):
+    model = Product
+    template_name = 'dashboard/product_related_products.html'
+
+    def get_queryset(self):
+        queryset = Product.my_query.active_for_site()
+
+        return queryset
+
+    def get_context_data(self, pk,  **kwargs):
+        context = super(RelatedProductsView, self).get_context_data(**kwargs)
+        instance = get_object_or_404(Product, id=pk)
+        context.update(locals())
+        return context
 
 
 @staff_member_required

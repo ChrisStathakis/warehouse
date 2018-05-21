@@ -1,5 +1,5 @@
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView, DeleteView
-from django.shortcuts import reverse
+from django.shortcuts import reverse, get_object_or_404, HttpResponseRedirect
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
 
@@ -51,6 +51,8 @@ class BannerEditView(UpdateView):
         return reverse('dashboard:banner_view')
 
 
-@method_decorator(staff_member_required, name='dispatch')
-class BannerDeleteView(DeleteView):
-    pass
+@staff_member_required
+def banner_delete(request, pk):
+    instance = get_object_or_404(Banner, id=pk)
+    instance.delete()
+    return HttpResponseRedirect(reverse('dashboard:banner_view'))

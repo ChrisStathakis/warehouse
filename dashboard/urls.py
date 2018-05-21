@@ -101,7 +101,7 @@ urlpatterns = [
     path('site-settings/banners/', BannerView.as_view(), name='banner_view'),
     path('site-settings/banners/create', BannerCreateView.as_view(), name='banner_create'),
     path('site-settings/banners/edit/<int:pk>/', BannerEditView.as_view(), name='banner_edit'),
-    path('site-settings/banners/delete/<int:pk>/', BannerDeleteView.as_view(), name='banner_edit'),
+    path('site-settings/banners/delete/<int:pk>/', view=banner_delete, name='banner_delete'),
 
     # user urls
     path('users-list/', UsersPage.as_view(), name='users_list'),
