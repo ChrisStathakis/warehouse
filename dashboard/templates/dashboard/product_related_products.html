@@ -18,9 +18,37 @@
                                         <th>Action</th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    {% for product in object_list %}
+                                        <tr>
+                                            <td>{{ product.id }}</td>
+                                            <td>{{ product }}</td>
+                                            <td><button class="btn btn-success">Add</button></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
                             </table>
                         </div>
                     </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="header">
+                            <div class="title">Related Products</div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                     <tr>
+                                        <th>#</th>
+                                        <th>Product</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                     </div>
                 </div>
             </div>
         </div>

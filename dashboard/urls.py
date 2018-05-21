@@ -6,7 +6,7 @@ from .views_sells import (EshopOrdersPage, eshop_order_edit, create_eshop_order,
                           add_edit_order_item, edit_order_item, delete_order_item,
                           CartListPage, OrderSettingsPage, print_invoice, 
                           ShippingPage, ShippingEditPage, ShippingCreatePage, delete_shipping,
-                          PaymentMethodPage, PaymentMethodCreatePage, PaymentMethodEditPage, delete_payment_method,
+                          PaymentMethodPage, PaymentMethodCreatePage, PaymentMethodEditPage, delete_payment_method, order_choices
                           )
 from .views_pages import *
 from .user_views import *
@@ -26,6 +26,7 @@ urlpatterns = [
     path('products/delete-images/<int:pk>/', view=delete_product_image, name='delete_image'),
     path('products/add-sizes/<int:dk>/', view=product_add_sizechart, name='product_add_sizes'),
     path('products/add-sizes/create/<int:dk>/<int:pk>/', view=create_new_sizechart, name='create_product_sizechart'),
+    path('products/add-related-products/<int:pk>/', RelatedProductsView.as_view(), name='product_related_view'),
 
     # popup and ajax calls
     path('products/popup/create-brand/', view=createBrandPopup, name='brand_popup'),
@@ -81,6 +82,9 @@ urlpatterns = [
     path('eshop-orders/delete-order-item/<int:dk>/', view=delete_order_item, name='delete_order_item'),
     path('eshop-orders/print/<int:pk>/', view=print_invoice, name='print_invoice'),
 
+    #actions
+    path('eshop-order/fast-change-status/', view=order_choices, name='order_choices'),
+
     path('cart-list/', CartListPage.as_view(), name='cart_list'),
     path('order-settings-page/', OrderSettingsPage.as_view(), name='settings_page'),
     path('create-coupon/', view=create_coupon, name='create_coupon'),
@@ -102,6 +106,9 @@ urlpatterns = [
     path('site-settings/banners/create', BannerCreateView.as_view(), name='banner_create'),
     path('site-settings/banners/edit/<int:pk>/', BannerEditView.as_view(), name='banner_edit'),
     path('site-settings/banners/delete/<int:pk>/', view=banner_delete, name='banner_delete'),
+
+    path('site-settings/coupons', CouponsView.as_view(), name='coupons_view'),
+
 
     # user urls
     path('users-list/', UsersPage.as_view(), name='users_list'),

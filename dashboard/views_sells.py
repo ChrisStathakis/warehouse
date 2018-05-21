@@ -5,6 +5,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
+from django.http import JsonResponse
 
 from account.models import ExtendsUser
 from products.models import *
@@ -27,22 +28,34 @@ class EshopOrdersPage(ListView):
 
     def get_queryset(self):
         queryset = RetailOrder.objects.filter(order_type='e')
-        queryset = RetailOrder.eshop_orders_filtering(queryset,
-                                                      search_name=self.request.GET.get('search_name', None),
-                                                      paid_name=self.request.GET.getlist('paid_name', None),
-                                                      printed_name=self.request.GET.get('printed_name', None),
-                                                      status_name=self.request.GET.getlist('status_name', None),
-                                                      payment_name=self.request.GET.getlist('payment_name', None)
-                                                      )
+        queryset = RetailOrder.eshop_orders_filtering(self.request, queryset)
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super(EshopOrdersPage, self).get_context_data(**kwargs)
         status_list, payment_method_list = ORDER_STATUS, PaymentMethod.objects.filter(active=True)
-        not_paid_name, paid_name, printed_name, status_name, payment_name = grab_orders_filter_data(self.request)
+        request = self.request
+        search_name = request.GET.get('search_name', None)
+        paid_name = request.GET.getlist('paid_name', None)
+        printed_name = request.GET.get('printed_name', None)
+        status_name = request.GET.getlist('status_name', None)
+        payment_name = request.GET.getlist('payment_name', None)
         context.update(locals())
         return context
 
+
+def order_choices(request):
+    choice = request.GET.get('choice')
+    ids = request.GET.getlist('choice_name', None)
+    print(choice, ids)
+    if ids and choice:
+        for id in ids:
+            instance = get_object_or_404(RetailOrder, id=id)
+            instance.status = int(choice)
+            instance.save()
+            print(instance.status)
+    return JsonResponse({})
+    
 
 class CartListPage(ListView):
     model = Cart

@@ -104,11 +104,9 @@
                                     <tbody>
                                         {% for form_size in formset_size %}
                                             <tr>
-
                                                 {% for field in form_size %}
                                                     <td>{{ field }}</td>
                                                 {% endfor %}
-
                                             </tr>
                                         {% endfor %}
                                     </tbody>
@@ -177,7 +175,7 @@
 
                 <div class="card">
                     <div class="header">
-                        <h4 class="title">Related Products</h4><a href="" class="btn btn-info">Add Related</a>
+                        <h4 class="title">Related Products</h4><a href="{% url 'dashboard:product_related_view' instance.id %}" class="btn btn-info">Add Related</a>
                     </div>
                     <div class="content">
                         <table class="table table-responsive">

@@ -162,3 +162,12 @@ class ShippingForm(forms.ModelForm):
         super(ShippingForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
+
+
+
+class CouponForm(forms.ModelForm):
+     
+    class Meta:
+        model = Coupons
+        fields = "__all__"
+        

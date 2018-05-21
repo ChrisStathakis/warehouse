@@ -1,0 +1,51 @@
+{% extends "dashboard/site_templates/homepage.html" %}
+
+{% block content %}
+<div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title text-center">Create Coupon</h4>
+                            <p class="category"><a href="{% url 'dashboard:banner_create' %}" class="btn btn-success">Create</a></p>
+                        </div>
+                        <div class="content table-responsive table-full-width">
+                            <table class="table table-striped">
+                                <thead>
+                                     <tr>
+                                         <th>#</th>
+                                         <th>Title</th>
+                                         <th>Active</th>
+                                         <th>Big Banner</th>
+                                         <th>Image</th>
+                                         <th>Actions</th>
+                                     </tr>
+                                </thead>
+                                <tbody>
+                                 {% for object in object_list %}
+                                     <tr>
+                                         <td>{{ forloop.counter }}</td>
+                                         <td>{{ object.title }}</td>
+                                         <td>{{ object.tag_active }}</td>
+                                         <td>No used</td>
+                                         <td><img class="img-raised img-responsive img img-thumbnail" style="height: 20%;width: 50%" src="{{ object.image.url }}"> </td>
+                                         <td><a href="{% url 'dashboard:banner_edit' object.id %}" class="btn btn-primaty">Edit</a> <br><br>
+                                             <a href="{% url 'dashboard:banner_delete' object.id %}" class="btn btn-warning">Delete</a>
+                                         </td>
+                                     </tr>
+                                 {% empty %}
+                                     <tr>
+                                         <td colspan="6">No Banners</td>
+                                     </tr>
+                                 {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+ 
+            </div>
+        </div>
+    </div>
+{% endblock content %}

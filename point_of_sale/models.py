@@ -188,6 +188,7 @@ class RetailOrder(models.Model):
 
     cart_related = models.OneToOneField(Cart, blank=True, null=True, on_delete=models.SET_NULL)
     coupons = models.ManyToManyField(Coupons, blank=True)
+    order_related = models.ForeignKey('self', blank=True, null=True, on_delete = models.CASCADE)
     payorders = GenericRelation(PaymentOrders)
 
     class Meta:
@@ -296,22 +297,34 @@ class RetailOrder(models.Model):
     def tag_phones(self):
         return 'CellPhone.. %s, Phone %s' % (self.cellphone, self.phone) if self.phone else self.cellphone
 
+    def tag_fullname(self):
+        if self.costumer_account:
+            return f'{self.first_name} {self.last_name}, Account: {self.costumer_account.user.username}'
+        return f'{self.first_name} {self.last_name}'
+    
+    def tag_full_address(self):
+        return f'{self.address}, City: {self.city}'
+
     @staticmethod
-    def eshop_orders_filtering(queryset, search_name, paid_name, printed_name, status_name, payment_name):
+    def eshop_orders_filtering(request, queryset):
+        search_name=request.GET.get('search_name', None)
+        paid_name=request.GET.getlist('paid_name', None)
+        printed_name=request.GET.get('printed_name', None)
+        status_name=request.GET.getlist('status_name', None)
+        payment_name=request.GET.getlist('payment_name', None)
         queryset = queryset.filter(printed=False) if printed_name else queryset
         queryset = queryset.filter(payment_method__id__in=payment_name) if payment_name else queryset
         queryset = queryset.filter(status__in=status_name) if status_name else queryset
         queryset = queryset.filter(is_paid=False) if paid_name else queryset
         queryset = queryset.filter(Q(title__icontains=search_name) |
-                                   Q(costumer_account__title__icontains=search_name) |
-                                   Q(cell_phone__icontains=search_name) |
+                                   Q(cellphone__icontains=search_name) |
                                    Q(address__icontains=search_name) |
                                    Q(city__icontains=search_name) |
                                    Q(zip_code__icontains=search_name) |
                                    Q(phone__icontains=search_name) |
                                    Q(first_name__icontains=search_name) |
                                    Q(last_name__icontains=search_name)
-                                   ).dinstict() if search_name else queryset
+                                   ).distinct() if search_name else queryset
         
         return queryset
 

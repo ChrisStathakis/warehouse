@@ -2,8 +2,9 @@ from django.views.generic import ListView, TemplateView, CreateView, UpdateView,
 from django.shortcuts import reverse, get_object_or_404, HttpResponseRedirect
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
-
+from django.urls import reverse_lazy
 from homepage.models import Banner
+from point_of_sale.views import Coupons
 from homepage.forms import BannerForm
 
 
@@ -56,3 +57,17 @@ def banner_delete(request, pk):
     instance = get_object_or_404(Banner, id=pk)
     instance.delete()
     return HttpResponseRedirect(reverse('dashboard:banner_view'))
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class CouponsView(ListView):
+    model = Coupons
+    template_name = 'dashboard/site_templates/coupons.html'
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class CouponCreate(CreateView):
+    model = Coupons
+    form_class = ''
+    template_name = ''
+    success_url = reverse_lazy('dashboard:coupons_view')

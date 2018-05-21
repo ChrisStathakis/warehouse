@@ -203,13 +203,13 @@ class RelatedProductsView(ListView):
     template_name = 'dashboard/product_related_products.html'
 
     def get_queryset(self):
-        queryset = Product.my_query.active_for_site()
+        queryset = Product.my_query.active_for_site()[:20]
 
         return queryset
 
-    def get_context_data(self, pk,  **kwargs):
+    def get_context_data(self, **kwargs):
         context = super(RelatedProductsView, self).get_context_data(**kwargs)
-        instance = get_object_or_404(Product, id=pk)
+        instance = get_object_or_404(Product, id=self.kwargs['pk'])
         context.update(locals())
         return context
 
