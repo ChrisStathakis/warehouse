@@ -63,6 +63,7 @@ urlpatterns = [
 
      # admin urls
     path('dashboard/', include('dashboard.urls', namespace='dashboard',)),
+    path('dashboard/users/', include('account.urls', namespace='users',)),
     path('reports/', include('reports.urls', namespace='reports',)),
     path('pos/', include('point_of_sale.urls', namespace='pos',)),
     path('billings/', include('transcations.urls', namespace='billings')),

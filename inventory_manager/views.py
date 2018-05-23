@@ -24,10 +24,7 @@ class VendorPageList(ListView):
 
     def get_queryset(self):
         queryset = Supply.objects.all()
-        search_name = self.request.GET.get('search_name', None)
-        balance_name = self.request.GET.get('balance_name', None)
-        queryset = self.model.filter_data(queryset, search_name, balance_name)
-
+        queryset = self.model.filter_data(self.request, queryset)
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -79,12 +76,7 @@ class WarehousePaymentPage(ListView):
 
     def get_queryset(self):
         queryset = Order.objects.all()
-        search_name = self.request.GET.get('search_name', None)
-        paid_name = self.request.GET.get('paid_name', None)
-        vendor_name = self.request.GET.getlist('vendor_name', None)
-        date_start = self.request.GET.get('date_start', None)
-        date_end = self.request.GET.get('date_end', None)
-        queryset = self.model.filter_data(queryset, search_name, vendor_name, date_start, date_end, paid_name)
+        queryset = self.model.filter_data(self.request, queryset)
         return queryset
 
     def get_context_data(self, **kwargs):

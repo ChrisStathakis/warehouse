@@ -20,16 +20,7 @@ class WareHouseOrderPage(ListView):
 
     def get_queryset(self):
         queryset = Order.objects.all()
-        date_start = self.request.GET.get('date_start', None)
-        date_end = self.request.GET.get('date_end', None)
-        search_name = self.request.GET.get('search_name', None)
-        vendor_name = self.request.GET.getlist('vendor_name', None)
-        queryset = self.model.filter_data(queryset,
-                                         search_name,
-                                         vendor_name,
-                                         date_start,
-                                         date_end
-                                         )
+        queryset = self.model.filter_data(self.request, queryset)
         return queryset
 
     def get_context_data(self, **kwargs):

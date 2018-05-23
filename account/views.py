@@ -1,11 +1,16 @@
 from django.shortcuts import render
 from django.contrib import auth
+from django.views.generic import ListView, CreateView, UpdateView
 from django.template.context_processors  import csrf
 from django.shortcuts import HttpResponse, HttpResponseRedirect, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth import authenticate, login
-from .forms import *
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.decorators import method_decorator
 
+
+from .forms import CreateUserAdmin, CostumerAccountAdminForm
+from .models import User, CostumerAccount, ExtendsUser
 
 # Create your views here.
 
@@ -72,3 +77,50 @@ def logout(request):
 
 
 
+#  dashboard urls
+
+@method_decorator(staff_member_required, name='dispatch')
+class UserListView(ListView):
+    template_name = 'accounts/dash_user_list.html'
+    model = CostumerAccount
+    paginate_by = 50
+
+    
+@method_decorator(staff_member_required, name='dispatch')
+class UserUpdateView(UpdateView):
+    template_name = 'dash_ware/form.html'
+    model = CostumerAccount
+    form_class = CostumerAccountAdminForm
+    success_url = reverse_lazy('accounts:dash_list')
+
+    def get_initial(self):
+        initial = super(UserUpdateView,self).get_initial()
+        initial['email'] = self.object.user.email
+        print(self.object.user.email)
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super(UserUpdateView, self).get_context_data(**kwargs)
+        page_title = f'{self.object}'
+        back_url = self.success_url
+        context.update(locals())
+        return context
+
+
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class UserCreateView(CreateView):
+    template_name = 'dash_ware/form.html'
+    model = User
+    form_class = CreateUserAdmin
+ 
+
+    def get_success_url(self):
+        get_last_object = User.objects.last()
+        return reverse('accounts:dash_update', kwargs={'pk': get_last_object.id})
+
+
+@staff_member_required
+def delete_user(request, pk):
+    pass

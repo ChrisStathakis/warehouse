@@ -5,6 +5,47 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import CostumerAccount
 
 
+class CostumerAccountAdminForm(forms.ModelForm):
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        model  = CostumerAccount
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(CostumerAccountAdminForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email', None)
+        if email:
+            if '@' in email and '.' in email:
+                email_exists = User.objects.filter(email=email).exists()
+                if not email_exists:
+                    user = self.cleaned_data.get('user')
+                    user.email = email
+                    user.save()
+                else:
+                    return forms.ValidationError('Email must have a @ or . symbol')
+            else:
+                return forms.ValidationError('This email Exists')
+        return email
+
+
+class CreateUserAdmin(UserCreationForm):
+
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+
+    def __init__(self, *args, **kwargs):
+        super(CreateUserAdmin, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+
+
+
 class RegisterForm(forms.ModelForm):
     username = forms.CharField(label='Ονοματεπώνυμο')
     email = forms.EmailField(label='Email Address',widget=forms.EmailInput)
