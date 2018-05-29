@@ -30,7 +30,7 @@ class RetailItemInline(admin.TabularInline):
 
 
 class RetailOrderAdmin(ImportExportModelAdmin):
-    list_display = ['title', 'order', 'qty', 'price', 'size', 'is_find']
+    list_display = ['title', 'order', 'qty', 'value', 'size', 'is_find']
     list_filter = ['is_find']
     search_fields = ['title', 'size', 'order']
     form = RetailOrderItemAdminForm
@@ -39,10 +39,10 @@ class RetailOrderAdmin(ImportExportModelAdmin):
 class RetailAdmin(ImportExportModelAdmin):
     save_as = True
     actions = [paid_action, ]
-    list_display = ['date_created', 'order_type', 'store_related', 'title', 'status', 'value', 'costumer_account', 'is_paid']
+    list_display = ['timestamp', 'order_type', 'store_related', 'title', 'status', 'value', 'user_account', 'is_paid']
     list_filter =['status', 'order_type', 'payment_method']
     search_fields = ['title', 'costumer_account', ]
-    readonly_fields = ['date_edited', 'date_created', 'value', 'tag_final_price', 'total_cost', 'tag_paid_value']
+    readonly_fields = ['edited', 'timestamp', 'value', 'tag_final_price', 'total_cost', 'tag_paid_value']
     inlines = [RetailItemInline, PaymentOrdersInline, ]
 
     form = RetailOrderAdminForm

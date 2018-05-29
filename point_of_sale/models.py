@@ -11,12 +11,13 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 import datetime
 from model_utils import FieldTracker
-
 from products.models import *
 from inventory_manager.models import *
 from dashboard.constants import *
 from dashboard.models import Store, PaymentOrders, PaymentMethod
+from dashboard.default_models import DefaultOrderModel, DefaultOrderItemModel
 from cart.models import Cart, Coupons
+
 
 
 def order_transcation(order_type, instance, qty, substact,): #  substact can be add or minus, change
@@ -138,32 +139,14 @@ class RetailOrderItemManager(models.Manager):
                                                           order__date_created__range=[date_start, date_end])
 
 
-class RetailOrder(models.Model):
+class RetailOrder(DefaultOrderModel):
     status = models.CharField(max_length=1, choices=ORDER_STATUS, default='1')
-    date_created = models.DateTimeField(default=datetime.datetime.now(), verbose_name='Ημερομηνία Δημιουργίας')
-    date_edited = models.DateTimeField(auto_now=True, verbose_name='Ημερομηνία Επεξεργασίας')
     order_type = models.CharField(max_length=1, choices=ORDER_TYPES, default='r')
-    title = models.CharField(max_length=50, blank=True, null=True, verbose_name='Τίτλος')
-    payment_method = models.ForeignKey(PaymentMethod,
-                                       null=True,
-                                       on_delete=models.SET_NULL,
-                                       # default=payment_method_default()
-                                       )
-    store_related = models.ForeignKey(Store, blank=True, null=True, on_delete=models.CASCADE)
-    value = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Αξία Παραγγελίας')
-    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Έκπτωση', )
-    taxes = models.CharField(max_length=1, choices=TAXES_CHOICES, default='3')
-    paid_value = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Αποπληρωμένο Πόσο')
-    final_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0,
                                      verbose_name='Συνολικό Κόστος Παραγγελίας')
-
-    count_items = models.PositiveIntegerField(default=0)
-    notes = models.TextField(null=True, blank=True)
     costumer_account = models.ForeignKey(CostumerAccount, blank=True, null=True, verbose_name='Πελάτης', on_delete=models.CASCADE)
-    seller_account = models.ForeignKey(User, blank=True, null=True, verbose_name='Πωλητής', on_delete=models.CASCADE)
-
     #eshop info only
+
     shipping = models.ForeignKey(Shipping, null=True, blank=True, on_delete=models.CASCADE)
     shipping_cost = models.DecimalField(default=0, decimal_places=2, max_digits=5)
     payment_cost = models.DecimalField(default=0, decimal_places=2, max_digits=5)
@@ -184,7 +167,6 @@ class RetailOrder(models.Model):
 
     my_query = RetailOrderManager()
     objects = models.Manager()
-    is_paid = models.BooleanField(default=False)
 
     cart_related = models.OneToOneField(Cart, blank=True, null=True, on_delete=models.SET_NULL)
     coupons = models.ManyToManyField(Coupons, blank=True)
@@ -192,7 +174,6 @@ class RetailOrder(models.Model):
     payorders = GenericRelation(PaymentOrders)
 
     class Meta:
-        ordering = ['-date_created']
         verbose_name_plural = '1. Παραστατικά Πωλήσεων'
 
     def __str__(self):
@@ -345,24 +326,15 @@ def update_on_delete_retail_order(sender, instance, *args, **kwargs):
         order.delete()
 
 
-class RetailOrderItem(models.Model):
-    title = models.ForeignKey(Product, on_delete=models.CASCADE)
+class RetailOrderItem(DefaultOrderItemModel):
     order = models.ForeignKey(RetailOrder, on_delete=models.CASCADE)
     cost = models.DecimalField(max_digits=6, decimal_places=2, default=0)
-    price = models.DecimalField(max_digits=6, decimal_places=2, default=0, verbose_name='Τιμή Μονάδας')
-    qty = models.DecimalField(max_digits=6, decimal_places=2, default=1, verbose_name='Ποσότητα')
-    discount = models.DecimalField(max_digits=6, decimal_places=2, default=0, verbose_name='Τιμή Μονάδας Με έκπτωση.')
-    day_added = models.DateField(auto_now_add=True)
 
     #  warehouse_management
     is_find = models.BooleanField(default=False)
-
-    #  if needed
-    size = models.ForeignKey(SizeAttribute, blank=True ,null=True, on_delete=models.CASCADE)
     is_return = models.BooleanField(default=False)
     tracker = FieldTracker()
 
-    final_price = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     my_query = RetailOrderItemManager()
     objects = models.Manager()
 

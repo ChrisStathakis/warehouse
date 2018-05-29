@@ -77,11 +77,11 @@ class SalesForm(forms.ModelForm):
         model = RetailOrder
         fields = ['title',
                   'costumer_account',
-                  'date_created',
+                  
                   'status',
                   'payment_method',
                   'discount',
-                  'seller_account'
+                  'user_account'
                   ]
 
 
@@ -111,7 +111,7 @@ class EshopRetailForm(forms.ModelForm):
         fields = ["status", 'title',
                   'payment_method', 'shipping',
                   'payment_cost', 'shipping_cost',
-                  'seller_account', 'costumer_account',
+                  'user_account', 'costumer_account',
                   'first_name', 'last_name', 'email',
                   'address', 'city', 'zip_code',
                   'state', 'cellphone', 'phone',
@@ -130,7 +130,7 @@ class EshopOrderItemForm(forms.ModelForm):
     class Meta:
         model = RetailOrderItem
         fields = ['qty',
-                  'price',
+                  'value',
                   'discount'
                   ]
 
@@ -144,7 +144,7 @@ class RetailOrderWarehouseIncomeForm(forms.ModelForm):
 
     class Meta:
         model = RetailOrder
-        fields = ['title', 'date_created', 'seller_account', 'notes']
+        fields = ['title', 'user_account', 'notes']
 
     def __init__(self, *args, **kwargs):
         super(RetailOrderWarehouseIncomeForm, self).__init__(*args, **kwargs)

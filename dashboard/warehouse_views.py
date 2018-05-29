@@ -4,7 +4,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 
-from products.models import Product, Supply
+from products.models import Product, Vendor
 
 from inventory_manager.models import Order, OrderItem
 from inventory_manager.forms import OrderQuickForm, VendorQuickForm, WarehouseOrderForm, OrderItemForm

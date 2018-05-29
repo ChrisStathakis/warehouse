@@ -50,16 +50,23 @@ def create_new_sales_order(request):
 
 
 @staff_member_required
-def create_return_order(request):
-    user = request.user
-    user_account = ExtendsUser.objects.get(user=user)
-    new_order = RetailOrder.objects.create(order_type='b')
-    if user_account:
-        new_order.seller_account = user
-        if user_account.store_related:
-            new_order.store_related = user_account.store_related
-        return HttpResponseRedirect('/point-of-sale/sales/%s' % new_order.id)
-
+def create_return_order(request, pk):
+    order = get_object_or_404(RetailOrder, id=pk)
+    new_order = RetailOrder.objects.create(order_related=order,
+                                           title=f'Return order',
+                                           order_type='b'
+                                           )
+    items = RetailOrderItem.objects.filter(order=order)
+    if items:
+        for item in items:
+            new_item = RetailOrderItem.objects.create(order=new_order,
+                                                      title=item.title,
+                                                      cost=item.cost,
+                                                      price=item.price,
+                                                      qty=item.qty,
+                                                      discount=item.discount
+                                                      
+                                                    )
 
 @staff_member_required
 def create_eshop_order(request):
@@ -107,6 +114,7 @@ def add_product_to_order_(request, dk, pk, qty=1):
     if order.order_type in ['wa', 'wr']:
         return HttpResponseRedirect(reverse('pos:warehouse_in', kwargs={'dk': dk}))
     return HttpResponseRedirect(reverse('pos:sales', kwargs={'pk': dk}))
+
 
 
 class SalesPoS(ListView):

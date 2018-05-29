@@ -9,7 +9,7 @@ from ..tools.warehouse_functions import warehouse_filters
 
 from inventory_manager.models import Order, OrderItem
 from point_of_sale.models import RetailOrderItem
-from products.models import Product, Supply, Category, CategorySite
+from products.models import Product, Vendor, Category, CategorySite
 
 CURRENCY = settings.CURRENCY
 

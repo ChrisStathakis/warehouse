@@ -125,7 +125,7 @@ class ProductDetail(LoginRequiredMixin, DetailView):
 
 @method_decorator(staff_member_required, name='dispatch')
 class Vendors(ListView):
-    model = Supply
+    model = Vendor
     template_name = 'report/vendors.html'
     paginate_by = 50
 

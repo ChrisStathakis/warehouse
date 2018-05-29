@@ -27,7 +27,7 @@ class PayOrders(models.Model):
     receipt = models.CharField(max_length=64, default='---', verbose_name='Απόδειξη')
     value = models.DecimalField(default=0, max_digits=20, decimal_places=2, verbose_name='Ποσό')
     status = models.CharField(max_length=1, choices=CHOICES_, default='a', verbose_name='Κατάσταση')
-    vendor = models.ForeignKey(Supply, null=True, on_delete=models.CASCADE)
+    vendor = models.ForeignKey(Vendor, null=True, on_delete=models.CASCADE)
     objects = models.Manager()
     my_query = PayOrdersManager()
 

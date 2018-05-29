@@ -12,6 +12,7 @@ from model_utils import FieldTracker
 from inventory_manager.models import *
 from dashboard.constants import *
 from dashboard.models import *
+from dashboard.default_models import DefaultOrderModel, DefaultOrderItemModel
 # Create your models here.
 
 User = get_user_model()
@@ -20,7 +21,7 @@ User = get_user_model()
 class FixedCosts(models.Model):
     # You have to make defaults of Λογαριασμοί, Προσωπικό, Αγορές
     title = models.CharField(max_length=64,unique=True,)
-    balance = models.DecimalField(max_digits=50, decimal_places=2, default=0)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         return self.title

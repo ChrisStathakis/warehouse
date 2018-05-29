@@ -41,14 +41,14 @@ class PaymentMethodAdmin(ImportExportModelAdmin):
 
 class OrderAdmin(ImportExportModelAdmin):
     readonly_fields = ['tag_clean_value', 'tag_value_after_discount', 'tag_total_value', 'tag_paid_value', ]
-    list_display = ['code', 'vendor', 'is_paid', 'tag_total_value']
+    list_display = ['title', 'vendor', 'is_paid', 'tag_total_value']
     list_filter = ['vendor', 'is_paid']
     inlines = [OrderAdminInline, WarehouseOrderImageInline, PaymentsOrdersInline ]
     form = OrderAdminForm
     search_fields = ['code',]
     fieldsets = (
         ('Γενικά Στοιχεία', {
-            'fields':(('is_paid', 'code', 'vendor',),
+            'fields':(('is_paid', 'title', 'vendor',),
                       ('day_created', 'payment_method', 'taxes_modifier', ),
                       )
         }),

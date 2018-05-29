@@ -12,7 +12,7 @@ from account.models import *
 @staff_member_required
 def create_warehouse_income_order(request):
     user = request.user
-    new_order = RetailOrder.objects.create(costumer_account=CostumerAccount.objects.first(),
+    new_order = RetailOrder.objects.create(user_account=CostumerAccount.objects.first(),
                                            status='2',
                                            order_type='wa',
                                            title='Test',

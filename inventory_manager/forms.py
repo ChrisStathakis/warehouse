@@ -95,7 +95,7 @@ class OrderQuickForm(forms.ModelForm):
     date_created = forms.DateTimeField(widget=forms.DateInput(attrs={'type': 'date'}))
     class Meta:
         model = Order
-        fields = ['date_created', 'code', 'vendor', 'payment_method',]
+        fields = ['date_expired', 'title', 'vendor', 'payment_method',]
 
     def __init__(self, *args, **kwargs):
         super(OrderQuickForm, self).__init__(*args, **kwargs)
@@ -107,7 +107,7 @@ class WarehouseOrderForm(forms.ModelForm):
 
     class Meta:
         model = Order
-        fields = ['date_created', 'code', 'payment_method', 'total_discount', 'taxes_modifier']
+        fields = ['date_expired', 'title', 'payment_method', 'total_discount', 'taxes_modifier']
 
     def __init__(self, *args, **kwargs):
         super(WarehouseOrderForm, self).__init__(*args, **kwargs)
@@ -118,7 +118,7 @@ class WarehouseOrderForm(forms.ModelForm):
 class VendorQuickForm(forms.ModelForm):
 
     class Meta:
-        model = Supply
+        model = Vendor
         fields = ['title', ]
 
     def __init__(self, *args, **kwargs):

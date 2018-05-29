@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import EmptyPage, Paginator, PageNotAnInteger
 
-from products.models import Supply, Category, Color, Size
+from products.models import Vendor, Category, Color, Size
 from products.forms import VendorForm
 from .models import Order
 from dashboard.models import PaymentOrders
@@ -19,11 +19,11 @@ import datetime
 @method_decorator(staff_member_required, name='dispatch')
 class VendorPageList(ListView):
     template_name = 'inventory_manager/vendor_list.html'
-    model = Supply
+    model = Vendor
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = Supply.objects.all()
+        queryset = Vendor.objects.all()
         queryset = self.model.filter_data(self.request, queryset)
         return queryset
 
@@ -39,7 +39,7 @@ class VendorPageList(ListView):
 class VendorPageDetail(UpdateView):
     template_name = 'inventory_manager/vendor_detail.html'
     form_class = VendorForm
-    model = Supply
+    model = Vendor
     
     def form_valid(self, form):
         form.save()

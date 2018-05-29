@@ -110,8 +110,8 @@ class ProductAdmin(ImportExportModelAdmin):
     save_as = True
     search_fields = ['title', 'brand__title', 'category_site__title', 'sku', 'color__title']
     readonly_fields = ['image_tag', 'image_back_tag', 'tag_final_price', ]
-    list_display = ['title', 'active', 'is_featured', 'qty', 'tag_final_price', 'category', 'brand', 'supply']
-    list_filter = ['status', 'brand', 'category_site', 'color', 'supply', ]
+    list_display = ['title', 'active', 'is_featured', 'qty', 'tag_final_price', 'category', 'brand', 'vendor']
+    list_filter = ['status', 'brand', 'category_site', 'color', 'vendor', ]
     inlines = [SizeAttributeInline, CharacteristicsInline, ImageInline,]
     actions = [site_active, non_site_active, is_featured_action, is_not_featured_action ]
     fieldsets = (
@@ -123,7 +123,7 @@ class ProductAdmin(ImportExportModelAdmin):
         }),
         ('Αποθήκη', {
             'fields': (
-                ('order_code', 'supply', 'category',),
+                ('order_code', 'vendor', 'category',),
                 ('qty', 'qty_kilo', 'measure_unit'),
                 ('barcode', 'notes', 'safe_stock'),
                 'size',
@@ -179,7 +179,7 @@ class PhotoAdmin(admin.ModelAdmin):
 admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductPhotos, PhotoAdmin)
 admin.site.register(ProductCharacteristics, ProductCharacteristicAdmin)
-admin.site.register(Supply, SupplyAdmin)
+admin.site.register(Vendor, SupplyAdmin)
 
 admin.site.register(SameColorProducts)
 admin.site.register(Color, DraggableMPTTAdmin)

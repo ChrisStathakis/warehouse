@@ -110,7 +110,7 @@ class SizeForm(forms.ModelForm):
 class VendorForm(forms.ModelForm):
 
     class Meta:
-        model = Supply
+        model = Vendor
         fields = "__all__"
         exclude = ["date_added",]
 

@@ -5,17 +5,17 @@ from django.dispatch import receiver
 from django.db.models.signals import post_delete, pre_save
 from django.utils import timezone
 from django.db.models import Sum, Q
+from django.contrib.auth.models import User
 
 from .constants import *
 
 
-MEASURE_UNITS = (
-    ('1', 'Τεμάχια'),
-    ('2', 'Κιλά'),
-    ('3', 'Κιβώτια')
-    )
 
-STATUS = (('1', ''),('2', ''),('3', ''),('4', ''),)
+def payment_method_default():
+    exists = PaymentMethod.objects.exists()
+    return PaymentMethod.objects.first() if exists else None
+
+
 
 class PaymentMethodManager(models.Manager):
 
@@ -62,7 +62,7 @@ class PaymentOrders(models.Model):
         ordering = ['-date_expired', ]
 
     def __str__(self):
-        return "Επιταγη %s" % self.id
+        return f"Επιταγη {self.id}" 
 
     @staticmethod
     def filter_warehouse_orders(queryset, search_name, vendor_name, paid_name):
@@ -97,14 +97,13 @@ class PaymentOrders(models.Model):
 
 @receiver(post_delete, sender=PaymentOrders)
 def update_on_delete(sender, instance, *args, **kwargs):
-    print('here')
     get_order = instance.content_object
     try:
         get_order.is_paid = False
         get_order.paid_value = 0
         get_order.save()
     except:
-        t=''
+        t = ''
 
 
 class Store(models.Model):
@@ -117,3 +116,4 @@ class Store(models.Model):
 
 
 
+    

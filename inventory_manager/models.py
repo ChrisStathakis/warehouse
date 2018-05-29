@@ -7,6 +7,7 @@ from django.db.models.signals import pre_delete
 
 from products.models import *
 from dashboard.models import PaymentOrders, PaymentMethod
+from dashboard.default_models import DefaultOrderModel, DefaultOrderItemModel
 from decimal import Decimal
 import os
 
@@ -50,19 +51,13 @@ class OrderManager(models.Manager):
         return super(OrderManager, self).filter(is_paid=True).order_by('day_created')
 
 
-class Order(models.Model):
-    code = models.CharField(max_length=40, verbose_name="Αριθμός Παραστατικού")
-    vendor = models.ForeignKey(Supply, verbose_name="Προμηθευτής", on_delete=models.CASCADE)
-    day_created = models.DateTimeField(auto_created=True, default=datetime.datetime.now(), verbose_name='Ημερομηνία') # primary mother fucker
-    date_created = models.DateTimeField(blank=True, null=True)
-    notes = models.TextField(null=True, blank=True, verbose_name="")
-    payment_method = models.ForeignKey(PaymentMethod, null=True, on_delete=models.SET_NULL)
+class Order(DefaultOrderModel):
+    vendor = models.ForeignKey(Vendor, verbose_name="Προμηθευτής", on_delete=models.CASCADE)
     total_price_no_discount = models.DecimalField(default=0, max_digits=15, decimal_places=2, verbose_name="Αξία προ έκπτωσης")
     total_discount = models.DecimalField(default=0, max_digits=15, decimal_places=2, verbose_name="Αξία έκπτωσης")
     total_price_after_discount = models.DecimalField(default=0, max_digits=15, decimal_places=2, verbose_name="Αξία μετά την έκπτωση")
     total_taxes = models.DecimalField(default=0, max_digits=15, decimal_places=2, verbose_name="Φ.Π.Α")
     total_price = models.DecimalField(default=0, max_digits=15, decimal_places=2, verbose_name="Τελική Αξία")
-    paid_value = models.DecimalField(default=0, max_digits=15, decimal_places=2, verbose_name="Πληρωμένο Ποσό")
     taxes_modifier = models.CharField(max_length=1, choices=TAXES_CHOICES, default='3')
 
     objects = models.Manager()
@@ -70,11 +65,11 @@ class Order(models.Model):
     tracker = FieldTracker()
     payment_orders = GenericRelation(PaymentOrders)
 
-    is_paid = models.BooleanField(default=False, verbose_name='Πληρώθηκε')
+    
 
     class Meta:
         verbose_name_plural = "1. Τιμολόγια"
-        ordering = ['-date_created', ]
+        
 
     def __str__(self):
         return self.code
@@ -308,7 +303,7 @@ class PreOrderItem(models.Model):
 
 class PreOrderNewItem(models.Model):
     title = models.CharField(max_length=120)
-    vendor = models.ForeignKey(Supply, on_delete=models.CASCADE)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     qty = models.DecimalField(max_digits=6,decimal_places=2)
     price_buy = models.DecimalField(default=0,max_digits=6,decimal_places=2, verbose_name='Τιμή Αγοράς')
     discount_buy = models.IntegerField(default=0, verbose_name='Εκπτωση Τιμολογίου')
@@ -332,7 +327,7 @@ class PreOrderStatement(models.Model):
     title = models.CharField(max_length=100)
     day_added = models.DateField(auto_now=True)
     day_expire = models.DateField(auto_now=True)
-    vendor = models.ForeignKey(Supply, on_delete=models.CASCADE)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     send_status = models.BooleanField(default=False)
     is_sended  = models.CharField(max_length=1, choices=STATUS, default='a')
     print_status = models.BooleanField(default=False)
@@ -355,7 +350,7 @@ class PreOrderStatementItem(models.Model):
 
 class PreOrderStatementNewItem(models.Model):
     title = models.CharField(max_length=120)
-    vendor = models.ForeignKey(Supply, on_delete=models.CASCADE)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     qty = models.DecimalField(max_digits=6,decimal_places=2)
     price_buy = models.DecimalField(default=0,max_digits=6,decimal_places=2,verbose_name='Τιμή Αγοράς')
     discount_buy = models.IntegerField(default=0, verbose_name='Εκπτωση Τιμολογίου')

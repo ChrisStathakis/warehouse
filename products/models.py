@@ -171,7 +171,7 @@ class TaxesCity(models.Model):
         return self.title
 
 
-class Supply(models.Model):
+class Vendor(models.Model):
     active = models.BooleanField(default=True)
     title = models.CharField(unique=True, max_length=70, verbose_name="'Ονομα")
     afm = models.CharField(max_length=9, blank=True, null=True, verbose_name="ΑΦΜ")
@@ -339,7 +339,7 @@ class Product(models.Model):
     price_buy = models.DecimalField(decimal_places=2, max_digits=6, default=0, verbose_name="Τιμή Αγοράς") # the price which you buy the product
     order_discount = models.IntegerField(default=0, verbose_name="'Εκπτωση Τιμολογίου σε %")
     category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL)
-    supply = models.ForeignKey(Supply, verbose_name="Προμηθευτής", blank=True, null=True, on_delete=models.SET_NULL)
+    vendor = models.ForeignKey(Vendor, verbose_name="Προμηθευτής", blank=True, null=True, on_delete=models.SET_NULL)
 
     qty_kilo = models.DecimalField(max_digits=5, decimal_places=3, default=1, verbose_name='Βάρος/Τεμάχια ανά Συσκευασία ')
     qty = models.DecimalField(default=0, verbose_name="Απόθεμα", max_digits=10, decimal_places=2)
