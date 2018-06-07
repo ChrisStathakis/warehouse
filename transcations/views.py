@@ -1,4 +1,4 @@
-from django.views.generic import ListView, DetailView, TemplateView, FormView
+from django.views.generic import ListView, DetailView, TemplateView, FormView, CreateView, UpdateView
 from django.shortcuts import get_object_or_404, HttpResponseRedirect, reverse, render
 from django.utils.decorators import method_decorator
 from django.contrib.admin.views.decorators import staff_member_required
@@ -6,7 +6,7 @@ from django.contrib import messages
 
 
 from .models import *
-from .forms import CreateBillForm, CreatePayrollForm, CreateBillCategoryForm, CreatePersonForm, CreateOccupForm
+from .forms import CreateBillForm, CreatePayrollForm, CreateBillCategoryForm, CreatePersonForm, CreateOccupForm, VacationForm
 from dashboard.forms import PaymentForm
 
 from dateutil.relativedelta import relativedelta
@@ -320,3 +320,84 @@ def payroll_invoice_delete(request, dk):
     instance.delete()
     messages.success(request, 'The %s invoice is deleted!' % instance.person.title)
     return HttpResponseRedirect(reverse('billings:payroll_page'))
+
+
+
+class VacationPage(ListView):
+    model = Person
+    template_name = 'vacation/index.html'
+    queryset = Person.objects.filter(active=True)
+
+    def get_context_data(self, **kwargs):
+        context = super(VacationPage, self).get_context_data(**kwargs)
+        vacations = Vacation.objects.all()
+        context.update(locals())
+        return context
+        
+
+
+class AddVacation(CreateView):
+    model = Vacation
+    template_name = 'vacation/form.html'
+    form_class = VacationForm
+
+    def get_initial(self, **kwargs):
+        initial = {}
+        staff_related = get_object_or_404(Person, id=self.kwargs.get('pk'))
+        initial['staff_related'] = staff_related
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super(AddVacation, self).get_context_data(**kwargs)
+        staff_related = get_object_or_404(Person, id=self.kwargs.get('pk'))
+        title = 'Προσθήκη στον %s' % staff_related.title
+        object_list = Person.objects.filter(active=True)
+        vacations = Vacation.objects.all()
+        context.update(locals())
+        return context
+
+    def get_success_url(self):
+        return reverse('billings:vacation')
+
+
+    def form_valid(self, form):
+        form.save()
+        # messages.success('Added')
+        return super().form_valid(form)
+
+
+class EditVacation(UpdateView):
+    model = Vacation
+    form_class = VacationForm
+    template_name = 'vacation/form.html'
+
+
+    def get_context_data(self, **kwargs):
+        context = super(EditVacation, self).get_context_data(**kwargs)
+        edit = True
+        title = 'Edit %s' %  self.object
+        object_list = Person.objects.filter(active=True)
+        vacations = Vacation.objects.all()
+        context.update(locals())
+        return context
+
+    def get_success_url(self):
+        return reverse('billings:vacation')
+
+
+    def form_valid(self, form):
+        form.save()
+        # messages.success('Added')
+        return super().form_valid(form)
+
+def vacation_update(request, pk):
+    instance = get_object_or_404(Vacation, id=pk)
+    instance.status =  True
+    instance.save()
+    return HttpResponseRedirect(reverse('billings:vacation'))
+
+
+def vacation_delete(request, pk):
+    instance = get_object_or_404(Vacation, id=pk)
+    instance.delete()
+    return HttpResponseRedirect(reverse('billings:vacation'))

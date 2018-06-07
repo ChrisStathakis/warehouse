@@ -166,6 +166,8 @@ class Person(models.Model):
     occupation = models.ForeignKey(Occupation, verbose_name='Απασχόληση', on_delete=models.CASCADE)
     store_related = models.ForeignKey(Store, blank=True, null=True, on_delete=models.CASCADE)
     balance = models.DecimalField(max_digits=50,decimal_places=2,default=0,verbose_name='Υπόλοιπο')
+    vacation_days = models.IntegerField(default=0)
+    
 
     class Meta:
         verbose_name_plural = "6. Υπάλληλος"
@@ -271,8 +273,28 @@ def update_person_on_delete(sender, instance, *args, **kwargs):
     person.save()
 
 
+class VacationReason(models.Model):
+    title = models.CharField(max_length=150, unique=True)
 
+    def __str__(self):
+        return self.title
 
+class Vacation(models.Model):
+    status = models.BooleanField(default=False, verbose_name='Ολοκληρώθηκε')
+    staff_related = models.ForeignKey(Person, on_delete=models.CASCADE, related_name='vacations')
+    date_started = models.DateField()
+    date_end = models.DateField()
+    reason = models.ForeignKey(VacationReason, blank=True, null=True, on_delete=models.CASCADE)
+    notes = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        ordering = ['status', 'date_started', 'date_end']
+
+    def tag_status(self):
+        return 'Ολοκληρώθηκε' if self.status else 'Δεν Ολοκληρωθηκε'
+
+    def __str__(self):
+        return 'f'
 
 
 

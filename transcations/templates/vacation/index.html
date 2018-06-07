@@ -1,0 +1,185 @@
+{% extends "dashboard/dashboard.html" %} {% load static %}
+
+{% block extra_css %}
+<link href="{% static 'calendar/fullcalendar.min.css'  %}" rel='stylesheet' />
+<link href="{% static 'calendar/fullcalendar.print.min.css'  %}" rel='stylesheet' media='print' />
+<style>
+
+        
+        #calendar {
+          max-width: 900px;
+          margin: 0 auto;
+        }
+      
+      </style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'calendar/lib/moment.min.js' %}"></script>
+<script src="{% static 'calendar/lib/jquery.min.js' %}"></script>
+<script src="{% static 'calendar/fullcalendar.min.js' %}"></script>
+<script>
+
+        $(document).ready(function() {
+      
+          $('#calendar').fullCalendar({
+            defaultDate: '2018-03-12',
+            editable: true,
+            eventLimit: true, // allow "more" link when too many events
+            events: [
+                {% for vacation in vacations %}
+                {% if forloop.last %}
+                    {
+                        title:'{{ vacation.staff_related.title }}',
+                        start:'{{ vacation.date_started }}',
+                        end: '{{ vacation.date_end }}'
+                    }
+                {% else %}
+                {
+                    title:'{{ vacation.staff_related.title }}',
+                    start:'{{ vacation.date_started }}',
+                    end: '{{ vacation.date_end }}'
+                },
+                {% endif %}
+                {% endfor %}
+              
+            ]
+          });
+      
+        });
+      
+      </script>
+{% endblock %}
+
+{% block submenu %}
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar bar1"></span>
+                    <span class="icon-bar bar2"></span>
+                    <span class="icon-bar bar3"></span>
+                </button>
+                <a class="navbar-brand" href="{% url 'dashboard:products' %}">Billing and Payroll</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="{% url 'dashboard:warehouse_home' %}">
+                            <i class="ti-panel"></i>
+								<p>Home</p>
+                            </a>
+                        </li>
+                         <li>
+                            <a href="{% url 'billings:billings' %}">
+                                <i class="ti-panel"></i>
+								<p>Billings</p>
+                            </a>
+                        </li>
+                         <li>
+                            <a href="{% url 'billings:payroll_page' %}">
+                                <i class="ti-panel"></i>
+								<p>Payments</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard:colors' %}">
+                                <i class="ti-panel"></i>
+								<p>Go to reports</p>
+                            </a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="header"><h4>Υπάλληλοι</h4></div>
+                        <div class="content">
+                            
+                            <br>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Yπάλληλος</th>
+                                        <th>Προηγούμενη Περίοδος</th>
+                                        <th>Επόμενη Περίοδος</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for person in object_list %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ person }}</td>
+                                            <td>{{ person }}</td>
+                                            <td>{{ person }}</td>
+                                            <td><a href="{% url 'billings:add_vacation' person.id %}" class="btn btn-primaty">Add</a></td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan='4'>No </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <br><br>
+                    {% block my_form %}{% endblock %}
+                </div>
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="header"><h4 class="text-center">Διακοπές</h4></div>
+                        <div class='content'>
+                            
+                            <table class='table'>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Υπάλληλος</th>
+                                        <th>Ξεκινάει- Ολοκληρώνετε</th>
+                                        <th>Κατάσταση</th>
+                                        <th colspan='2'>Λόγος</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for vacation in vacations %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ vacation.staff_related }}</td>
+                                            <td>{{ vacation.date_started|date }} - {{ vacation.date_end|date }}</td>
+                                            <td {% if vacation.status %}class='success' {% else  %} class='warning'{% endif %}>{{ vacation.tag_status }}</td>
+                                            <td colspan='2'>{{ vacation.notes }}</td>
+                                            <td><a href="{% url 'billings:vacation_edit' vacation.id %}" class="btn btn-warning">Edit</a>{% if not vacation.status %}<a href="{% url 'billings:vacation_update' vacation.id %}" class="btn btn-success">Done</a>{% endif %}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="5">No payment added.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id='calendar'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

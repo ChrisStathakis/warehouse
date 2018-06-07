@@ -1,0 +1,18 @@
+{% extends 'vacation/index.html' %}
+
+
+{% block my_form %}
+    <div class="card">
+        <div class="header text-center">
+            <h4 class="title">{{ title }}</h4>
+            <br>
+        </div>
+        <div class="context">
+            <form method="post" class="form">{% csrf_token %}
+                {{ form }}
+                <button type='submit' class="btn btn-success">Save</button>
+            </form>
+        </div>
+        {% if edit %}<br><br> <a href='{% url 'billings:vacation_delete' object.id %}' class="btn btn-warning">Delete</a>{% endif %}
+    </div>
+{% endblock my_form %}
