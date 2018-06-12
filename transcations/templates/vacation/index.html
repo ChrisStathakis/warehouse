@@ -18,7 +18,64 @@
 <script src="{% static 'calendar/lib/moment.min.js' %}"></script>
 <script src="{% static 'calendar/lib/jquery.min.js' %}"></script>
 <script src="{% static 'calendar/fullcalendar.min.js' %}"></script>
-<script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />  
+<script type="text/javascript">
+    $(window).on('load',function(){
+        $('#myModal').modal('show');
+    });
+</script>
+<script type="text/javascript">
+    $(function() {
+    
+        var start = moment().subtract(29, 'days');
+    var end = moment();
+
+    function cb(start, end) {
+        $('input[name="datefilter"]').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    }
+    
+      $('input[name="datefilter"]').daterangepicker({
+          autoUpdateInput: false,
+          locale: {
+              cancelLabel: 'Clear'
+          }
+      });
+    
+      $('input[name="datefilter"]').on('apply.daterangepicker', function(ev, picker) {
+          $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+      });
+    
+      $('input[name="datefilter"]').on('cancel.daterangepicker', function(ev, picker) {
+          $(this).val('');
+      });
+
+      
+
+      $('input[name="datefilter"]').daterangepicker({
+        startDate: start,
+        endDate: end,
+        ranges: {
+            "Προηγούμενο Τρίμηνο": [moment().subtract(3, 'month'), moment()],
+            'Today': [moment(), moment()],
+             "Τρέχων Χρονιά": [moment().startOf('year'), moment().endOf('year')],
+             "Επόμενο Τρίμηνο": [moment().startOf('month'), moment().subtract(-3, 'month').endOf('month')],
+             "Επόμενο Εξάμηνο": [moment().startOf('month'), moment().subtract(-6, 'month').endOf('month')],
+ 
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+    }, cb);
+
+    cb(start, end);
+    
+    });
+    </script>
+   
+    <script>
 
         $(document).ready(function() {
       
@@ -100,20 +157,36 @@
     <div class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="header">Choose Date</div>
+                        <div class="content">
+                            <form class="form" method="GET">
+                                <div class="col-md-6">
+                                    <input type="text" name="datefilter" class="form-control pull-right" value="">
+                                      
+                                </div>
+                                <button type="submit" class="btn btn-success text-center">Save</button>
+                                <a href="{{ request.path }}" type="submit" class="btn btn-warning text-center">Clear</a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
                     <div class="card">
                         <div class="header"><h4>Υπάλληλοι</h4></div>
                         <div class="content">
                             
                             <br>
-                            <table class="table">
+                            <table class="table table-responsive">
                                 <thead>
                                     <tr>
                                         <th>#</th>
                                         <th>Yπάλληλος</th>
-                                        <th>Προηγούμενη Περίοδος</th>
-                                        <th>Επόμενη Περίοδος</th>
-                                        <th></th>
+                                        <th>Ημέρες</th>
+                                        <th>#</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -121,8 +194,7 @@
                                         <tr>
                                             <td>{{ forloop.counter }}</td>
                                             <td>{{ person }}</td>
-                                            <td>{{ person }}</td>
-                                            <td>{{ person }}</td>
+                                            <th>{{ person.calculate_total_days }}</th>
                                             <td><a href="{% url 'billings:add_vacation' person.id %}" class="btn btn-primaty">Add</a></td>
                                         </tr>
                                     {% empty %}
@@ -137,47 +209,75 @@
                     <br><br>
                     {% block my_form %}{% endblock %}
                 </div>
-                <div class="col-md-8">
-                    <div class="card">
-                        <div class="header"><h4 class="text-center">Διακοπές</h4></div>
-                        <div class='content'>
-                            
-                            <table class='table'>
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Υπάλληλος</th>
-                                        <th>Ξεκινάει- Ολοκληρώνετε</th>
-                                        <th>Κατάσταση</th>
-                                        <th colspan='2'>Λόγος</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for vacation in vacations %}
-                                        <tr>
-                                            <td>{{ forloop.counter }}</td>
-                                            <td>{{ vacation.staff_related }}</td>
-                                            <td>{{ vacation.date_started|date }} - {{ vacation.date_end|date }}</td>
-                                            <td {% if vacation.status %}class='success' {% else  %} class='warning'{% endif %}>{{ vacation.tag_status }}</td>
-                                            <td colspan='2'>{{ vacation.notes }}</td>
-                                            <td><a href="{% url 'billings:vacation_edit' vacation.id %}" class="btn btn-warning">Edit</a>{% if not vacation.status %}<a href="{% url 'billings:vacation_update' vacation.id %}" class="btn btn-success">Done</a>{% endif %}</td>
-                                        </tr>
-                                    {% empty %}
-                                        <tr>
-                                            <td colspan="5">No payment added.</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-
-                        </div>
+                <div class="col-md-6">
+                        <div id='calendar'></div>
                     </div>
-                </div>
+                
             </div>
+            <br><br>
             <div class="row">
-                <div class="col-md-12">
-                    <div id='calendar'></div>
+                <div class="col-md-6">
+                            <div class="card">
+                                <div class="header"><h4 class="text-center">Διακοπές</h4></div>
+                                <div class='content'>
+                                    
+                                    <table class='table'>
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Υπάλληλος</th>
+                                                <th>Ξεκινάει- Ολοκληρώνετε</th>
+                                                <th>Κατάσταση</th>
+                                                <th colspan='2'>Λόγος</th>
+                                                <th>Ημέρες</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for vacation in vacations %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ vacation.staff_related }}</td>
+                                                    <td>{{ vacation.date_started|date }} - {{ vacation.date_end|date }}</td>
+                                                    <td {% if vacation.status %}class='success' {% else  %} class='warning'{% endif %}>{{ vacation.tag_status }}</td>
+                                                    <td colspan='2'>{{ vacation.notes }}</td>
+                                                    <td>{{ vacation.days }}</td>
+                                                    <td><a href="{% url 'billings:vacation_edit' vacation.id %}" class="btn btn-warning">Edit</a>{% if not vacation.status %}<a href="{% url 'billings:vacation_update' vacation.id %}" class="btn btn-success">Done</a>{% endif %}</td>
+                                                </tr>
+                                            {% empty %}
+                                                <tr>
+                                                    <td colspan="5">No payment added.</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+        
+                                </div>
+                            </div>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-responsive">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Yπάλληλος</th>
+                                <th>Ημέρες</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for person in persons %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ person.staff_related__title }}</td>
+                                    <th>{{ person.days__sum }}</th>         
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan='4'>No </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

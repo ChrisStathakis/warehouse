@@ -13,7 +13,9 @@ from inventory_manager.models import *
 from dashboard.constants import *
 from dashboard.models import *
 from dashboard.default_models import DefaultOrderModel, DefaultOrderItemModel
-# Create your models here.
+
+import datetime
+
 
 User = get_user_model()
 
@@ -186,6 +188,13 @@ class Person(models.Model):
         return '%s %s' % (self.balance, CURRENCY)
     tag_balance.short_description = 'Υπόλοιπο'
 
+    def calculate_total_days(self):
+        vacations = self.vacations.all()#.all().filter(date_started__year=datetime.date.year(),)
+        print(vacations)
+        days = vacations.aggregate(Sum('days'))['days__sum'] if vacations else 0
+        return days
+
+
 
 class PayrollInvoiceManager(models.Manager):
 
@@ -273,11 +282,13 @@ def update_person_on_delete(sender, instance, *args, **kwargs):
     person.save()
 
 
+
 class VacationReason(models.Model):
     title = models.CharField(max_length=150, unique=True)
 
     def __str__(self):
         return self.title
+
 
 class Vacation(models.Model):
     status = models.BooleanField(default=False, verbose_name='Ολοκληρώθηκε')
@@ -286,6 +297,7 @@ class Vacation(models.Model):
     date_end = models.DateField()
     reason = models.ForeignKey(VacationReason, blank=True, null=True, on_delete=models.CASCADE)
     notes = models.CharField(max_length=200, blank=True)
+    days = models.PositiveIntegerField(default=0)
 
     class Meta:
         ordering = ['status', 'date_started', 'date_end']
@@ -293,8 +305,7 @@ class Vacation(models.Model):
     def tag_status(self):
         return 'Ολοκληρώθηκε' if self.status else 'Δεν Ολοκληρωθηκε'
 
-    def __str__(self):
-        return 'f'
+    
 
-
+    
 

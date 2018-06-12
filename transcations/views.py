@@ -322,7 +322,6 @@ def payroll_invoice_delete(request, dk):
     return HttpResponseRedirect(reverse('billings:payroll_page'))
 
 
-
 class VacationPage(ListView):
     model = Person
     template_name = 'vacation/index.html'
@@ -330,11 +329,23 @@ class VacationPage(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(VacationPage, self).get_context_data(**kwargs)
+        try:
+            date_range = self.request.GET.get('datefilter', None)
+            date_start, date_end = date_range.split('-')
+            date_start = f'{date_start}'
+            date_start = datetime.datetime.strptime(date_start.replace(' ',''), '%m/%d/%Y')
+            date_end = datetime.datetime.strptime(date_end.replace(' ',''), '%m/%d/%Y')
+            vacations = Vacation.objects.all()
+            date_name = self.request.GET.get('date_name', None)
+        except:
+            date_start, date_end = None, None
         vacations = Vacation.objects.all()
+        vacations = vacations.filter(date_started__range=[date_start, date_end]) if date_start and date_end else vacations
+        persons = vacations.values('staff_related__title').annotate(Sum('days')).order_by('-days__sum')
+        print(persons)
         context.update(locals())
         return context
         
-
 
 class AddVacation(CreateView):
     model = Vacation
